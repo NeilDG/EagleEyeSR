@@ -17,6 +17,7 @@ import android.widget.Toast;
 import org.opencv.android.*;
 import org.opencv.core.Mat;
 
+import neildg.com.megatronsr.camera.CameraManager;
 import neildg.com.megatronsr.platformtools.utils.ApplicationCore;
 
 public class MainActivity extends AppCompatActivity{
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.main_activity_layout);
 
         ApplicationCore.initialize(this);
+        CameraManager.initialize();
+
         this.verifyCamera();
         this.initializeButtons();
     }
@@ -73,8 +76,8 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 if(MainActivity.this.hasCamera) {
-                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(takePictureIntent, 0);
+                    Intent imageCaptureIntent = new Intent(MainActivity.this, ImageCaptureActivity.class);
+                    startActivity(imageCaptureIntent);
                 }
             }
         });
