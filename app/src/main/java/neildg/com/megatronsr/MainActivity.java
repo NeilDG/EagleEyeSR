@@ -1,20 +1,29 @@
 package neildg.com.megatronsr;
 
+import android.app.Application;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
 import org.opencv.android.*;
 import org.opencv.core.Mat;
 
-public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
+import neildg.com.megatronsr.platformtools.utils.ApplicationCore;
+
+public class MainActivity extends AppCompatActivity{
 
     private final static String TAG = "MainActivity";
 
-    private JavaCameraView cameraView;
+    private boolean hasCamera = true;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -23,8 +32,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 case LoaderCallbackInterface.SUCCESS:
                 {
                     Log.i(TAG, "OpenCV loaded successfully");
-                    cameraView.enableView();
-                    cameraView.enableFpsMeter();
                 } break;
                 default:
                 {
@@ -37,9 +44,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity_layout);
 
-        this.cameraView = (JavaCameraView) this.findViewById(R.id.java_camera_view);
+        ApplicationCore.initialize(this);
+        this.verifyCamera();
+        this.initializeButtons();
     }
 
     @Override
@@ -49,18 +58,26 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0, this, mLoaderCallback);
     }
 
-    @Override
-    public void onCameraViewStarted(int width, int height) {
+    private void verifyCamera() {
+        PackageManager packageManager = ApplicationCore.getInstance().getAppContext().getPackageManager();
+        if(packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) == false){
+            Toast.makeText(this, "This device does not have a camera.", Toast.LENGTH_SHORT)
+                    .show();
 
+            this.hasCamera = false;
+        }
+    }
+    private void initializeButtons() {
+        Button captureImageBtn = (Button) this.findViewById(R.id.capture_btn);
+        captureImageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(MainActivity.this.hasCamera) {
+                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(takePictureIntent, 0);
+                }
+            }
+        });
     }
 
-    @Override
-    public void onCameraViewStopped() {
-
-    }
-
-    @Override
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        return inputFrame.rgba();
-    }
 }

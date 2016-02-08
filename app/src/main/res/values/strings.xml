@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">MegatronSR</string>
     <string name="title_activity_main">Super Camera</string>
+    <string name="sr_title">Megatron SR: A Superresolution Experiment Environment</string>
+    <string name= "sr_intro">ABOUT: This is a mobile application that utilizes super-resolution to further enhance an image. You may modify the configurations seen below, before
+    proceeding in taking an image.</string>
 </resources>
