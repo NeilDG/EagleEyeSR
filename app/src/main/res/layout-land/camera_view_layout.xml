@@ -5,7 +5,7 @@
 
     <SurfaceView
         android:id="@+id/camera_surface_view"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
@@ -14,19 +14,19 @@
 
     <neildg.com.megatronsr.camera.DrawingView
         android:id="@+id/camera_drawing_view"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/linearLayout1"
-        android:fitsSystemWindows="true" />
+        android:fitsSystemWindows="true"
+        android:focusableInTouchMode="true" />
 
     <ImageButton
         android:id="@+id/btn_rotate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/camera_surface_view"
         android:layout_marginLeft="11dp"
         android:layout_marginTop="12dp"
         android:background="?android:selectableItemBackground"
