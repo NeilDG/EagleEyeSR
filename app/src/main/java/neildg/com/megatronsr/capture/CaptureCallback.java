@@ -19,7 +19,7 @@ import neildg.com.megatronsr.platformtools.utils.notifications.Parameters;
  *
  */
 public class CaptureCallback implements PictureCallback {
-	private final static String TAG = "CameraEnhance_CaptureCallback";
+	private final static String TAG = "SR_CaptureCallback";
 	
 	public final static String CAPTURED_IMAGE_DATA_KEY = "CAPTURED_IMAGE_DATA_KEY";
 	
