@@ -10,7 +10,7 @@ import android.util.Log;
 
 import java.util.concurrent.Semaphore;
 
-import neildg.com.megatronsr.camera.CameraManager;
+import neildg.com.megatronsr.camera.OldCameraManager;
 import neildg.com.megatronsr.config.ConfigHandler;
 import neildg.com.megatronsr.config.values.BaseConfig;
 import neildg.com.megatronsr.io.ImageWriter;
@@ -40,8 +40,8 @@ public class ShutterCallbackHandler extends Thread implements PreviewCallback {
 		//TODO: uncomment to use burst mode
 		ProgressDialogHandler.getInstance().showDialog("Taking pictures", "Do not move the device!");
 		
-		Camera camera = CameraManager.getInstance().requestCamera();
-		CameraManager.getInstance().setupCameraForShutter();
+		Camera camera = OldCameraManager.getInstance().requestCamera();
+		OldCameraManager.getInstance().setupCameraForShutter();
 		
 		try {
 			Thread.sleep(500);
@@ -65,7 +65,7 @@ public class ShutterCallbackHandler extends Thread implements PreviewCallback {
 		ImageSequencesHolder.getInstance().release();
 		
 		ProgressDialogHandler.getInstance().hideDialog();
-		CameraManager.getInstance().resetSettings();
+		OldCameraManager.getInstance().resetSettings();
 		
 		//start processing immediately
 		NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_PROCESSING_STARTED);

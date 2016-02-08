@@ -1,23 +1,17 @@
 package neildg.com.megatronsr;
 
-import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import org.opencv.android.*;
-import org.opencv.core.Mat;
 
-import neildg.com.megatronsr.camera.CameraManager;
+import neildg.com.megatronsr.camera.OldCameraManager;
 import neildg.com.megatronsr.platformtools.utils.ApplicationCore;
 
 public class MainActivity extends AppCompatActivity{
@@ -48,7 +42,7 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.main_activity_layout);
 
         ApplicationCore.initialize(this);
-        CameraManager.initialize();
+        OldCameraManager.initialize();
 
         this.verifyCamera();
         this.initializeButtons();

@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import neildg.com.megatronsr.camera.CameraManager;
+import neildg.com.megatronsr.camera.OldCameraManager;
 import neildg.com.megatronsr.capture.ImageSequencesHolder;
 import neildg.com.megatronsr.platformtools.utils.notifications.NotificationListener;
 import neildg.com.megatronsr.platformtools.utils.notifications.Parameters;
@@ -110,7 +110,7 @@ public class ImageWriter implements NotificationListener {
 		//save image sequences
 		try {
 
-			Camera.Parameters parameters = CameraManager.getInstance().requestCamera().getParameters();
+			Camera.Parameters parameters = OldCameraManager.getInstance().requestCamera().getParameters();
 			Size size = parameters.getPreviewSize(); 
 			
 			for(int i = 0; i < ImageSequencesHolder.getInstance().getImageToProcessSize(); i++) {

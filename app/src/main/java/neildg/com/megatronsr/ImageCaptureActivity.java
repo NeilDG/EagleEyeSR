@@ -1,16 +1,20 @@
 package neildg.com.megatronsr;
 
-import android.content.Intent;
 import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraDevice;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Surface;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageButton;
 
-import neildg.com.megatronsr.camera.CameraManager;
+import java.util.ArrayList;
+
+import neildg.com.megatronsr.camera.CameraManagerWrapper;
+import neildg.com.megatronsr.camera.OldCameraManager;
 import neildg.com.megatronsr.camera.CameraPreview;
 import neildg.com.megatronsr.camera.DrawingView;
 import neildg.com.megatronsr.io.ImageWriter;
@@ -18,6 +22,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 public class ImageCaptureActivity extends AppCompatActivity {
 
+    private final static String TAG = "SR_ImageCapture";
     private CameraPreview cameraPreview;
 
     @Override
@@ -25,14 +30,12 @@ public class ImageCaptureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_view_layout);
 
-        Camera deviceCamera = CameraManager.getInstance().requestCamera();
-        this.cameraPreview = (CameraPreview) this.findViewById(R.id.camera_surface_view);
-        this.cameraPreview.assignCamera(deviceCamera);
-        CameraManager.getInstance().setCameraPreview(this.cameraPreview);
+        SurfaceView testCameraView = (SurfaceView) this.findViewById(R.id.camera_surface_view);
+        ArrayList<Surface> surfaces = new ArrayList<Surface>();
+        surfaces.add(testCameraView.getHolder().getSurface());
 
-        DrawingView drawingView = (DrawingView) this.findViewById(R.id.camera_drawing_view);
-        this.cameraPreview.assignDrawingView(drawingView);
-
+        CameraManagerWrapper.initialize(surfaces);
+        CameraManagerWrapper.getInstance().requestCamera();
         this.initializeButtons();
 
     }
@@ -47,7 +50,7 @@ public class ImageCaptureActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        CameraManager.getInstance().closeCamera();
+        OldCameraManager.getInstance().closeCamera();
         ProgressDialogHandler.destroy();
 
     }
@@ -64,7 +67,7 @@ public class ImageCaptureActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Camera deviceCamera = CameraManager.getInstance().swapCamera();
+                Camera deviceCamera = OldCameraManager.getInstance().swapCamera();
                 ImageCaptureActivity.this.cameraPreview.updateCameraSource(deviceCamera);
             }
         });
@@ -74,7 +77,7 @@ public class ImageCaptureActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                CameraManager.getInstance().capture();
+                OldCameraManager.getInstance().capture();
             }
         });
     }

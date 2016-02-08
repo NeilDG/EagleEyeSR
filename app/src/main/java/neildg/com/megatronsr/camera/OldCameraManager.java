@@ -19,14 +19,14 @@ import neildg.com.megatronsr.config.values.BaseConfig;
  * @author NeilDG
  *
  */
-public class CameraManager {
+public class OldCameraManager {
 	private final static String TAG = "SR_CameraManager";
 	
-	private static CameraManager sharedInstance = null;
+	private static OldCameraManager sharedInstance = null;
 	
-	public static CameraManager getInstance() {
+	public static OldCameraManager getInstance() {
 		if(sharedInstance == null) {
-			Log.e(TAG, "CameraManager has not called initialized!");
+			Log.e(TAG, "OldCameraManager has not called initialized!");
 		}
 		return sharedInstance;
 	}
@@ -41,12 +41,12 @@ public class CameraManager {
 	private boolean safeToTakePicture = false;
 	private CaptureCallback captureCallback = new CaptureCallback();
 	
-	private CameraManager() {
+	private OldCameraManager() {
 		
 	}
 	
 	public static void initialize() {
-		sharedInstance = new CameraManager();
+		sharedInstance = new OldCameraManager();
 	}
 	
 	public static boolean isCameraSupported(Context context) {
