@@ -28,7 +28,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +39,8 @@
         <activity
             android:name=".ImageCaptureActivity"
             android:label="@string/title_activity_image_capture"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ProcessingActivity"></activity>
     </application>
 
 </manifest>

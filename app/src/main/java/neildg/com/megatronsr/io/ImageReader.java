@@ -81,7 +81,7 @@ public class ImageReader {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Reads an image from file and returns its matrix form represented by openCV
 	 * @param fileName
@@ -89,8 +89,8 @@ public class ImageReader {
 	 */
 	public Mat imReadOpenCV(String fileName) {
 		String completeFilePath = ImageWriter.getInstance().getFilePath() + "/" +fileName;
-		
-		Log.d(TAG, "Filepath for imread: " +completeFilePath);
+
+		Log.d(TAG, "Filepath for imread: " + completeFilePath);
 		return Imgcodecs.imread(completeFilePath);
 	}
 }

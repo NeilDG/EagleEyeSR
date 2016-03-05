@@ -4,6 +4,7 @@
 package neildg.com.megatronsr.io;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
@@ -11,7 +12,11 @@ import android.hardware.Camera.Size;
 import android.os.Environment;
 import android.util.Log;
 
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -75,19 +80,23 @@ public class ImageWriter implements NotificationListener {
 		this.proposedPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + ALBUM_NAME_PREFIX + this.startingAlbum;
 	}
 	
-	private void createNewAlbum() {
+	private void createDirectory() {
 		
 		File filePath = new File(this.proposedPath);
 		filePath.mkdirs();
 		
 		Log.d(TAG, "Image storage is set to: " +proposedPath);
 	}
+
+	public void createNewAlbum() {
+		this.identifyDir();
+		this.createDirectory();
+	}
 	
 	/*
 	 * Starts writing to the specified directory
 	 */
 	public void startWriting() {
-		this.identifyDir();
 		this.createNewAlbum();
 		
 		//save original image
@@ -170,6 +179,28 @@ public class ImageWriter implements NotificationListener {
 			Log.e(TAG, "Error writing image: " +e.getMessage());
 		}
 	}
+
+	public void saveBitmapImage(Bitmap bitmap, String fileName) {
+
+        try {
+            File processedImageFile = new File(this.proposedPath, fileName + ".jpg");
+            FileOutputStream out = new FileOutputStream(processedImageFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            // NOTE: PNG is a lossless format, the compression factor (100) is ignored
+			out.close();
+            Log.d(TAG, "Saved: " +processedImageFile.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+
+	public void saveMatrixToImage(Mat mat, String fileName) {
+		File imageFile = new File(this.proposedPath, fileName + ".jpg");
+		Imgcodecs.imwrite(imageFile.getAbsolutePath(), mat);
+
+		Log.d(TAG, "Saved " + imageFile.getAbsolutePath());
+	}
+
 
 	@Override
 	public void onNotify(String notificationString, Parameters params) {

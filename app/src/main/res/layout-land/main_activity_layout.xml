@@ -128,8 +128,9 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="View Images"
-            android:id="@+id/view_image_btn" />
+            android:text="Pick Images from Gallery"
+            android:id="@+id/select_image_btn" />
+
     </LinearLayout>
 
 </LinearLayout>
