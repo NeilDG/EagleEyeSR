@@ -2,12 +2,17 @@ package neildg.com.megatronsr.processing;
 
 import android.util.Log;
 
+import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.DMatch;
+import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfKeyPoint;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
@@ -43,7 +48,7 @@ public class ShiftAddFusionOperator {
 
         this.hrMat = Mat.ones(referenceMat.rows() * ParameterConstants.SCALING_FACTOR, referenceMat.cols() * ParameterConstants.SCALING_FACTOR, this.referenceMat.type());
 
-        this.copyMatToHR(this.referenceMat, 0, 0);
+        //this.copyMatToHR(this.referenceMat, 0, 0);
         //this.bruteForcePutLRMat();
         this.assembleHRMatWithFeatures();
 
@@ -152,7 +157,7 @@ public class ShiftAddFusionOperator {
         descriptorExtractor.compute(lrMat1, matOfKeyPoint1, descriptors1);
 
         Mat lrMat2 = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 1 + ".jpg");
-        featureDetector = FeatureDetector.create(FeatureDetector.FAST);
+        featureDetector = FeatureDetector.create(FeatureDetector.ORB);
         MatOfKeyPoint matOfKeyPoint2 = new MatOfKeyPoint();
         featureDetector.detect(lrMat2, matOfKeyPoint2);
 
@@ -173,7 +178,7 @@ public class ShiftAddFusionOperator {
         List<DMatch> goodMatchesList = new ArrayList<DMatch>();
         for(int i = 0; i < dMatchList.length; i++) {
             Log.d(TAG, "Distance is: " + dMatchList[i].distance);
-            if(dMatchList[i].distance < 40.0f) {
+            if(dMatchList[i].distance < 10.0f) {
                 goodMatchesList.add(dMatchList[i]);
             }
         }
@@ -185,5 +190,42 @@ public class ShiftAddFusionOperator {
         Mat matchesShower = new Mat();
         Features2d.drawMatches(lrMat1, matOfKeyPoint1, lrMat2, matOfKeyPoint2, goodMatches, matchesShower);
         ImageWriter.getInstance().saveMatrixToImage(matchesShower, "matches");
+
+        this.warpImage(goodMatches,matOfKeyPoint1, matOfKeyPoint2, lrMat1, lrMat2);
+    }
+
+    private void warpImage(MatOfDMatch goodMatch, MatOfKeyPoint matOfKeyPoint1, MatOfKeyPoint matOfKeyPoint2, Mat srcMat, Mat comparingMat) {
+        DMatch[] dMatchArray = goodMatch.toArray();
+
+        MatOfPoint2f matOfPoint1 = new MatOfPoint2f();
+        MatOfPoint2f matOfPoint2 = new MatOfPoint2f();
+
+        KeyPoint[] keyPoints1 = matOfKeyPoint1.toArray();
+        KeyPoint[] keyPoints2 = matOfKeyPoint2.toArray();
+
+        List<Point> pointList1 = new ArrayList<>();
+        List<Point> pointList2 = new ArrayList<>();
+
+        for(int i = 0; i < dMatchArray.length; i++) {
+            Log.d(TAG, "DMATCHES" +dMatchArray[i].toString());
+
+            pointList1.add(keyPoints1[dMatchArray[i].queryIdx].pt);
+            pointList2.add(keyPoints2[dMatchArray[i].trainIdx].pt);
+        }
+
+        matOfPoint1.fromList(pointList1); matOfPoint2.fromList(pointList2);
+
+        //((M0.type() == CV_32F || M0.type() == CV_64F) && M0.rows == 3 && M0.cols == 3)
+
+        Log.d(TAG, "Homography pre info: matOfPoint1 ROWS: " +matOfPoint1.rows() + " matOfPoint1 COLS: " +matOfPoint1.cols());
+        Log.d(TAG, "Homography pre info: matOfPoint2 ROWS: " +matOfPoint2.rows() + " matOfPoint2 COLS: " +matOfPoint2.cols());
+
+        Mat homography = Calib3d.findHomography(matOfPoint2, matOfPoint1);
+        Log.d(TAG, "Homography info: ROWS: " +homography.rows() + " COLS: " +homography.cols());
+        Mat outputMat = new Mat();
+        Imgproc.warpPerspective(comparingMat,outputMat,homography,comparingMat.size());
+
+        ImageWriter.getInstance().saveMatrixToImage(outputMat, "warped");
+
     }
 }
