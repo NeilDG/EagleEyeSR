@@ -32,8 +32,8 @@ public class LRToHROperator {
 
             this.hrMat = Mat.ones(lrMat.rows() * ParameterConstants.SCALING_FACTOR, lrMat.cols() * ParameterConstants.SCALING_FACTOR, lrMat.type());
             //this.hrMat.setTo(Scalar.all(255));
-
             //this.copyMatToHR(lrMat, 0, 0);
+
             Imgproc.resize(lrMat, this.hrMat, this.hrMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
             ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.INITIAL_HR_PREFIX_STRING + i);
 

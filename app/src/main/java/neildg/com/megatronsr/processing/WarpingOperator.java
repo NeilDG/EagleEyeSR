@@ -64,7 +64,7 @@ public class WarpingOperator {
             this.warpedMat = new Mat();
             this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
 
-            Core.addWeighted(this.outputMat, 1.0, this.warpedMat, 1.0/numImages, 0.0, this.outputMat);
+            Core.addWeighted(this.outputMat, 1.0, this.warpedMat, 0.25/numImages, 0.0, this.outputMat);
             ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "blend_" + i);
             this.warpedMat.release();
 
