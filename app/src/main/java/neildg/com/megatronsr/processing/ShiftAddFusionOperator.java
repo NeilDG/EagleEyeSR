@@ -3,17 +3,14 @@ package neildg.com.megatronsr.processing;
 import android.util.Log;
 
 import org.opencv.calib3d.Calib3d;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.DMatch;
 import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
-import org.opencv.core.Scalar;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
@@ -191,10 +188,10 @@ public class ShiftAddFusionOperator {
         Features2d.drawMatches(lrMat1, matOfKeyPoint1, lrMat2, matOfKeyPoint2, goodMatches, matchesShower);
         ImageWriter.getInstance().saveMatrixToImage(matchesShower, "matches");
 
-        this.warpImage(goodMatches,matOfKeyPoint1, matOfKeyPoint2, lrMat1, lrMat2);
+        this.warpImage(goodMatches,matOfKeyPoint1, matOfKeyPoint2, lrMat2);
     }
 
-    private void warpImage(MatOfDMatch goodMatch, MatOfKeyPoint matOfKeyPoint1, MatOfKeyPoint matOfKeyPoint2, Mat srcMat, Mat comparingMat) {
+    private void warpImage(MatOfDMatch goodMatch, MatOfKeyPoint matOfKeyPoint1, MatOfKeyPoint matOfKeyPoint2, Mat comparingMat) {
         DMatch[] dMatchArray = goodMatch.toArray();
 
         MatOfPoint2f matOfPoint1 = new MatOfPoint2f();
