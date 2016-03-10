@@ -1,5 +1,7 @@
 package neildg.com.megatronsr.processing;
 
+import android.util.Log;
+
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -17,6 +19,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
  * Created by neil.dg on 3/10/16.
  */
 public class WarpedToHROperator {
+    private final static String TAG = "WarpedHROperator";
 
     private List<Mat> warpedMatrixList = null;
 
@@ -38,16 +41,18 @@ public class WarpedToHROperator {
             Mat hrWarpedMat =  Mat.zeros(warpedMat.rows() * ParameterConstants.SCALING_FACTOR, warpedMat.cols() * ParameterConstants.SCALING_FACTOR, warpedMat.type());
 
             this.copyMatToHR(warpedMat, hrWarpedMat, 0, 0);
+
             ImageWriter.getInstance().saveMatrixToImage(hrWarpedMat, "hrwarp_" + i);
 
             ProgressDialogHandler.getInstance().showDialog("Merging with reference HR", "Warped image " + i + " is being merged to the HR image.");
             Mat maskHRMat = new Mat(hrWarpedMat.rows(), hrWarpedMat.cols(), CvType.CV_8UC1);
             hrWarpedMat.convertTo(maskHRMat, CvType.CV_8UC1);
+            Imgproc.cvtColor(maskHRMat, maskHRMat, Imgproc.COLOR_BGR2GRAY);
+            Imgproc.threshold(maskHRMat, maskHRMat, 1, 1, Imgproc.THRESH_TRUNC);
 
             //only replace values that have not been touched by previous masks
             if(this.previousMaskMat.elemSize() != 0) {
-                Core.bitwise_and(this.previousMaskMat, maskHRMat, maskHRMat);
-                Core.bitwise_not(maskHRMat, maskHRMat);
+                Core.bitwise_xor(this.previousMaskMat, maskHRMat, maskHRMat);
             }
 
             hrWarpedMat.copyTo(this.outputMat, maskHRMat);
@@ -58,9 +63,20 @@ public class WarpedToHROperator {
         }
 
         Mat bilateralMat = new Mat();
-        Imgproc.bilateralFilter(this.outputMat,bilateralMat,5, 25.0, 25.0);
+        Imgproc.bilateralFilter(this.outputMat,bilateralMat,7, 200, 200);
         ImageWriter.getInstance().saveMatrixToImage(bilateralMat, "FINAL_RESULT");
         ProgressDialogHandler.getInstance().hideDialog();
+    }
+
+    private void debugMat(Mat mat) {
+       Log.d(TAG, mat.toString());
+        for(int row = 0; row < mat.rows(); row++) {
+            for (int col = 0; col < mat.cols(); col++) {
+                double data = mat.get(row, col)[0];
+                Log.d(TAG, "Row " + row + " Col " + col + " Value: " + data);
+            }
+        }
+
     }
 
     /*
