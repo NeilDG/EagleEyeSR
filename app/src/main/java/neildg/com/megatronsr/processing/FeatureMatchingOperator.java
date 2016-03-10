@@ -21,6 +21,7 @@ import neildg.com.megatronsr.preprocessing.BitmapURIRepository;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
+ * Compare LR reference mat and match features to LR2...LRN.
  * Created by NeilDG on 3/6/2016.
  */
 public class FeatureMatchingOperator {
@@ -39,7 +40,7 @@ public class FeatureMatchingOperator {
     private DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
 
     public FeatureMatchingOperator() {
-        this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_PREFIX_STRING + "0.jpg");
+        this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0.jpg");
     }
 
     public MatOfKeyPoint getRefKeypoint() {
@@ -66,7 +67,7 @@ public class FeatureMatchingOperator {
         int numImages = BitmapURIRepository.getInstance().getNumImages();
 
         for(int i = 1; i < numImages; i++) {
-            Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_PREFIX_STRING +i+ ".jpg");
+            Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING +i+ ".jpg");
 
             ProgressDialogHandler.getInstance().showDialog("Finding feature in image " + i, "Finding features in image " + i);
             this.detectFeaturesInLR(comparingMat);
@@ -77,7 +78,7 @@ public class FeatureMatchingOperator {
         ProgressDialogHandler.getInstance().hideDialog();
 
         for(int i = 1; i < numImages; i++) {
-            Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_PREFIX_STRING +i+ ".jpg");
+            Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING +i+ ".jpg");
 
             ProgressDialogHandler.getInstance().showDialog("Matching features for image " +i, "Matching features in image " +i+ " to reference image.");
             this.matchFeaturesToReference(this.lrDescriptorList.get(i - 1));

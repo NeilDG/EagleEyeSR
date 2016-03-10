@@ -27,7 +27,17 @@ public class LRToHROperator {
         ProgressDialogHandler.getInstance().showDialog("Converting to HR images", "Pixels are \"stretched\" for each LR image.");
         int numImages = BitmapURIRepository.getInstance().getNumImages();
 
-        for(int i = 0; i < numImages; i++) {
+        //only interpolate the first reference image
+        Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0 + ".jpg");
+        this.hrMat = Mat.ones(lrMat.rows() * ParameterConstants.SCALING_FACTOR, lrMat.cols() * ParameterConstants.SCALING_FACTOR, lrMat.type());
+        Imgproc.resize(lrMat, this.hrMat, this.hrMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
+        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.INITIAL_HR_PREFIX_STRING + 0);
+
+        this.hrMat.release();
+        lrMat.release();
+
+
+        /*for(int i = 0; i < numImages; i++) {
             Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i + ".jpg");
 
             this.hrMat = Mat.ones(lrMat.rows() * ParameterConstants.SCALING_FACTOR, lrMat.cols() * ParameterConstants.SCALING_FACTOR, lrMat.type());
@@ -39,7 +49,7 @@ public class LRToHROperator {
 
             this.hrMat.release();
             lrMat.release();
-        }
+        }*/
 
         ProgressDialogHandler.getInstance().hideDialog();
     }
