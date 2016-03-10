@@ -28,10 +28,18 @@ public class SRProcessor extends Thread {
         downsamplingOperator.perform();
         ProgressDialogHandler.getInstance().hideDialog();
 
-        ProgressDialogHandler.getInstance().showDialog("Shift add fusion", "Performing shift add fusion.");
-        ShiftAddFusionOperator fusionOperator = new ShiftAddFusionOperator();
-        fusionOperator.perform();
-        ProgressDialogHandler.getInstance().hideDialog();
+        LRToHROperator lrToHROperator = new LRToHROperator();
+        lrToHROperator.perform();
+
+        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator();
+        matchingOperator.perform();
+
+        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
+        warpingOperator.perform();
+
+        WarpedToHROperator warpedToHROperator = new WarpedToHROperator(warpingOperator.getWarpedMatrixList());
+        warpedToHROperator.perform();
+
     }
 
 }

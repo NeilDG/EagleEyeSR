@@ -48,6 +48,7 @@ public class ProgressDialogHandler {
 			
 			@Override
 			public void run() {
+				sharedInstance.hideDialog();
 				sharedInstance.progressDialog = ProgressDialog.show(sharedInstance.activity, title, message);
 				sharedInstance.progressDialog.setCancelable(false);
 			}
