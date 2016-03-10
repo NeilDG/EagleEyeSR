@@ -1,5 +1,6 @@
 package neildg.com.megatronsr.processing;
 
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -21,6 +22,8 @@ public class WarpedToHROperator {
 
     private Mat outputMat;
 
+    private Mat previousMaskMat = new Mat();
+
     public WarpedToHROperator(List<Mat> warpedMatrixList) {
         this.warpedMatrixList = warpedMatrixList;
         this.outputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_PREFIX_STRING + 0 + ".jpg");
@@ -38,15 +41,25 @@ public class WarpedToHROperator {
             ImageWriter.getInstance().saveMatrixToImage(hrWarpedMat, "hrwarp_" + i);
 
             ProgressDialogHandler.getInstance().showDialog("Merging with reference HR", "Warped image " + i + " is being merged to the HR image.");
-            Mat maskHRMat = new Mat(hrWarpedMat.rows(), hrWarpedMat.cols(), CvType.CV_8U);
-            hrWarpedMat.convertTo(maskHRMat, CvType.CV_8U);
+            Mat maskHRMat = new Mat(hrWarpedMat.rows(), hrWarpedMat.cols(), CvType.CV_8UC1);
+            hrWarpedMat.convertTo(maskHRMat, CvType.CV_8UC1);
+
+            //only replace values that have not been touched by previous masks
+            if(this.previousMaskMat.elemSize() != 0) {
+                Core.bitwise_and(this.previousMaskMat, maskHRMat, maskHRMat);
+                Core.bitwise_not(maskHRMat, maskHRMat);
+            }
 
             hrWarpedMat.copyTo(this.outputMat, maskHRMat);
-            ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_"+i);
-            //Imgproc.resize(warpedMat, hrWarpedMat, hrWarpedMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
+            ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i);
+
+            //copy the mask mat to a holder
+            maskHRMat.copyTo(this.previousMaskMat);
         }
 
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "FINAL_RESULT");
+        Mat bilateralMat = new Mat();
+        Imgproc.bilateralFilter(this.outputMat,bilateralMat,5, 25.0, 25.0);
+        ImageWriter.getInstance().saveMatrixToImage(bilateralMat, "FINAL_RESULT");
         ProgressDialogHandler.getInstance().hideDialog();
     }
 
