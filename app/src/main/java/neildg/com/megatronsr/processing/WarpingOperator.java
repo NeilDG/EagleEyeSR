@@ -4,6 +4,7 @@ import android.util.Log;
 
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.DMatch;
 import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
@@ -64,10 +65,12 @@ public class WarpingOperator {
             this.warpedMat = new Mat();
             this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
 
-            Core.addWeighted(this.outputMat, 1.0, this.warpedMat, 0.25/numImages, 0.0, this.outputMat);
+            //TODO: test only
+            this.warpedMat.setTo(Scalar.all(255));
+            this.overrideMat(this.warpedMat, this.outputMat);
+
             ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "blend_" + i);
             this.warpedMat.release();
-
             //Core.add(this.warpedMat, this.outputMat, this.outputMat);
             ProgressDialogHandler.getInstance().hideDialog();
         }
@@ -107,5 +110,21 @@ public class WarpingOperator {
         Log.d(TAG, "Homography info: ROWS: " + homography.rows() + " COLS: " + homography.cols());
 
         Imgproc.warpPerspective(candidateMat, this.warpedMat, homography, this.warpedMat.size(), Imgproc.INTER_CUBIC, Core.BORDER_TRANSPARENT, Scalar.all(0));
+    }
+
+    private void overrideMat(Mat warpedMat, Mat destinationMat) {
+        for(int row = 0; row < warpedMat.rows(); row++) {
+            for(int col = 0; col < warpedMat.cols(); col++) {
+                double[] pixelData = warpedMat.get(row,col);
+                destinationMat.put(row,col,pixelData);
+            }
+        }
+    }
+
+    private void copyToMat(Mat warpedMat, Mat destinationMat) {
+        Mat mask = new Mat(); this.warpedMat.copyTo(mask);
+        mask.convertTo(mask, CvType.CV_8U);
+
+        warpedMat.copyTo(destinationMat, mask);
     }
 }
