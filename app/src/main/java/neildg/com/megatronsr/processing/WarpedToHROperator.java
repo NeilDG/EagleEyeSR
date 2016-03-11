@@ -86,7 +86,7 @@ public class WarpedToHROperator {
         this.baseMaskMat.release();
 
         ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising final image.");
-        
+
 
         //this.performCLAHERGB();
         Photo.detailEnhance(this.outputMat, this.outputMat);
