@@ -5,8 +5,11 @@ import android.util.Log;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.photo.Photo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
@@ -73,12 +76,37 @@ public class WarpedToHROperator {
 
             //perform OR operation to merge the mask mat with the base MAT
             Core.bitwise_or(this.baseMaskMat, maskHRMat, this.baseMaskMat);
+
+            maskHRMat.release();
+            hrWarpedMat.release();
+            warpedMat.release();
         }
 
-        //Mat bilateralMat = new Mat();
-        //Imgproc.bilateralFilter(this.outputMat,bilateralMat,7, 200, 200);
+        this.warpedMatrixList.clear();
+        this.baseMaskMat.release();
+
+        ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising final image.");
+        
+
+        //this.performCLAHERGB();
+        Photo.detailEnhance(this.outputMat, this.outputMat);
         ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "FINAL_RESULT");
         ProgressDialogHandler.getInstance().hideDialog();
+    }
+
+    private void performCLAHERGB() {
+        Mat labColorMat = new Mat();
+        Imgproc.cvtColor(this.outputMat, labColorMat, Imgproc.COLOR_BGR2Lab);
+
+        List<Mat> labSeparated = new ArrayList<Mat>();
+        Core.split(labColorMat, labSeparated);
+
+        Mat claheMat = new Mat();
+        Imgproc.createCLAHE(1, new Size(4,4)).apply(labSeparated.get(0), claheMat);
+        claheMat.copyTo(labSeparated.get(0)); claheMat.release(); claheMat = null;
+        Core.merge(labSeparated, labColorMat); labSeparated.clear();
+
+        Imgproc.cvtColor(labColorMat, this.outputMat, Imgproc.COLOR_Lab2BGR);
     }
 
     private void debugMat(Mat mat) {

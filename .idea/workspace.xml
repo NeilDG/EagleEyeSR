@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_LOG_LEVEL" value="DEBUG" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="ERROR" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
@@ -73,6 +73,7 @@
             <state vertical-scroll-proportion="0.0">
               <caret line="47" column="21" selection-start-line="47" selection-start-column="21" selection-end-line="47" selection-end-column="21" />
               <folding>
+                <element signature="imports" expanded="false" />
                 <element signature="e#2852#2853#0" expanded="false" />
                 <element signature="e#2896#2897#0" expanded="false" />
               </folding>
@@ -83,8 +84,8 @@
       <file leaf-file-name="WarpedToHROperator.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/WarpedToHROperator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5529753">
-              <caret line="66" column="41" selection-start-line="66" selection-start-column="41" selection-end-line="66" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.8113208">
+              <caret line="88" column="8" selection-start-line="88" selection-start-column="8" selection-end-line="88" selection-end-column="8" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -2450,6 +2451,10 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane" />
+      <pane id="Scratches" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -2546,10 +2551,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
-      <pane id="PackagesPane" />
-      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -2752,7 +2753,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.41612378" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.41612378" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -2839,6 +2840,75 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="47" column="21" selection-start-line="47" selection-start-column="21" selection-end-line="47" selection-end-column="21" />
           <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#2852#2853#0" expanded="false" />
+            <element signature="e#2896#2897#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/WarpedToHROperator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="66" column="41" selection-start-line="66" selection-start-column="41" selection-end-line="66" selection-end-column="41" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/WarpingOperator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="112" column="5" selection-start-line="53" selection-start-column="4" selection-end-line="112" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/LRToHROperator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="32" column="152" selection-start-line="32" selection-start-column="8" selection-end-line="32" selection-end-column="152" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/FeatureMatchingOperator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="23" column="60" selection-start-line="23" selection-start-column="60" selection-end-line="23" selection-end-column="60" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#1757#1758#0" expanded="false" />
+            <element signature="e#1796#1797#0" expanded="false" />
+            <element signature="e#1846#1847#0" expanded="false" />
+            <element signature="e#1886#1887#0" expanded="false" />
+            <element signature="e#1941#1942#0" expanded="false" />
+            <element signature="e#1984#1985#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/SRProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="40" column="37" selection-start-line="40" selection-start-column="37" selection-end-line="40" selection-end-column="37" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/LRWarpingOperator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="47" column="21" selection-start-line="47" selection-start-column="21" selection-end-line="47" selection-end-column="21" />
+          <folding>
+            <element signature="imports" expanded="false" />
             <element signature="e#2852#2853#0" expanded="false" />
             <element signature="e#2896#2897#0" expanded="false" />
           </folding>
@@ -2906,6 +2976,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="47" column="21" selection-start-line="47" selection-start-column="21" selection-end-line="47" selection-end-column="21" />
           <folding>
+            <element signature="imports" expanded="false" />
             <element signature="e#2852#2853#0" expanded="false" />
             <element signature="e#2896#2897#0" expanded="false" />
           </folding>
@@ -2980,6 +3051,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="47" column="21" selection-start-line="47" selection-start-column="21" selection-end-line="47" selection-end-column="21" />
           <folding>
+            <element signature="imports" expanded="false" />
             <element signature="e#2852#2853#0" expanded="false" />
             <element signature="e#2896#2897#0" expanded="false" />
           </folding>
@@ -3052,6 +3124,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="47" column="21" selection-start-line="47" selection-start-column="21" selection-end-line="47" selection-end-column="21" />
           <folding>
+            <element signature="imports" expanded="false" />
             <element signature="e#2852#2853#0" expanded="false" />
             <element signature="e#2896#2897#0" expanded="false" />
           </folding>
@@ -3100,10 +3173,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/openCVLibrary310/src/main/java/org/opencv/imgproc/Imgproc.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33236575">
+          <caret line="2989" column="31" selection-start-line="2989" selection-start-column="31" selection-end-line="2989" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/WarpedToHROperator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5529753">
-          <caret line="66" column="41" selection-start-line="66" selection-start-column="41" selection-end-line="66" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.8113208">
+          <caret line="88" column="8" selection-start-line="88" selection-start-column="8" selection-end-line="88" selection-end-column="8" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
