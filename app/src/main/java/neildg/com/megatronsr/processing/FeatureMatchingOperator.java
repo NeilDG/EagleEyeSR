@@ -88,6 +88,8 @@ public class FeatureMatchingOperator {
             ImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i);
 
             ProgressDialogHandler.getInstance().hideDialog();
+
+            matchesShower.release();
         }
     }
 
@@ -124,6 +126,8 @@ public class FeatureMatchingOperator {
                 goodMatchesList.add(dMatchList[i]);
             }
         }
+
+        initialMatch.release();
 
         //filter matches to only show good ones
         MatOfDMatch goodMatches = new MatOfDMatch();

@@ -67,9 +67,9 @@ public class WarpedToHROperator {
             Imgproc.threshold(maskHRMat, maskHRMat, 1, 1, Imgproc.THRESH_TRUNC);
 
             //perform filtering of mask
-            Mat comparingMat = new Mat();
+           /* Mat comparingMat = new Mat();
             Core.bitwise_not(this.baseMaskMat, comparingMat);
-            Core.bitwise_and(comparingMat, maskHRMat, maskHRMat);
+            Core.bitwise_and(comparingMat, maskHRMat, maskHRMat);*/
 
             hrWarpedMat.copyTo(this.outputMat, maskHRMat);
             ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i);
@@ -80,6 +80,7 @@ public class WarpedToHROperator {
             maskHRMat.release();
             hrWarpedMat.release();
             warpedMat.release();
+            //comparingMat.release();
         }
 
         this.warpedMatrixList.clear();
@@ -89,8 +90,11 @@ public class WarpedToHROperator {
 
 
         //this.performCLAHERGB();
-        Photo.detailEnhance(this.outputMat, this.outputMat);
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "FINAL_RESULT");
+        Mat enhancedMat = new Mat();
+        System.gc();
+
+        Photo.fastNlMeansDenoisingColored(this.outputMat, enhancedMat);
+        ImageWriter.getInstance().saveMatrixToImage(enhancedMat, "FINAL_RESULT");
         ProgressDialogHandler.getInstance().hideDialog();
     }
 
