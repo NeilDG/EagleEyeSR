@@ -16,6 +16,7 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConstants;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.MetricsLogger;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -26,13 +27,18 @@ public class WarpedToHROperator {
 
     private List<Mat> warpedMatrixList = null;
 
+    private Mat groundTruthMat;
     private Mat outputMat;
 
     private Mat baseMaskMat = new Mat();
 
     public WarpedToHROperator(List<Mat> warpedMatrixList) {
         this.warpedMatrixList = warpedMatrixList;
+        this.groundTruthMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING + ".jpg");
         this.outputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_PREFIX_STRING + 0 + ".jpg");
+
+        MetricsLogger.getSharedInstance().takePSNR("ground_truth_vs_initial_hr", this.groundTruthMat, "GroundTruth", this.outputMat,
+                "InterCubicHR", "Ground truth vs Intercubic");
     }
 
     public void perform() {
@@ -74,6 +80,9 @@ public class WarpedToHROperator {
             hrWarpedMat.copyTo(this.outputMat, maskHRMat);
             ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i);
 
+            MetricsLogger.getSharedInstance().takePSNR("ground_truth_vs_result_"+i, this.groundTruthMat, "GroundTruth", this.outputMat,
+                    "Result_"+i, "Ground truth vs Result_" +i);
+
             //perform OR operation to merge the mask mat with the base MAT
             Core.bitwise_or(this.baseMaskMat, maskHRMat, this.baseMaskMat);
 
@@ -96,6 +105,12 @@ public class WarpedToHROperator {
         Photo.fastNlMeansDenoisingColored(this.outputMat, enhancedMat);
         ImageWriter.getInstance().saveMatrixToImage(enhancedMat, "FINAL_RESULT");
         ProgressDialogHandler.getInstance().hideDialog();
+
+        MetricsLogger.getSharedInstance().takePSNR("ground_truth_vs_final", this.groundTruthMat, "GroundTruth", this.outputMat,
+                "Final", "Ground truth vs Final");
+
+        MetricsLogger.getSharedInstance().debugPSNRTable();
+        MetricsLogger.getSharedInstance().logResultsToJSON(FilenameConstants.METRICS_NAME_STRING);
     }
 
     private void performCLAHERGB() {

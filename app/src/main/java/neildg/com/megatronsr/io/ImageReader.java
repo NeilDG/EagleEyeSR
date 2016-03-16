@@ -50,12 +50,6 @@ public class ImageReader {
 		this.context = context;
 	}
 	
-	public boolean isAlbumDirExisting(int albumNumber) {
-		File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + ImageWriter.ALBUM_NAME_PREFIX + albumNumber);
-		
-		return file.isDirectory() && file.exists();
-	}
-	
 	/**
 	 * Loads the specified image and returns its byte data
 	 */
