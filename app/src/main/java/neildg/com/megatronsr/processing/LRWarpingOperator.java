@@ -68,7 +68,7 @@ public class LRWarpingOperator {
             this.warpedMat = new Mat();
             this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
 
-            Photo.detailEnhance(this.warpedMat, this.warpedMat);//TODO: test
+            //Photo.detailEnhance(this.warpedMat, this.warpedMat);//TODO: test
 
             this.warpedMatrixList.add(this.warpedMat);
             ImageWriter.getInstance().saveMatrixToImage(this.warpedMat, "warp_" +i);
