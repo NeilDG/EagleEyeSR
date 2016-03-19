@@ -36,12 +36,12 @@ public class MetricsLogger {
 
     }
 
-    public void takePSNR(String key, Mat m1, String m1Name, Mat m2, String m2Name, String description) {
+    public void takeMetrics(String key, Mat m1, String m1Name, Mat m2, String m2Name, String description) {
         if(this.psnrTable.containsKey(key)) {
             Log.e(TAG, key + " is already in the psnr table.");
         }
         else {
-            MetricsSnapshot snapshot = new MetricsSnapshot(m1Name, m2Name, ImageMetrics.getPSNR(m1,m2), description);
+            MetricsSnapshot snapshot = new MetricsSnapshot(m1Name, m2Name, ImageMetrics.getRMSE(m1,m2), ImageMetrics.getPSNR(m1,m2), description);
             this.psnrTable.put(key, snapshot);
         }
     }
@@ -83,7 +83,9 @@ public class MetricsLogger {
             writer.name("description").value(snapshot.getDescription());
             writer.name("mat1").value(snapshot.getMat1Name());
             writer.name("mat2").value(snapshot.getMat2Name());
+            writer.name("rmse").value(snapshot.getRMSE());
             writer.name("psnr").value(snapshot.getPSNR());
+            writer.name("ssim").value(snapshot.getSSIMInfo());
             writer.endObject();
         }
 
