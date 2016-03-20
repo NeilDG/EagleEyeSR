@@ -32,12 +32,18 @@ public class WarpedToHROperator {
     private Mat outputMat;
 
     private Mat baseMaskMat = new Mat();
-    private double currentPSNR = 0.0;
+    //private double currentPSNR = 0.0;
+
+    private double rmse = 0.0;
 
     public WarpedToHROperator(List<Mat> warpedMatrixList) {
         this.warpedMatrixList = warpedMatrixList;
         this.groundTruthMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING + ".jpg");
         this.outputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_PREFIX_STRING + 0 + ".jpg");
+
+        Mat nearestMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_NEAREST + ".jpg");
+        MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_nearest", this.groundTruthMat, "GroundTruth", nearestMat,
+                "NearestMat", "Ground truth vs Nearest");
 
         MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_initial_hr", this.groundTruthMat, "GroundTruth", this.outputMat,
                 "InterCubicHR", "Ground truth vs Intercubic");
@@ -54,15 +60,20 @@ public class WarpedToHROperator {
         baseHRWarpMat.convertTo(this.baseMaskMat, CvType.CV_8UC1);
         Imgproc.threshold(this.baseMaskMat, this.baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
 
-        Mat candidateHRMat = new Mat();
-        this.outputMat.copyTo(candidateHRMat);
+        Mat medianMat = new Mat();
+        Mat candidateHRMat = new Mat(); this.outputMat.copyTo(candidateHRMat);
+
         baseHRWarpMat.copyTo(candidateHRMat, this.baseMaskMat);
-        MetricsLogger.getSharedInstance().takeMetrics("mat_initial_vs_mat_1", this.outputMat, "Mat_initial", candidateHRMat,
-                "Mat_0", "PSNR compare Mat");
+        Imgproc.medianBlur(candidateHRMat, medianMat, 3);
 
         baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat); //replace initial output
 
         ImageWriter.getInstance().saveMatrixToImage(candidateHRMat, "candidate_" + 0);
+        ImageWriter.getInstance().saveMatrixToImage(medianMat, "candidate_median_" + 0);
+        this.rmse = ImageMetrics.getRMSE(candidateHRMat, medianMat);
+
+        MetricsLogger.getSharedInstance().takeMetrics("Noise_evaluate_0", candidateHRMat, "candidate_0", medianMat,
+                "candidate_median_filter_0", "Candidate_Vs_Median_RMSE");
 
         for(int i = 1; i < this.warpedMatrixList.size(); i++) {
             ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warping image " +i);
@@ -76,23 +87,30 @@ public class WarpedToHROperator {
             Imgproc.threshold(this.baseMaskMat, this.baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
 
             baseHRWarpMat.copyTo(candidateHRMat, this.baseMaskMat); //store on candidate mat to compare PSNR with initial output
-
-
-            double newPSNR = ImageMetrics.getPSNR(this.outputMat, candidateHRMat);
-            MetricsLogger.getSharedInstance().takeMetrics("mat_"+(i-1)+ "vs_mat_"+i, this.outputMat, "Mat "+(i-1), candidateHRMat,
-                    "Mat "+i, "PSNR compare Mat");
-
-            Log.d(TAG, "PSNR new: " +newPSNR+ " old: " +this.currentPSNR);
-            //is the new PSNR "better" than the current PSNR, then replace
-            if(newPSNR >= this.currentPSNR) {
-                baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat);
-                this.currentPSNR = newPSNR;
-            }
-            else {
-                Log.d(TAG, "PSNR is not better. Doing nothing");
-            }
+            Imgproc.medianBlur(candidateHRMat, medianMat, 3);
 
             ImageWriter.getInstance().saveMatrixToImage(candidateHRMat, "candidate_" + i);
+            ImageWriter.getInstance().saveMatrixToImage(medianMat, "candidate_median_" + i);
+
+            MetricsLogger.getSharedInstance().takeMetrics("Noise_evaluate_"+i, candidateHRMat, "candidate_" + i, medianMat,
+                    "candidate_median_filter_" + i, "Candidate_Vs_Median_RMSE");
+
+            double newRMSE = ImageMetrics.getRMSE(candidateHRMat, medianMat);
+            Log.d(TAG, "New RMSE: " +newRMSE+ " Old RMSE: " +this.rmse);
+            //if RMSE is lower than previous, candidate is reliable. That means its noise is not too much.
+            if(newRMSE <= this.rmse) {
+                //baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat);
+                medianMat.copyTo(this.outputMat, this.baseMaskMat); //TODO: test only
+                this.rmse = newRMSE;
+            }
+            else {
+                Log.d(TAG, "RMSE is not lesser. Doing nothing");
+            }
+
+
+
+            this.outputMat.copyTo(candidateHRMat); //overwrite as new candidate
+
             ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i);
         }
 

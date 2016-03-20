@@ -69,12 +69,12 @@ public class LRWarpingOperator {
             this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
 
             Mat holderMat = new Mat();
-            Imgproc.bilateralFilter(this.warpedMat,holderMat,9,75,75);
+            //Imgproc.bilateralFilter(this.warpedMat,holderMat,9,75,75);
             //Photo.detailEnhance(this.warpedMat, this.warpedMat);//TODO: test
 
-            this.warpedMatrixList.add(holderMat);
+            this.warpedMatrixList.add(this.warpedMat);
             ImageWriter.getInstance().saveMatrixToImage(this.warpedMat, "warp_" + i);
-            ImageWriter.getInstance().saveMatrixToImage(holderMat, "warp_bilateral_" +i);
+            //ImageWriter.getInstance().saveMatrixToImage(holderMat, "warp_bilateral_" +i);
 
             ProgressDialogHandler.getInstance().hideDialog();
         }
