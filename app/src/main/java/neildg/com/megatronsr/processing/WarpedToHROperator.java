@@ -17,6 +17,7 @@ import neildg.com.megatronsr.constants.ParameterConstants;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.io.MetricsLogger;
+import neildg.com.megatronsr.metrics.ImageMetrics;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -31,6 +32,7 @@ public class WarpedToHROperator {
     private Mat outputMat;
 
     private Mat baseMaskMat = new Mat();
+    private double currentPSNR = 0.0;
 
     public WarpedToHROperator(List<Mat> warpedMatrixList) {
         this.warpedMatrixList = warpedMatrixList;
@@ -43,56 +45,55 @@ public class WarpedToHROperator {
 
     public void perform() {
         ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warping base image");
-        Mat baseWarpMKat = this.warpedMatrixList.get(0);
-        Mat baseHRWarpMat = Mat.zeros(baseWarpMKat.rows() * ParameterConstants.SCALING_FACTOR, baseWarpMKat.cols() * ParameterConstants.SCALING_FACTOR, baseWarpMKat.type());
-        this.copyMatToHR(baseWarpMKat, baseHRWarpMat, 0, 0);
+        Mat baseWarpMat = this.warpedMatrixList.get(0);
+        Mat baseHRWarpMat = Mat.zeros(baseWarpMat.rows() * ParameterConstants.SCALING_FACTOR, baseWarpMat.cols() * ParameterConstants.SCALING_FACTOR, baseWarpMat.type());
+        this.copyMatToHR(baseWarpMat, baseHRWarpMat, 0, 0);
 
-        this.baseMaskMat = new Mat(baseHRWarpMat.rows(), baseHRWarpMat.cols(), CvType.CV_8UC1);
-        baseHRWarpMat.convertTo(this.baseMaskMat, CvType.CV_8UC1);
+        baseHRWarpMat.copyTo(this.baseMaskMat);
         Imgproc.cvtColor(this.baseMaskMat, this.baseMaskMat, Imgproc.COLOR_BGR2GRAY);
+        baseHRWarpMat.convertTo(this.baseMaskMat, CvType.CV_8UC1);
         Imgproc.threshold(this.baseMaskMat, this.baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
 
-        ImageWriter.getInstance().saveMatrixToImage(this.baseMaskMat, "mask_" + 0);
+        Mat candidateHRMat = new Mat();
+        this.outputMat.copyTo(candidateHRMat);
+        baseHRWarpMat.copyTo(candidateHRMat, this.baseMaskMat);
+        MetricsLogger.getSharedInstance().takeMetrics("mat_initial_vs_mat_1", this.outputMat, "Mat_initial", candidateHRMat,
+                "Mat_0", "PSNR compare Mat");
 
-        baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat);
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_0");
+        baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat); //replace initial output
+
+        ImageWriter.getInstance().saveMatrixToImage(candidateHRMat, "candidate_" + 0);
 
         for(int i = 1; i < this.warpedMatrixList.size(); i++) {
-            ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warped image " + i + " pixel stretching");
+            ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warping image " +i);
+            baseWarpMat = this.warpedMatrixList.get(i);
+            Mat.zeros(baseWarpMat.rows() * ParameterConstants.SCALING_FACTOR, baseWarpMat.cols() * ParameterConstants.SCALING_FACTOR, baseWarpMat.type());
+            this.copyMatToHR(baseWarpMat, baseHRWarpMat, 0, 0);
 
-            Mat warpedMat = this.warpedMatrixList.get(i);
-            Mat hrWarpedMat =  Mat.zeros(warpedMat.rows() * ParameterConstants.SCALING_FACTOR, warpedMat.cols() * ParameterConstants.SCALING_FACTOR, warpedMat.type());
+            baseHRWarpMat.copyTo(this.baseMaskMat);
+            Imgproc.cvtColor(this.baseMaskMat, this.baseMaskMat, Imgproc.COLOR_BGR2GRAY);
+            baseHRWarpMat.convertTo(this.baseMaskMat, CvType.CV_8UC1);
+            Imgproc.threshold(this.baseMaskMat, this.baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
 
-            //Imgproc.resize(warpedMat, hrWarpedMat, hrWarpedMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_NEAREST);
-            this.copyMatToHR(warpedMat, hrWarpedMat, 0, 0);
+            baseHRWarpMat.copyTo(candidateHRMat, this.baseMaskMat); //store on candidate mat to compare PSNR with initial output
 
-            ImageWriter.getInstance().saveMatrixToImage(hrWarpedMat, "hrwarp_" + i);
 
-            ProgressDialogHandler.getInstance().showDialog("Merging with reference HR", "Warped image " + i + " is being merged to the HR image.");
-            Mat maskHRMat = new Mat(hrWarpedMat.rows(), hrWarpedMat.cols(), CvType.CV_8UC1);
-            hrWarpedMat.convertTo(maskHRMat, CvType.CV_8UC1);
-            Imgproc.cvtColor(maskHRMat, maskHRMat, Imgproc.COLOR_BGR2GRAY);
-            Imgproc.threshold(maskHRMat, maskHRMat, 1, 255, Imgproc.THRESH_BINARY);
+            double newPSNR = ImageMetrics.getPSNR(this.outputMat, candidateHRMat);
+            MetricsLogger.getSharedInstance().takeMetrics("mat_"+(i-1)+ "vs_mat_"+i, this.outputMat, "Mat "+(i-1), candidateHRMat,
+                    "Mat "+i, "PSNR compare Mat");
 
-            //perform filtering of mask
-            Mat comparingMat = new Mat();
-            Core.bitwise_not(this.baseMaskMat, comparingMat);
-            Core.bitwise_and(comparingMat, maskHRMat, maskHRMat);
+            Log.d(TAG, "PSNR new: " +newPSNR+ " old: " +this.currentPSNR);
+            //is the new PSNR "better" than the current PSNR, then replace
+            if(newPSNR >= this.currentPSNR) {
+                baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat);
+                this.currentPSNR = newPSNR;
+            }
+            else {
+                Log.d(TAG, "PSNR is not better. Doing nothing");
+            }
 
-            hrWarpedMat.copyTo(this.outputMat, maskHRMat);
-            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_" + i);
+            ImageWriter.getInstance().saveMatrixToImage(candidateHRMat, "candidate_" + i);
             ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i);
-
-            MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_result_" + i, this.groundTruthMat, "GroundTruth", this.outputMat,
-                    "Result_" + i, "Ground truth vs Result_" + i);
-
-            //perform OR operation to merge the mask mat with the base MAT
-            Core.bitwise_or(this.baseMaskMat, maskHRMat, this.baseMaskMat);
-
-            maskHRMat.release();
-            hrWarpedMat.release();
-            warpedMat.release();
-            comparingMat.release();
         }
 
         this.warpedMatrixList.clear();
@@ -100,12 +101,8 @@ public class WarpedToHROperator {
 
         ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising final image.");
 
-
-        //this.performCLAHERGB();
-        Mat enhancedMat = new Mat();
         System.gc();
 
-        //Photo.fastNlMeansDenoisingColored(this.outputMat, enhancedMat);
         ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "FINAL_RESULT");
         ProgressDialogHandler.getInstance().hideDialog();
 
