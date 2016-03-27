@@ -122,7 +122,7 @@ public class FeatureMatchingOperator {
         List<DMatch> goodMatchesList = new ArrayList<DMatch>();
         for(int i = 0; i < dMatchList.length; i++) {
             Log.d(TAG, "dMatch distance: " +dMatchList[i].distance);
-            if(dMatchList[i].distance < 25.0f) {
+            /*if(dMatchList[i].distance < 25.0f)*/ {
                 goodMatchesList.add(dMatchList[i]);
             }
         }

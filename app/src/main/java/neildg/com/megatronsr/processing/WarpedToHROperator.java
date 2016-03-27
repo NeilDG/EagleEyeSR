@@ -105,11 +105,11 @@ public class WarpedToHROperator {
         Mat enhancedMat = new Mat();
         System.gc();
 
-        //Photo.fastNlMeansDenoisingColored(this.outputMat, enhancedMat);
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "FINAL_RESULT");
+        Photo.fastNlMeansDenoisingColored(this.outputMat, enhancedMat);
+        ImageWriter.getInstance().saveMatrixToImage(enhancedMat, "FINAL_RESULT");
         ProgressDialogHandler.getInstance().hideDialog();
 
-        MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_final", this.groundTruthMat, "GroundTruth", this.outputMat,
+        MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_final", this.groundTruthMat, "GroundTruth", enhancedMat,
                 "Final", "Ground truth vs Final");
 
         MetricsLogger.getSharedInstance().debugPSNRTable();
