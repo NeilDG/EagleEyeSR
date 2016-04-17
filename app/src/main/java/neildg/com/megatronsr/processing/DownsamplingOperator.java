@@ -20,8 +20,12 @@ public class DownsamplingOperator {
 
     public void perform() {
         ImageWriter imageWriter = ImageWriter.getInstance();
-        imageWriter.createNewAlbum();
         BitmapURIRepository bitmapURIRepository = BitmapURIRepository.getInstance();
+
+        //get bitmap ground-truth and transfer to debugging folder
+        Bitmap bitmap = bitmapURIRepository.getDownsampledBitmap(0, 1);
+        imageWriter.saveBitmapImage(bitmap, FilenameConstants.GROUND_TRUTH_PREFIX_STRING);
+
         for(int i = 0; i < BitmapURIRepository.getInstance().getNumImages(); i++) {
             Bitmap downsampledBitmap = bitmapURIRepository.getDownsampledBitmap(i, this.downsampleFactor);
             imageWriter.saveBitmapImage(downsampledBitmap, FilenameConstants.DOWNSAMPLE_PREFIX_STRING+i);

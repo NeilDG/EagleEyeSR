@@ -88,6 +88,8 @@ public class FeatureMatchingOperator {
             ImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i);
 
             ProgressDialogHandler.getInstance().hideDialog();
+
+            matchesShower.release();
         }
     }
 
@@ -120,10 +122,12 @@ public class FeatureMatchingOperator {
         List<DMatch> goodMatchesList = new ArrayList<DMatch>();
         for(int i = 0; i < dMatchList.length; i++) {
             Log.d(TAG, "dMatch distance: " +dMatchList[i].distance);
-            if(dMatchList[i].distance < 25.0f) {
+            /*if(dMatchList[i].distance < 25.0f)*/ { //25.0f original
                 goodMatchesList.add(dMatchList[i]);
             }
         }
+
+        initialMatch.release();
 
         //filter matches to only show good ones
         MatOfDMatch goodMatches = new MatOfDMatch();

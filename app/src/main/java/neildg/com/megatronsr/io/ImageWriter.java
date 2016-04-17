@@ -47,12 +47,13 @@ public class ImageWriter implements NotificationListener {
 	public final static String PROCESSED_IMAGE_NAME = "processed.jpg";
 	
 	private Context context;
-	private int startingAlbum = 0;
 	private String proposedPath;
 	
 	private ImageWriter(Context context) {
 		this.context = context;
-		
+		DirectoryStorage.getSharedInstance().createDirectory();
+
+		this.proposedPath = DirectoryStorage.getSharedInstance().getProposedPath();
 	}
 	
 	public static void initialize(Context context) {
@@ -70,34 +71,10 @@ public class ImageWriter implements NotificationListener {
 		ImageReader.destroy();
 	}
 	
-	private void identifyDir() {
-		//identify directory index first
-		while(ImageReader.getInstance().isAlbumDirExisting(this.startingAlbum)) {
-			this.startingAlbum++;
-		}
-		
-		//create path
-		this.proposedPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + ALBUM_NAME_PREFIX + this.startingAlbum;
-	}
-	
-	private void createDirectory() {
-		
-		File filePath = new File(this.proposedPath);
-		filePath.mkdirs();
-		
-		Log.d(TAG, "Image storage is set to: " +proposedPath);
-	}
-
-	public void createNewAlbum() {
-		this.identifyDir();
-		this.createDirectory();
-	}
-	
 	/*
 	 * Starts writing to the specified directory
 	 */
 	public void startWriting() {
-		this.createNewAlbum();
 		
 		//save original image
 		try {

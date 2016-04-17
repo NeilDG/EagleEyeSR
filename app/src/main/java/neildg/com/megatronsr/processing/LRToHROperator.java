@@ -8,6 +8,7 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConstants;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.MetricsLogger;
 import neildg.com.megatronsr.preprocessing.BitmapURIRepository;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -30,26 +31,15 @@ public class LRToHROperator {
         //only interpolate the first reference image
         Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0 + ".jpg");
         this.hrMat = Mat.ones(lrMat.rows() * ParameterConstants.SCALING_FACTOR, lrMat.cols() * ParameterConstants.SCALING_FACTOR, lrMat.type());
+
+        Imgproc.resize(lrMat, this.hrMat, this.hrMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_NEAREST);
+        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.INITIAL_HR_NEAREST);
+
         Imgproc.resize(lrMat, this.hrMat, this.hrMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
         ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.INITIAL_HR_PREFIX_STRING + 0);
 
         this.hrMat.release();
         lrMat.release();
-
-
-        /*for(int i = 0; i < numImages; i++) {
-            Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i + ".jpg");
-
-            this.hrMat = Mat.ones(lrMat.rows() * ParameterConstants.SCALING_FACTOR, lrMat.cols() * ParameterConstants.SCALING_FACTOR, lrMat.type());
-            //this.hrMat.setTo(Scalar.all(255));
-            //this.copyMatToHR(lrMat, 0, 0);
-
-            Imgproc.resize(lrMat, this.hrMat, this.hrMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
-            ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.INITIAL_HR_PREFIX_STRING + i);
-
-            this.hrMat.release();
-            lrMat.release();
-        }*/
 
         ProgressDialogHandler.getInstance().hideDialog();
     }

@@ -13,6 +13,7 @@ import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.photo.Photo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,13 +62,19 @@ public class LRWarpingOperator {
         for (int i = 1; i < numImages; i++) {
             Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i + ".jpg");
 
+
             ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + i + " to reference image.");
 
             this.warpedMat = new Mat();
             this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
 
+            Mat holderMat = new Mat();
+            //Imgproc.bilateralFilter(this.warpedMat,holderMat,9,75,75);
+            //Photo.detailEnhance(this.warpedMat, this.warpedMat);//TODO: test
+
             this.warpedMatrixList.add(this.warpedMat);
-            ImageWriter.getInstance().saveMatrixToImage(this.warpedMat, "warp_" +i);
+            ImageWriter.getInstance().saveMatrixToImage(this.warpedMat, "warp_" + i);
+            //ImageWriter.getInstance().saveMatrixToImage(holderMat, "warp_bilateral_" +i);
 
             ProgressDialogHandler.getInstance().hideDialog();
         }
@@ -83,12 +90,12 @@ public class LRWarpingOperator {
     private void finalizeResult() {
         this.refKeypoint.release(); this.refKeypoint = null;
         for(MatOfDMatch dMatch: this.goodMatchList) {
-            dMatch.release(); dMatch = null;
+            dMatch.release();
         }
         this.goodMatchList.clear();
 
         for(MatOfKeyPoint keyPoint: this.keyPointList) {
-            keyPoint.release(); keyPoint = null;
+            keyPoint.release();
         }
 
         this.keyPointList.clear();
