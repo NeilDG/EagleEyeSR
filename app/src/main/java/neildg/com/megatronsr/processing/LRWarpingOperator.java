@@ -62,15 +62,13 @@ public class LRWarpingOperator {
         for (int i = 1; i < numImages; i++) {
             Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i + ".jpg");
 
-
-            ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + i + " to reference image.");
+            ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising image " +i);
+            Photo.fastNlMeansDenoisingColored(comparingMat, comparingMat);
 
             this.warpedMat = new Mat();
             this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
 
-            Mat holderMat = new Mat();
-            //Imgproc.bilateralFilter(this.warpedMat,holderMat,9,75,75);
-            //Photo.detailEnhance(this.warpedMat, this.warpedMat);//TODO: test
+            ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + i + " to reference image.");
 
             this.warpedMatrixList.add(this.warpedMat);
             ImageWriter.getInstance().saveMatrixToImage(this.warpedMat, "warp_" + i);
