@@ -75,7 +75,7 @@ public class TVDenoiseHROperator implements IOperator {
         ProgressDialogHandler.getInstance().showDialog("TV Denoising","Denoising and creating HR image through observations.");
         Mat denoisedMat = new Mat(lrMat.size(), lrMat.type());
 
-        Photo.denoise_TVL1(lrObservations, denoisedMat,40,30);
+        Photo.denoise_TVL1(lrObservations, denoisedMat,30,100);
         Imgproc.resize(denoisedMat, this.hrMat, this.hrMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
         ImageWriter.getInstance().saveMatrixToImage(denoisedMat, "denoised_lr");
         ImageWriter.getInstance().saveMatrixToImage(this.hrMat, "denoised_HR");
