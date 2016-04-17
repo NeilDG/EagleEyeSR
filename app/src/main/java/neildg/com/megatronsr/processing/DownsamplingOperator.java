@@ -9,7 +9,7 @@ import neildg.com.megatronsr.preprocessing.BitmapURIRepository;
 /**
  * Created by NeilDG on 3/5/2016.
  */
-public class DownsamplingOperator {
+public class DownsamplingOperator implements IOperator {
     private static String TAG = "DownsamplingOperator";
 
     private int downsampleFactor = 2;

@@ -24,7 +24,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
  * Compare LR reference mat and match features to LR2...LRN.
  * Created by NeilDG on 3/6/2016.
  */
-public class FeatureMatchingOperator {
+public class FeatureMatchingOperator implements IOperator {
     private final static String TAG = "FeatureMatchingOperator";
 
     private Mat referenceMat;
@@ -55,6 +55,7 @@ public class FeatureMatchingOperator {
         return this.lrKeypointsList;
     }
 
+    @Override
     public void perform() {
         ProgressDialogHandler.getInstance().hideDialog();
         ProgressDialogHandler.getInstance().showDialog("Finding features in first image", "Finding features in first image. Succeeding LR images will be matched to it.");

@@ -29,6 +29,7 @@ public class ImageMetrics {
         s1 = s1.mul(s1);           // |I1 - I2|^2
 
         Scalar s = Core.sumElems(s1);         // sum elements per channel
+        s1.release();
 
         double sse = s.val[0] + s.val[1] + s.val[2]; // sum channels
 

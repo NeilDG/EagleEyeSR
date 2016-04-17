@@ -27,7 +27,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 /**
  * Created by neil.dg on 3/10/16.
  */
-public class LRWarpingOperator {
+public class LRWarpingOperator implements IOperator {
     private final static String TAG = "WarpingOperator";
 
     private MatOfKeyPoint refKeypoint;

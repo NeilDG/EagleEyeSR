@@ -16,7 +16,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
  * Converts LR to HR images and saves them
  * Created by NeilDG on 3/6/2016.
  */
-public class LRToHROperator {
+public class LRToHROperator implements IOperator {
     private static String TAG = "LRToHROperator";
 
     private Mat hrMat;

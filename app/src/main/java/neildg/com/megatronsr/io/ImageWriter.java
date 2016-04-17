@@ -42,7 +42,7 @@ public class ImageWriter implements NotificationListener {
 		return sharedInstance;
 	}
 	
-	public final static String ALBUM_NAME_PREFIX = "/MegatronSR";
+	public final static String ALBUM_NAME_PREFIX = "/SR";
 	public final static String ORIGINAL_IMAGE_NAME = "original.jpg";
 	public final static String PROCESSED_IMAGE_NAME = "processed.jpg";
 	

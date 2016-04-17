@@ -23,7 +23,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 /**
  * Created by neil.dg on 3/10/16.
  */
-public class WarpedToHROperator {
+public class WarpedToHROperator implements IOperator {
     private final static String TAG = "WarpedHROperator";
 
     private List<Mat> warpedMatrixList = null;
