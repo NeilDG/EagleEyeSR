@@ -28,6 +28,9 @@ public class SRProcessor extends Thread {
         downsamplingOperator.perform();
         ProgressDialogHandler.getInstance().hideDialog();
 
+        /*TVDenoiseHROperator denoiseHROperator = new TVDenoiseHROperator();
+        denoiseHROperator.perform();*/
+
         LRToHROperator lrToHROperator = new LRToHROperator();
         lrToHROperator.perform();
 

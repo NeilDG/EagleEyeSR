@@ -11,7 +11,7 @@ import java.io.File;
 public class DirectoryStorage {
     private final static String TAG = "DirectoryStorage";
 
-    public final static String ALBUM_NAME_PREFIX = "/MegatronSR";
+    public final static String ALBUM_NAME_PREFIX = "/SR";
 
     private static DirectoryStorage sharedInstance = null;
 

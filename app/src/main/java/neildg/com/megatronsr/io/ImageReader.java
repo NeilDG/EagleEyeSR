@@ -25,10 +25,6 @@ public class ImageReader {
 	
 	private static ImageReader sharedInstance = null;
 	public static ImageReader getInstance() {
-		/*if(sharedInstance == null) {
-			sharedInstance = new ImageReader();
-		}*/
-		
 		return sharedInstance;
 	}
 	
@@ -53,8 +49,8 @@ public class ImageReader {
 	/**
 	 * Loads the specified image and returns its byte data
 	 */
-	public byte[] getBytesFromFile(String fileName) {
-		File file = new File(ImageWriter.getInstance().getFilePath() + "/" +fileName);
+	public byte[] getBytesFromFile(String fileName, ImageFileAttribute.FileType fileType) {
+		File file = new File(ImageWriter.getInstance().getFilePath() + "/" +fileName + ImageFileAttribute.getFileExtension(fileType));
 		
 		try {
 			if(file.exists()) {
@@ -81,8 +77,8 @@ public class ImageReader {
 	 * @param fileName
 	 * @return
 	 */
-	public Mat imReadOpenCV(String fileName) {
-		String completeFilePath = ImageWriter.getInstance().getFilePath() + "/" +fileName;
+	public Mat imReadOpenCV(String fileName, ImageFileAttribute.FileType fileType) {
+		String completeFilePath = ImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
 
 		Log.d(TAG, "Filepath for imread: " + completeFilePath);
 		return Imgcodecs.imread(completeFilePath);

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
+import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.preprocessing.BitmapURIRepository;
@@ -24,7 +25,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
  * Compare LR reference mat and match features to LR2...LRN.
  * Created by NeilDG on 3/6/2016.
  */
-public class FeatureMatchingOperator {
+public class FeatureMatchingOperator implements IOperator {
     private final static String TAG = "FeatureMatchingOperator";
 
     private Mat referenceMat;
@@ -40,7 +41,7 @@ public class FeatureMatchingOperator {
     private DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
 
     public FeatureMatchingOperator() {
-        this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0.jpg");
+        this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
     }
 
     public MatOfKeyPoint getRefKeypoint() {
@@ -55,6 +56,7 @@ public class FeatureMatchingOperator {
         return this.lrKeypointsList;
     }
 
+    @Override
     public void perform() {
         ProgressDialogHandler.getInstance().hideDialog();
         ProgressDialogHandler.getInstance().showDialog("Finding features in first image", "Finding features in first image. Succeeding LR images will be matched to it.");
@@ -67,7 +69,7 @@ public class FeatureMatchingOperator {
         int numImages = BitmapURIRepository.getInstance().getNumImages();
 
         for(int i = 1; i < numImages; i++) {
-            Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING +i+ ".jpg");
+            Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING +i, ImageFileAttribute.FileType.JPEG);
 
             ProgressDialogHandler.getInstance().showDialog("Finding feature in image " + i, "Finding features in image " + i);
             this.detectFeaturesInLR(comparingMat);
@@ -78,14 +80,14 @@ public class FeatureMatchingOperator {
         ProgressDialogHandler.getInstance().hideDialog();
 
         for(int i = 1; i < numImages; i++) {
-            Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING +i+ ".jpg");
+            Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING +i, ImageFileAttribute.FileType.JPEG);
 
             ProgressDialogHandler.getInstance().showDialog("Matching features for image " +i, "Matching features in image " +i+ " to reference image.");
             this.matchFeaturesToReference(this.lrDescriptorList.get(i - 1));
 
             Mat matchesShower = new Mat();
             Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList.get(i-1), this.dMatchesList.get(i-1), matchesShower);
-            ImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i);
+            ImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
 
             ProgressDialogHandler.getInstance().hideDialog();
 

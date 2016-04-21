@@ -18,7 +18,6 @@ import org.opencv.android.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import neildg.com.megatronsr.camera.OldCameraManager;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.platformtools.utils.ApplicationCore;
@@ -60,7 +59,6 @@ public class MainActivity extends AppCompatActivity{
         ProgressDialogHandler.initialize(this);
         ImageWriter.initialize(this);
         ImageReader.initialize(this);
-        OldCameraManager.initialize();
 
         this.verifyCamera();
         this.initializeButtons();
@@ -84,16 +82,6 @@ public class MainActivity extends AppCompatActivity{
     }
     private void initializeButtons() {
         Button captureImageBtn = (Button) this.findViewById(R.id.capture_btn);
-        captureImageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(MainActivity.this.hasCamera) {
-                    Intent imageCaptureIntent = new Intent(MainActivity.this, ImageCaptureActivity.class);
-                    startActivity(imageCaptureIntent);
-                }
-            }
-        });
-
         captureImageBtn.setEnabled(false); //TODO:disable capture image btn
 
         Button pickImagesBtn = (Button) this.findViewById(R.id.select_image_btn);
