@@ -55,69 +55,58 @@ public class WarpedToHROperator implements IOperator {
         Mat baseHRWarpMat = Mat.zeros(baseWarpMat.rows() * ParameterConstants.SCALING_FACTOR, baseWarpMat.cols() * ParameterConstants.SCALING_FACTOR, baseWarpMat.type());
         this.copyMatToHR(baseWarpMat, baseHRWarpMat, 0, 0);
 
-        baseHRWarpMat.copyTo(this.baseMaskMat);
-        Imgproc.cvtColor(this.baseMaskMat, this.baseMaskMat, Imgproc.COLOR_BGR2GRAY);
+        this.baseMaskMat = new Mat(baseHRWarpMat.rows(), baseHRWarpMat.cols(), CvType.CV_8UC1);
         baseHRWarpMat.convertTo(this.baseMaskMat, CvType.CV_8UC1);
+        Imgproc.cvtColor(this.baseMaskMat, this.baseMaskMat, Imgproc.COLOR_BGR2GRAY);
         Imgproc.threshold(this.baseMaskMat, this.baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
 
-        Mat medianMat = new Mat();
-        Mat candidateHRMat = new Mat(); this.outputMat.copyTo(candidateHRMat);
+        ImageWriter.getInstance().saveMatrixToImage(this.baseMaskMat, "mask_" + 0);
 
-        baseHRWarpMat.copyTo(candidateHRMat, this.baseMaskMat);
-        Imgproc.medianBlur(candidateHRMat, medianMat, 3);
-
-        baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat); //replace initial output
-
-        ImageWriter.getInstance().saveMatrixToImage(candidateHRMat, "candidate_" + 0);
-        ImageWriter.getInstance().saveMatrixToImage(medianMat, "candidate_median_" + 0);
-        this.rmse = ImageMetrics.getRMSE(candidateHRMat, medianMat);
-
-        MetricsLogger.getSharedInstance().takeMetrics("Noise_evaluate_0", candidateHRMat, "candidate_0", medianMat,
-                "candidate_median_filter_0", "Candidate_Vs_Median_RMSE");
+        baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat);
+        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_0");
 
         for(int i = 1; i < this.warpedMatrixList.size(); i++) {
-            ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warping image " +i);
-            baseWarpMat = this.warpedMatrixList.get(i);
-            Mat.zeros(baseWarpMat.rows() * ParameterConstants.SCALING_FACTOR, baseWarpMat.cols() * ParameterConstants.SCALING_FACTOR, baseWarpMat.type());
-            this.copyMatToHR(baseWarpMat, baseHRWarpMat, 0, 0);
+            ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warped image " + i + " pixel stretching");
 
-            baseHRWarpMat.copyTo(this.baseMaskMat);
-            Imgproc.cvtColor(this.baseMaskMat, this.baseMaskMat, Imgproc.COLOR_BGR2GRAY);
-            baseHRWarpMat.convertTo(this.baseMaskMat, CvType.CV_8UC1);
-            Imgproc.threshold(this.baseMaskMat, this.baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
+            Mat warpedMat = this.warpedMatrixList.get(i);
+            Mat hrWarpedMat =  Mat.zeros(warpedMat.rows() * ParameterConstants.SCALING_FACTOR, warpedMat.cols() * ParameterConstants.SCALING_FACTOR, warpedMat.type());
 
-            baseHRWarpMat.copyTo(candidateHRMat, this.baseMaskMat); //store on candidate mat to compare PSNR with initial output
-            Imgproc.medianBlur(candidateHRMat, medianMat, 3);
+            //Imgproc.resize(warpedMat, hrWarpedMat, hrWarpedMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_NEAREST);
+            this.copyMatToHR(warpedMat, hrWarpedMat, 0, 0);
 
-            ImageWriter.getInstance().saveMatrixToImage(candidateHRMat, "candidate_" + i);
-            ImageWriter.getInstance().saveMatrixToImage(medianMat, "candidate_median_" + i);
+            ImageWriter.getInstance().saveMatrixToImage(hrWarpedMat, "hrwarp_" + i);
 
-            MetricsLogger.getSharedInstance().takeMetrics("Noise_evaluate_"+i, candidateHRMat, "candidate_" + i, medianMat,
-                    "candidate_median_filter_" + i, "Candidate_Vs_Median_RMSE");
+            ProgressDialogHandler.getInstance().showDialog("Merging with reference HR", "Warped image " + i + " is being merged to the HR image.");
+            Mat maskHRMat = new Mat(hrWarpedMat.rows(), hrWarpedMat.cols(), CvType.CV_8UC1);
+            hrWarpedMat.convertTo(maskHRMat, CvType.CV_8UC1);
+            Imgproc.cvtColor(maskHRMat, maskHRMat, Imgproc.COLOR_BGR2GRAY);
+            Imgproc.threshold(maskHRMat, maskHRMat, 1, 255, Imgproc.THRESH_BINARY);
 
-            double newRMSE = ImageMetrics.getRMSE(candidateHRMat, medianMat);
-            Log.d(TAG, "New RMSE: " +newRMSE+ " Old RMSE: " +this.rmse);
-            //if RMSE is lower than previous, candidate is reliable. That means its noise is not too much.
-            if(newRMSE <= this.rmse) {
-                baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat);
-                medianMat.copyTo(this.outputMat, this.baseMaskMat); //TODO: test only
-                this.rmse = newRMSE;
-            }
-            else {
-                Log.d(TAG, "RMSE is not lesser. Doing nothing");
-            }
+            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_"+i);
 
+            //perform filtering of mask
+            Mat comparingMat = new Mat();
+            Core.bitwise_not(this.baseMaskMat, comparingMat);
+            Core.bitwise_and(comparingMat, maskHRMat, maskHRMat);
 
-
-            this.outputMat.copyTo(candidateHRMat); //overwrite as new candidate
-
+            hrWarpedMat.copyTo(this.outputMat, maskHRMat);
+            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_" + i);
             ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i);
+
+            MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_result_" + i, this.groundTruthMat, "GroundTruth", this.outputMat,
+                    "Result_" + i, "Ground truth vs Result_" + i);
+
+            //perform OR operation to merge the mask mat with the base MAT
+            Core.bitwise_or(this.baseMaskMat, maskHRMat, this.baseMaskMat);
+
+            maskHRMat.release();
+            hrWarpedMat.release();
+            warpedMat.release();
+            comparingMat.release();
         }
 
         this.warpedMatrixList.clear();
         this.baseMaskMat.release();
-
-        ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising final image.");
 
         System.gc();
 
