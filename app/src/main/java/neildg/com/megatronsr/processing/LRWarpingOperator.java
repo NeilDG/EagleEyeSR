@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
+import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.preprocessing.BitmapURIRepository;
@@ -47,11 +48,11 @@ public class LRWarpingOperator implements IOperator {
         this.keyPointList = keyPointList;
         this.refKeypoint = refKeypoint;
 
-        this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0 + ".jpg");
+        this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
         this.outputMat = new Mat(this.referenceMat.size(), this.referenceMat.type());
         this.referenceMat.copyTo(this.outputMat);
 
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "holderimage");
+        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "holderimage", ImageFileAttribute.FileType.JPEG);
     }
 
     public void perform() {
@@ -61,7 +62,7 @@ public class LRWarpingOperator implements IOperator {
 
         int numImages = BitmapURIRepository.getInstance().getNumImages();
         for (int i = 1; i < numImages; i++) {
-            Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i + ".jpg");
+            Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
 
             ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising image " +i);
             //Photo.fastNlMeansDenoisingColored(comparingMat, comparingMat);
@@ -73,7 +74,7 @@ public class LRWarpingOperator implements IOperator {
             ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + i + " to reference image.");
 
             this.warpedMatrixList.add(this.warpedMat);
-            ImageWriter.getInstance().saveMatrixToImage(this.warpedMat, "warp_" + i);
+            ImageWriter.getInstance().saveMatrixToImage(this.warpedMat, "warp_", ImageFileAttribute.FileType.JPEG);
             //ImageWriter.getInstance().saveMatrixToImage(holderMat, "warp_bilateral_" +i);
 
             ProgressDialogHandler.getInstance().hideDialog();

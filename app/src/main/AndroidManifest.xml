@@ -36,10 +36,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ImageCaptureActivity"
-            android:label="@string/title_activity_image_capture"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ProcessingActivity"></activity>
     </application>
 

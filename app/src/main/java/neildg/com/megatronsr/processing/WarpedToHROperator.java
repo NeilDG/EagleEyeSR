@@ -14,6 +14,7 @@ import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConstants;
+import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.io.MetricsLogger;
@@ -38,10 +39,10 @@ public class WarpedToHROperator implements IOperator {
 
     public WarpedToHROperator(List<Mat> warpedMatrixList) {
         this.warpedMatrixList = warpedMatrixList;
-        this.groundTruthMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING + ".jpg");
-        this.outputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_PREFIX_STRING + 0 + ".jpg");
+        this.groundTruthMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
+        this.outputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
-        Mat nearestMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_NEAREST + ".jpg");
+        Mat nearestMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_NEAREST, ImageFileAttribute.FileType.JPEG);
         MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_nearest", this.groundTruthMat, "GroundTruth", nearestMat,
                 "NearestMat", "Ground truth vs Nearest");
 
@@ -60,10 +61,10 @@ public class WarpedToHROperator implements IOperator {
         Imgproc.cvtColor(this.baseMaskMat, this.baseMaskMat, Imgproc.COLOR_BGR2GRAY);
         Imgproc.threshold(this.baseMaskMat, this.baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
 
-        ImageWriter.getInstance().saveMatrixToImage(this.baseMaskMat, "mask_" + 0);
+        ImageWriter.getInstance().saveMatrixToImage(this.baseMaskMat, "mask_" + 0, ImageFileAttribute.FileType.JPEG);
 
         baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat);
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_0");
+        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_0", ImageFileAttribute.FileType.JPEG);
 
         for(int i = 1; i < this.warpedMatrixList.size(); i++) {
             ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warped image " + i + " pixel stretching");
@@ -74,7 +75,7 @@ public class WarpedToHROperator implements IOperator {
             //Imgproc.resize(warpedMat, hrWarpedMat, hrWarpedMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_NEAREST);
             this.copyMatToHR(warpedMat, hrWarpedMat, 0, 0);
 
-            ImageWriter.getInstance().saveMatrixToImage(hrWarpedMat, "hrwarp_" + i);
+            ImageWriter.getInstance().saveMatrixToImage(hrWarpedMat, "hrwarp_" + i, ImageFileAttribute.FileType.JPEG);
 
             ProgressDialogHandler.getInstance().showDialog("Merging with reference HR", "Warped image " + i + " is being merged to the HR image.");
             Mat maskHRMat = new Mat(hrWarpedMat.rows(), hrWarpedMat.cols(), CvType.CV_8UC1);
@@ -82,7 +83,7 @@ public class WarpedToHROperator implements IOperator {
             Imgproc.cvtColor(maskHRMat, maskHRMat, Imgproc.COLOR_BGR2GRAY);
             Imgproc.threshold(maskHRMat, maskHRMat, 1, 255, Imgproc.THRESH_BINARY);
 
-            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_"+i);
+            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_"+i, ImageFileAttribute.FileType.JPEG);
 
             //perform filtering of mask
             Mat comparingMat = new Mat();
@@ -90,8 +91,8 @@ public class WarpedToHROperator implements IOperator {
             Core.bitwise_and(comparingMat, maskHRMat, maskHRMat);
 
             hrWarpedMat.copyTo(this.outputMat, maskHRMat);
-            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_" + i);
-            ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i);
+            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_" + i, ImageFileAttribute.FileType.JPEG);
+            ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i, ImageFileAttribute.FileType.JPEG);
 
             MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_result_" + i, this.groundTruthMat, "GroundTruth", this.outputMat,
                     "Result_" + i, "Ground truth vs Result_" + i);
@@ -110,7 +111,7 @@ public class WarpedToHROperator implements IOperator {
 
         System.gc();
 
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "FINAL_RESULT");
+        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "FINAL_RESULT",ImageFileAttribute.FileType.JPEG);
         ProgressDialogHandler.getInstance().hideDialog();
 
         MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_final", this.groundTruthMat, "GroundTruth", this.outputMat,

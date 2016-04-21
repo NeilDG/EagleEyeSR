@@ -23,6 +23,7 @@ import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConstants;
+import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -41,7 +42,7 @@ public class ShiftAddFusionOperator implements IOperator {
     }
 
     public void perform() {
-        this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0.jpg");
+        this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
 
         this.hrMat = Mat.ones(referenceMat.rows() * ParameterConstants.SCALING_FACTOR, referenceMat.cols() * ParameterConstants.SCALING_FACTOR, this.referenceMat.type());
 
@@ -50,7 +51,7 @@ public class ShiftAddFusionOperator implements IOperator {
         this.assembleHRMatWithFeatures();
 
         //temp save hrImage
-        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.HR_PROCESSED_STRING);
+        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
         this.hrMat.release();
         this.hrMat = null;
     }
@@ -89,17 +90,17 @@ public class ShiftAddFusionOperator implements IOperator {
         }*/
 
 
-        Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 1 + ".jpg");
+        Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 1, ImageFileAttribute.FileType.JPEG);
         this.copyMatToHR(lrMat,1,0);
 
         lrMat.release();
 
 
-        lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 2 + ".jpg");
+        lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 2, ImageFileAttribute.FileType.JPEG);
         this.copyMatToHR(lrMat,0,1);
         lrMat.release();
 
-        lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 3 + ".jpg");
+        lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 3, ImageFileAttribute.FileType.JPEG);
         lrMat.release();
         lrMat = null;
     }
@@ -107,7 +108,7 @@ public class ShiftAddFusionOperator implements IOperator {
     private void assembleHRMatWithInpaint() {
         int pixelSpace = ParameterConstants.SCALING_FACTOR;
 
-        Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 1 + ".jpg");
+        Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 1, ImageFileAttribute.FileType.JPEG);
         this.copyMatToHR(lrMat, 1, 0);
 
         ProgressDialogHandler.getInstance().hideDialog();
@@ -120,7 +121,7 @@ public class ShiftAddFusionOperator implements IOperator {
         this.referenceMat.copyTo(refKeypoints);
         Features2d.drawKeypoints(this.hrMat, matOfKeyPoint, refKeypoints);
 
-        ImageWriter.getInstance().saveMatrixToImage(refKeypoints, "keypoints");
+        ImageWriter.getInstance().saveMatrixToImage(refKeypoints, "keypoints", ImageFileAttribute.FileType.JPEG);
 
         Imgproc.cvtColor(refKeypoints, refKeypoints, Imgproc.COLOR_BGR2GRAY);
         refKeypoints.convertTo(refKeypoints, CvType.CV_8UC1);
@@ -134,7 +135,7 @@ public class ShiftAddFusionOperator implements IOperator {
 
         Mat descriptors1 = new Mat();
         Mat descriptors2 = new Mat();
-        Mat lrMat1 = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0 + ".jpg");
+        Mat lrMat1 = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
         ProgressDialogHandler.getInstance().hideDialog();
         ProgressDialogHandler.getInstance().showDialog("Detecting features", "Detecting features using FAST method.");
@@ -146,14 +147,14 @@ public class ShiftAddFusionOperator implements IOperator {
         lrMat1.copyTo(refKeypoints);
         Features2d.drawKeypoints(lrMat1, matOfKeyPoint1, refKeypoints);
 
-        ImageWriter.getInstance().saveMatrixToImage(refKeypoints, "keypoints_1");
+        ImageWriter.getInstance().saveMatrixToImage(refKeypoints, "keypoints_1", ImageFileAttribute.FileType.JPEG);
 
         refKeypoints.release();
 
         DescriptorExtractor descriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
         descriptorExtractor.compute(lrMat1, matOfKeyPoint1, descriptors1);
 
-        Mat lrMat2 = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 1 + ".jpg");
+        Mat lrMat2 = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 1, ImageFileAttribute.FileType.JPEG);
         featureDetector = FeatureDetector.create(FeatureDetector.ORB);
         MatOfKeyPoint matOfKeyPoint2 = new MatOfKeyPoint();
         featureDetector.detect(lrMat2, matOfKeyPoint2);
@@ -161,7 +162,7 @@ public class ShiftAddFusionOperator implements IOperator {
         lrMat2.copyTo(refKeypoints);
         Features2d.drawKeypoints(lrMat2, matOfKeyPoint2, refKeypoints);
 
-        ImageWriter.getInstance().saveMatrixToImage(refKeypoints, "keypoints_2");
+        ImageWriter.getInstance().saveMatrixToImage(refKeypoints, "keypoints_2", ImageFileAttribute.FileType.JPEG);
         refKeypoints.release();
 
         descriptorExtractor.compute(lrMat2, matOfKeyPoint2, descriptors2);
@@ -186,7 +187,7 @@ public class ShiftAddFusionOperator implements IOperator {
 
         Mat matchesShower = new Mat();
         Features2d.drawMatches(lrMat1, matOfKeyPoint1, lrMat2, matOfKeyPoint2, goodMatches, matchesShower);
-        ImageWriter.getInstance().saveMatrixToImage(matchesShower, "matches");
+        ImageWriter.getInstance().saveMatrixToImage(matchesShower, "matches", ImageFileAttribute.FileType.JPEG);
 
         this.warpImage(goodMatches,matOfKeyPoint1, matOfKeyPoint2, lrMat2);
     }
@@ -222,7 +223,7 @@ public class ShiftAddFusionOperator implements IOperator {
         Mat outputMat = new Mat();
         Imgproc.warpPerspective(comparingMat,outputMat,homography,comparingMat.size());
 
-        ImageWriter.getInstance().saveMatrixToImage(outputMat, "warped");
+        ImageWriter.getInstance().saveMatrixToImage(outputMat, "warped", ImageFileAttribute.FileType.JPEG);
 
     }
 }
