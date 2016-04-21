@@ -28,10 +28,10 @@ public class SRProcessor extends Thread {
         downsamplingOperator.perform();
         ProgressDialogHandler.getInstance().hideDialog();
 
-        TVDenoiseHROperator denoiseHROperator = new TVDenoiseHROperator();
-        denoiseHROperator.perform();
+        /*TVDenoiseHROperator denoiseHROperator = new TVDenoiseHROperator();
+        denoiseHROperator.perform();*/
 
-        /*LRToHROperator lrToHROperator = new LRToHROperator();
+        LRToHROperator lrToHROperator = new LRToHROperator();
         lrToHROperator.perform();
 
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator();
@@ -41,7 +41,7 @@ public class SRProcessor extends Thread {
         warpingOperator.perform();
 
         WarpedToHROperator warpedToHROperator = new WarpedToHROperator(warpingOperator.getWarpedMatrixList());
-        warpedToHROperator.perform();*/
+        warpedToHROperator.perform();
 
     }
 

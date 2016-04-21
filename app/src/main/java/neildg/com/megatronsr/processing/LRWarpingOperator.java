@@ -4,6 +4,7 @@ import android.util.Log;
 
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.DMatch;
 import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
@@ -63,7 +64,8 @@ public class LRWarpingOperator implements IOperator {
             Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i + ".jpg");
 
             ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising image " +i);
-            Photo.fastNlMeansDenoisingColored(comparingMat, comparingMat);
+            //Photo.fastNlMeansDenoisingColored(comparingMat, comparingMat);
+            this.performTVDenoising(comparingMat);
 
             this.warpedMat = new Mat();
             this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
@@ -79,6 +81,23 @@ public class LRWarpingOperator implements IOperator {
 
         this.finalizeResult();
         //ImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_PROCESSED_STRING);
+    }
+
+    private void performTVDenoising(Mat inputMat) {
+        Imgproc.cvtColor(inputMat, inputMat, Imgproc.COLOR_BGR2YUV);
+
+        List<Mat> splittedYUVMat = new ArrayList<Mat>();
+        Core.split(inputMat, splittedYUVMat);
+
+        Mat denoisedMat = new Mat(inputMat.size(), CvType.CV_32FC1);
+
+        List<Mat> lrObservations = new ArrayList<>();
+        lrObservations.add(splittedYUVMat.get(0)); //only apply denoising to Y
+
+        Photo.denoise_TVL1(lrObservations, denoisedMat);
+
+        Core.merge(splittedYUVMat, inputMat);
+        Imgproc.cvtColor(inputMat, inputMat, Imgproc.COLOR_YUV2BGR);
     }
 
     public List<Mat> getWarpedMatrixList() {
