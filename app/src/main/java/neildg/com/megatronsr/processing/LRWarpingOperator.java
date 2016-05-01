@@ -8,13 +8,16 @@ import org.opencv.core.CvType;
 import org.opencv.core.DMatch;
 import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfDMatch;
+import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
+import org.opencv.video.Video;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,9 +67,9 @@ public class LRWarpingOperator implements IOperator {
         for (int i = 1; i < numImages; i++) {
             Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
 
-            ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising image " +i);
+            //ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising image " +i);
             //Photo.fastNlMeansDenoisingColored(comparingMat, comparingMat);
-            this.performTVDenoising(comparingMat);
+           // this.performTVDenoising(comparingMat);
 
             this.warpedMat = new Mat();
             this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
@@ -74,7 +77,7 @@ public class LRWarpingOperator implements IOperator {
             ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + i + " to reference image.");
 
             this.warpedMatrixList.add(this.warpedMat);
-            ImageWriter.getInstance().saveMatrixToImage(this.warpedMat, "warp_", ImageFileAttribute.FileType.JPEG);
+            ImageWriter.getInstance().saveMatrixToImage(this.warpedMat, "warp_"+i, ImageFileAttribute.FileType.JPEG);
             //ImageWriter.getInstance().saveMatrixToImage(holderMat, "warp_bilateral_" +i);
 
             ProgressDialogHandler.getInstance().hideDialog();
@@ -95,7 +98,7 @@ public class LRWarpingOperator implements IOperator {
         List<Mat> lrObservations = new ArrayList<>();
         lrObservations.add(splittedYUVMat.get(0)); //only apply denoising to Y
 
-        Photo.denoise_TVL1(lrObservations, denoisedMat);
+        Photo.denoise_TVL1(lrObservations, denoisedMat, 60.0f, 30);
 
         Core.merge(splittedYUVMat, inputMat);
         Imgproc.cvtColor(inputMat, inputMat, Imgproc.COLOR_YUV2BGR);
@@ -142,13 +145,16 @@ public class LRWarpingOperator implements IOperator {
 
         matOfPoint1.fromList(pointList1); matOfPoint2.fromList(pointList2);
 
+        MatOfByte status = new MatOfByte(); MatOfFloat error = new MatOfFloat();
+        Video.calcOpticalFlowPyrLK(this.referenceMat,candidateMat,matOfPoint1, matOfPoint2,status,error);
+
         //((M0.type() == CV_32F || M0.type() == CV_64F) && M0.rows == 3 && M0.cols == 3)
 
         Log.d(TAG, "Homography pre info: matOfPoint1 ROWS: " + matOfPoint1.rows() + " matOfPoint1 COLS: " + matOfPoint1.cols());
         Log.d(TAG, "Homography pre info: matOfPoint2 ROWS: " + matOfPoint2.rows() + " matOfPoint2 COLS: " + matOfPoint2.cols());
 
         Mat mask = new Mat();
-        Mat homography = Calib3d.findHomography(matOfPoint2, matOfPoint1, Calib3d.RANSAC, 1);
+        Mat homography = Calib3d.findHomography(matOfPoint1, matOfPoint2, Calib3d.RANSAC, 1);
         mask.release();
         Log.d(TAG, "Homography info: ROWS: " + homography.rows() + " COLS: " + homography.cols());
 

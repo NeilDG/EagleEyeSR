@@ -54,6 +54,7 @@ public class WarpedToHROperator implements IOperator {
         ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warping base image");
         Mat baseWarpMat = this.warpedMatrixList.get(0);
         Mat baseHRWarpMat = Mat.zeros(baseWarpMat.rows() * ParameterConstants.SCALING_FACTOR, baseWarpMat.cols() * ParameterConstants.SCALING_FACTOR, baseWarpMat.type());
+        //Imgproc.resize(baseWarpMat, baseHRWarpMat, baseHRWarpMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
         this.copyMatToHR(baseWarpMat, baseHRWarpMat, 0, 0);
 
         this.baseMaskMat = new Mat(baseHRWarpMat.rows(), baseHRWarpMat.cols(), CvType.CV_8UC1);
@@ -61,10 +62,15 @@ public class WarpedToHROperator implements IOperator {
         Imgproc.cvtColor(this.baseMaskMat, this.baseMaskMat, Imgproc.COLOR_BGR2GRAY);
         Imgproc.threshold(this.baseMaskMat, this.baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
 
+        ImageWriter.getInstance().saveMatrixToImage(baseWarpMat, "read_warped_" + 0, ImageFileAttribute.FileType.JPEG);
+        ImageWriter.getInstance().saveMatrixToImage(baseHRWarpMat, "hrwarp_" + 0, ImageFileAttribute.FileType.JPEG);
         ImageWriter.getInstance().saveMatrixToImage(this.baseMaskMat, "mask_" + 0, ImageFileAttribute.FileType.JPEG);
 
         baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat);
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_0", ImageFileAttribute.FileType.JPEG);
+        baseHRWarpMat.release();
+        baseWarpMat.release();
+
+        //ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_0", ImageFileAttribute.FileType.JPEG);
 
         for(int i = 1; i < this.warpedMatrixList.size(); i++) {
             ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warped image " + i + " pixel stretching");
@@ -72,7 +78,7 @@ public class WarpedToHROperator implements IOperator {
             Mat warpedMat = this.warpedMatrixList.get(i);
             Mat hrWarpedMat =  Mat.zeros(warpedMat.rows() * ParameterConstants.SCALING_FACTOR, warpedMat.cols() * ParameterConstants.SCALING_FACTOR, warpedMat.type());
 
-            //Imgproc.resize(warpedMat, hrWarpedMat, hrWarpedMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_NEAREST);
+            //Imgproc.resize(warpedMat, hrWarpedMat, hrWarpedMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
             this.copyMatToHR(warpedMat, hrWarpedMat, 0, 0);
 
             ImageWriter.getInstance().saveMatrixToImage(hrWarpedMat, "hrwarp_" + i, ImageFileAttribute.FileType.JPEG);
@@ -83,7 +89,7 @@ public class WarpedToHROperator implements IOperator {
             Imgproc.cvtColor(maskHRMat, maskHRMat, Imgproc.COLOR_BGR2GRAY);
             Imgproc.threshold(maskHRMat, maskHRMat, 1, 255, Imgproc.THRESH_BINARY);
 
-            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_"+i, ImageFileAttribute.FileType.JPEG);
+            /*ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_"+i, ImageFileAttribute.FileType.JPEG);
 
             //perform filtering of mask
             Mat comparingMat = new Mat();
@@ -91,11 +97,12 @@ public class WarpedToHROperator implements IOperator {
             Core.bitwise_and(comparingMat, maskHRMat, maskHRMat);
 
             hrWarpedMat.copyTo(this.outputMat, maskHRMat);
-            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_" + i, ImageFileAttribute.FileType.JPEG);
+            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_" + i, ImageFileAttribute.FileType.JPEG);*/
+            hrWarpedMat.copyTo(this.outputMat, maskHRMat);
             ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i, ImageFileAttribute.FileType.JPEG);
 
-            MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_result_" + i, this.groundTruthMat, "GroundTruth", this.outputMat,
-                    "Result_" + i, "Ground truth vs Result_" + i);
+            /*MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_result_" + i, this.groundTruthMat, "GroundTruth", this.outputMat,
+                    "Result_" + i, "Ground truth vs Result_" + i);*/
 
             //perform OR operation to merge the mask mat with the base MAT
             Core.bitwise_or(this.baseMaskMat, maskHRMat, this.baseMaskMat);
@@ -103,7 +110,7 @@ public class WarpedToHROperator implements IOperator {
             maskHRMat.release();
             hrWarpedMat.release();
             warpedMat.release();
-            comparingMat.release();
+            //comparingMat.release();
         }
 
         this.warpedMatrixList.clear();
@@ -121,20 +128,6 @@ public class WarpedToHROperator implements IOperator {
         MetricsLogger.getSharedInstance().logResultsToJSON(FilenameConstants.METRICS_NAME_STRING);
     }
 
-    private void performCLAHERGB() {
-        Mat labColorMat = new Mat();
-        Imgproc.cvtColor(this.outputMat, labColorMat, Imgproc.COLOR_BGR2Lab);
-
-        List<Mat> labSeparated = new ArrayList<Mat>();
-        Core.split(labColorMat, labSeparated);
-
-        Mat claheMat = new Mat();
-        Imgproc.createCLAHE(1, new Size(4,4)).apply(labSeparated.get(0), claheMat);
-        claheMat.copyTo(labSeparated.get(0)); claheMat.release(); claheMat = null;
-        Core.merge(labSeparated, labColorMat); labSeparated.clear();
-
-        Imgproc.cvtColor(labColorMat, this.outputMat, Imgproc.COLOR_Lab2BGR);
-    }
 
     private void debugMat(Mat mat) {
        Log.d(TAG, mat.toString());

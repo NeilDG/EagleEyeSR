@@ -10,6 +10,8 @@ public class FilenameConstants {
 
     public final static String INITIAL_HR_NEAREST = "prehr_nearest";
     public final static String INITIAL_HR_PREFIX_STRING = "prehr_intercubic_";
+    public final static String INITIAL_HR_ZERO_FILLED_STRING = "prehr_zerofill";
+
     public final static String MATCHES_PREFIX_STRING = "refimage_matchto_";
 
     public final static String METRICS_NAME_STRING = "psnr_metrics";
