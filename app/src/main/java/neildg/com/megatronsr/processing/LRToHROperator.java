@@ -42,7 +42,6 @@ public class LRToHROperator implements IOperator {
         Mat zeroFillMat = Mat.zeros(lrMat.rows() * ParameterConstants.SCALING_FACTOR, lrMat.cols() * ParameterConstants.SCALING_FACTOR, lrMat.type());
         this.copyMatToHR(lrMat, zeroFillMat, 0, 0);
         ImageWriter.getInstance().saveMatrixToImage(zeroFillMat, FilenameConstants.INITIAL_HR_ZERO_FILLED_STRING, ImageFileAttribute.FileType.JPEG);
-        ImageWriter.getInstance().saveMatrixToImage(zeroFillMat, FilenameConstants.INITIAL_HR_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG); //TODO: replaced HR mat with zero fill
 
         this.hrMat.release();
         lrMat.release();

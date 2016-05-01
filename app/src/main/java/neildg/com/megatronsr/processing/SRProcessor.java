@@ -37,12 +37,13 @@ public class SRProcessor extends Thread {
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator();
         matchingOperator.perform();
 
-        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
+        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint());
         warpingOperator.perform();
 
         WarpedToHROperator warpedToHROperator = new WarpedToHROperator(warpingOperator.getWarpedMatrixList());
         warpedToHROperator.perform();
 
+        sharedInstance = null;
     }
 
 }

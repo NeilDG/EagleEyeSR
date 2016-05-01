@@ -76,7 +76,7 @@ public class WarpingOperator implements IOperator {
             ProgressDialogHandler.getInstance().hideDialog();
         }
 
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
+        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG );
     }
 
     private void warpImage(MatOfDMatch goodMatch, MatOfKeyPoint candidateKeypoint, Mat candidateMat) {

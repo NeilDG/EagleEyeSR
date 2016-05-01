@@ -48,13 +48,13 @@ public class FeatureMatchingOperator implements IOperator {
         return this.refKeypoint;
     }
 
-    public List<MatOfDMatch> getdMatchesList() {
+    /*public List<MatOfDMatch> getdMatchesList() {
         return this.dMatchesList;
     }
 
     public List<MatOfKeyPoint> getLrKeypointsList() {
         return this.lrKeypointsList;
-    }
+    }*/
 
     @Override
     public void perform() {
@@ -62,9 +62,12 @@ public class FeatureMatchingOperator implements IOperator {
         ProgressDialogHandler.getInstance().showDialog("Finding features in first image", "Finding features in first image. Succeeding LR images will be matched to it.");
 
         this.detectFeaturesInReference();
+        Mat keypointMat = new Mat();
+        Features2d.drawKeypoints(this.referenceMat,this.refKeypoint,keypointMat);
+        ImageWriter.getInstance().saveMatrixToImage(keypointMat, FilenameConstants.KEYPOINTS_STRING, ImageFileAttribute.FileType.JPEG);
 
-        ProgressDialogHandler.getInstance().hideDialog();
 
+        /*ProgressDialogHandler.getInstance().hideDialog();
 
         int numImages = BitmapURIRepository.getInstance().getNumImages();
 
@@ -87,12 +90,12 @@ public class FeatureMatchingOperator implements IOperator {
 
             Mat matchesShower = new Mat();
             Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList.get(i-1), this.dMatchesList.get(i-1), matchesShower);
-            ImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
+            //ImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
 
             ProgressDialogHandler.getInstance().hideDialog();
 
             matchesShower.release();
-        }
+        }*/
     }
 
     private void detectFeaturesInReference() {

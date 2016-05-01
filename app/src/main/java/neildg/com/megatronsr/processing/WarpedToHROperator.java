@@ -62,7 +62,6 @@ public class WarpedToHROperator implements IOperator {
         Imgproc.cvtColor(this.baseMaskMat, this.baseMaskMat, Imgproc.COLOR_BGR2GRAY);
         Imgproc.threshold(this.baseMaskMat, this.baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
 
-        ImageWriter.getInstance().saveMatrixToImage(baseWarpMat, "read_warped_" + 0, ImageFileAttribute.FileType.JPEG);
         ImageWriter.getInstance().saveMatrixToImage(baseHRWarpMat, "hrwarp_" + 0, ImageFileAttribute.FileType.JPEG);
         ImageWriter.getInstance().saveMatrixToImage(this.baseMaskMat, "mask_" + 0, ImageFileAttribute.FileType.JPEG);
 
@@ -85,19 +84,17 @@ public class WarpedToHROperator implements IOperator {
 
             ProgressDialogHandler.getInstance().showDialog("Merging with reference HR", "Warped image " + i + " is being merged to the HR image.");
             Mat maskHRMat = new Mat(hrWarpedMat.rows(), hrWarpedMat.cols(), CvType.CV_8UC1);
-            hrWarpedMat.convertTo(maskHRMat, CvType.CV_8UC1);
-            Imgproc.cvtColor(maskHRMat, maskHRMat, Imgproc.COLOR_BGR2GRAY);
+            Imgproc.cvtColor(hrWarpedMat, maskHRMat, Imgproc.COLOR_BGR2GRAY);
             Imgproc.threshold(maskHRMat, maskHRMat, 1, 255, Imgproc.THRESH_BINARY);
 
-            /*ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_"+i, ImageFileAttribute.FileType.JPEG);
+            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_"+i, ImageFileAttribute.FileType.JPEG);
 
             //perform filtering of mask
-            Mat comparingMat = new Mat();
+            /*Mat comparingMat = new Mat();
             Core.bitwise_not(this.baseMaskMat, comparingMat);
             Core.bitwise_and(comparingMat, maskHRMat, maskHRMat);
+            comparingMat.release();*/
 
-            hrWarpedMat.copyTo(this.outputMat, maskHRMat);
-            ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_" + i, ImageFileAttribute.FileType.JPEG);*/
             hrWarpedMat.copyTo(this.outputMat, maskHRMat);
             ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i, ImageFileAttribute.FileType.JPEG);
 
@@ -105,12 +102,12 @@ public class WarpedToHROperator implements IOperator {
                     "Result_" + i, "Ground truth vs Result_" + i);*/
 
             //perform OR operation to merge the mask mat with the base MAT
-            Core.bitwise_or(this.baseMaskMat, maskHRMat, this.baseMaskMat);
+            //Core.bitwise_or(this.baseMaskMat, maskHRMat, this.baseMaskMat);
 
             maskHRMat.release();
             hrWarpedMat.release();
             warpedMat.release();
-            //comparingMat.release();
+
         }
 
         this.warpedMatrixList.clear();

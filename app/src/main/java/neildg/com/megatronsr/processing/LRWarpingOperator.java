@@ -36,8 +36,8 @@ public class LRWarpingOperator implements IOperator {
     private final static String TAG = "WarpingOperator";
 
     private MatOfKeyPoint refKeypoint;
-    private List<MatOfDMatch> goodMatchList;
-    private List<MatOfKeyPoint> keyPointList;
+    //private List<MatOfDMatch> goodMatchList;
+    //private List<MatOfKeyPoint> keyPointList;
 
     private Mat referenceMat;
 
@@ -46,9 +46,7 @@ public class LRWarpingOperator implements IOperator {
 
     private List<Mat> warpedMatrixList = new ArrayList<Mat>();
 
-    public LRWarpingOperator(MatOfKeyPoint refKeypoint, List<MatOfDMatch> goodMatchList, List<MatOfKeyPoint> keyPointList) {
-        this.goodMatchList = goodMatchList;
-        this.keyPointList = keyPointList;
+    public LRWarpingOperator(MatOfKeyPoint refKeypoint) {
         this.refKeypoint = refKeypoint;
 
         this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
@@ -67,18 +65,13 @@ public class LRWarpingOperator implements IOperator {
         for (int i = 1; i < numImages; i++) {
             Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
 
-            //ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising image " +i);
-            //Photo.fastNlMeansDenoisingColored(comparingMat, comparingMat);
-           // this.performTVDenoising(comparingMat);
-
             this.warpedMat = new Mat();
-            this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
+            this.warpImage(comparingMat);
 
             ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + i + " to reference image.");
 
             this.warpedMatrixList.add(this.warpedMat);
             ImageWriter.getInstance().saveMatrixToImage(this.warpedMat, "warp_"+i, ImageFileAttribute.FileType.JPEG);
-            //ImageWriter.getInstance().saveMatrixToImage(holderMat, "warp_bilateral_" +i);
 
             ProgressDialogHandler.getInstance().hideDialog();
         }
@@ -110,40 +103,21 @@ public class LRWarpingOperator implements IOperator {
 
     private void finalizeResult() {
         this.refKeypoint.release(); this.refKeypoint = null;
-        for(MatOfDMatch dMatch: this.goodMatchList) {
-            dMatch.release();
-        }
-        this.goodMatchList.clear();
-
-        for(MatOfKeyPoint keyPoint: this.keyPointList) {
-            keyPoint.release();
-        }
-
-        this.keyPointList.clear();
-
         this.referenceMat.release(); this.referenceMat = null;
     }
 
-    private void warpImage(MatOfDMatch goodMatch, MatOfKeyPoint candidateKeypoint, Mat candidateMat) {
+    private void warpImage(Mat candidateMat) {
         MatOfPoint2f matOfPoint1 = new MatOfPoint2f();
         MatOfPoint2f matOfPoint2 = new MatOfPoint2f();
 
         KeyPoint[] keyPoints1 = this.refKeypoint.toArray();
-        KeyPoint[] keyPoints2 = candidateKeypoint.toArray();
+        List<Point> pointList1 = new ArrayList<Point>();
 
-        List<Point> pointList1 = new ArrayList<>();
-        List<Point> pointList2 = new ArrayList<>();
+       for(int i = 0; i < keyPoints1.length; i++) {
+            pointList1.add(keyPoints1[i].pt);
+       }
 
-        DMatch[] dMatchArray = goodMatch.toArray();
-
-        for(int i = 0; i < dMatchArray.length; i++) {
-            Log.d(TAG, "DMATCHES" + dMatchArray[i].toString());
-
-            pointList1.add(keyPoints1[dMatchArray[i].queryIdx].pt);
-            pointList2.add(keyPoints2[dMatchArray[i].trainIdx].pt);
-        }
-
-        matOfPoint1.fromList(pointList1); matOfPoint2.fromList(pointList2);
+        matOfPoint1.fromList(pointList1);
 
         MatOfByte status = new MatOfByte(); MatOfFloat error = new MatOfFloat();
         Video.calcOpticalFlowPyrLK(this.referenceMat,candidateMat,matOfPoint1, matOfPoint2,status,error);
@@ -153,9 +127,7 @@ public class LRWarpingOperator implements IOperator {
         Log.d(TAG, "Homography pre info: matOfPoint1 ROWS: " + matOfPoint1.rows() + " matOfPoint1 COLS: " + matOfPoint1.cols());
         Log.d(TAG, "Homography pre info: matOfPoint2 ROWS: " + matOfPoint2.rows() + " matOfPoint2 COLS: " + matOfPoint2.cols());
 
-        Mat mask = new Mat();
         Mat homography = Calib3d.findHomography(matOfPoint1, matOfPoint2, Calib3d.RANSAC, 1);
-        mask.release();
         Log.d(TAG, "Homography info: ROWS: " + homography.rows() + " COLS: " + homography.cols());
 
         Imgproc.warpPerspective(candidateMat, this.warpedMat, homography, this.warpedMat.size(), Imgproc.INTER_CUBIC, Core.BORDER_TRANSPARENT, Scalar.all(0));
