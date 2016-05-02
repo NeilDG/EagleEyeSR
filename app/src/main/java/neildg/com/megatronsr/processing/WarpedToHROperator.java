@@ -64,7 +64,7 @@ public class WarpedToHROperator {
             Mat hrWarpedMat =  Mat.zeros(warpedMat.rows() * ParameterConstants.SCALING_FACTOR, warpedMat.cols() * ParameterConstants.SCALING_FACTOR, warpedMat.type());
 
             //Imgproc.resize(warpedMat, hrWarpedMat, hrWarpedMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_NEAREST);
-            this.copyMatToHR(warpedMat, hrWarpedMat, 0, 0);
+            this.copyMatBasedFromIndex(warpedMat, hrWarpedMat, i);
 
             ImageWriter.getInstance().saveMatrixToImage(hrWarpedMat, "hrwarp_" + i);
 
@@ -75,9 +75,9 @@ public class WarpedToHROperator {
             Imgproc.threshold(maskHRMat, maskHRMat, 1, 255, Imgproc.THRESH_BINARY);
 
             //perform filtering of mask
-            Mat comparingMat = new Mat();
+            /*Mat comparingMat = new Mat();
             Core.bitwise_not(this.baseMaskMat, comparingMat);
-            Core.bitwise_and(comparingMat, maskHRMat, maskHRMat);
+            Core.bitwise_and(comparingMat, maskHRMat, maskHRMat);*/
 
             hrWarpedMat.copyTo(this.outputMat, maskHRMat);
             ImageWriter.getInstance().saveMatrixToImage(maskHRMat, "mask_" + i);
@@ -87,12 +87,12 @@ public class WarpedToHROperator {
                     "Result_" + i, "Ground truth vs Result_" + i);
 
             //perform OR operation to merge the mask mat with the base MAT
-            Core.bitwise_or(this.baseMaskMat, maskHRMat, this.baseMaskMat);
+           // Core.bitwise_or(this.baseMaskMat, maskHRMat, this.baseMaskMat);
 
             maskHRMat.release();
             hrWarpedMat.release();
             warpedMat.release();
-            comparingMat.release();
+            //comparingMat.release();
         }
 
         this.warpedMatrixList.clear();
@@ -105,7 +105,7 @@ public class WarpedToHROperator {
         Mat enhancedMat = new Mat();
         System.gc();
 
-        Photo.fastNlMeansDenoisingColored(this.outputMat, enhancedMat);
+        //Photo.fastNlMeansDenoisingColored(this.outputMat, enhancedMat);
         ImageWriter.getInstance().saveMatrixToImage(enhancedMat, "FINAL_RESULT");
         ProgressDialogHandler.getInstance().hideDialog();
 
@@ -162,5 +162,35 @@ public class WarpedToHROperator {
             }
         }
 
+    }
+
+    private void copyMatBasedFromIndex(Mat fromMat, Mat hrMat, int index) {
+        if(index == 0) {
+            this.copyMatToHR(fromMat, hrMat, 0, 0);
+        }
+        else if(index == 1) {
+            this.copyMatToHR(fromMat, hrMat, 0, 1);
+        }
+        else if(index == 2) {
+            this.copyMatToHR(fromMat, hrMat, 0, 2);
+        }
+        else if(index == 3) {
+            this.copyMatToHR(fromMat, hrMat, 1, 0);
+        }
+        else if(index == 4) {
+            this.copyMatToHR(fromMat, hrMat, 1, 1);
+        }
+        else if(index == 5) {
+            this.copyMatToHR(fromMat, hrMat, 1, 2);
+        }
+        else if(index == 6) {
+            this.copyMatToHR(fromMat, hrMat, 2, 0);
+        }
+        else if(index == 7) {
+            this.copyMatToHR(fromMat, hrMat, 2, 1);
+        }
+        else if(index == 8) {
+            this.copyMatToHR(fromMat, hrMat, 2, 2);
+        }
     }
 }
