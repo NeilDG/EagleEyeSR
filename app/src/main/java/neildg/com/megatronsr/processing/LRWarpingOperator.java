@@ -126,11 +126,9 @@ public class LRWarpingOperator {
         Log.d(TAG, "Homography pre info: matOfPoint1 ROWS: " + matOfPoint1.rows() + " matOfPoint1 COLS: " + matOfPoint1.cols());
         Log.d(TAG, "Homography pre info: matOfPoint2 ROWS: " + matOfPoint2.rows() + " matOfPoint2 COLS: " + matOfPoint2.cols());
 
-        Mat mask = new Mat();
         Mat homography = Calib3d.findHomography(matOfPoint2, matOfPoint1, Calib3d.RANSAC, 1);
-        mask.release();
-        Log.d(TAG, "Homography info: ROWS: " + homography.rows() + " COLS: " + homography.cols());
 
-        Imgproc.warpPerspective(candidateMat, this.warpedMat, homography, this.warpedMat.size(), Imgproc.INTER_CUBIC, Core.BORDER_TRANSPARENT, Scalar.all(0));
+        Log.d(TAG, "Homography info: ROWS: " + homography.rows() + " COLS: " + homography.cols());
+        Imgproc.warpPerspective(candidateMat, this.warpedMat, homography, this.warpedMat.size(), Imgproc.INTER_NEAREST, Core.BORDER_TRANSPARENT, Scalar.all(0));
     }
 }

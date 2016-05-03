@@ -5,6 +5,7 @@ import android.util.Log;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
@@ -57,6 +58,7 @@ public class WarpedToHROperator {
         baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat);
         ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_0");
 
+
         for(int i = 1; i < this.warpedMatrixList.size(); i++) {
             ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warped image " + i + " pixel stretching");
 
@@ -65,7 +67,6 @@ public class WarpedToHROperator {
 
             //Imgproc.resize(warpedMat, hrWarpedMat, hrWarpedMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_NEAREST);
             this.copyMatBasedFromIndex(warpedMat, hrWarpedMat, i);
-
             ImageWriter.getInstance().saveMatrixToImage(hrWarpedMat, "hrwarp_" + i);
 
             ProgressDialogHandler.getInstance().showDialog("Merging with reference HR", "Warped image " + i + " is being merged to the HR image.");
@@ -105,7 +106,7 @@ public class WarpedToHROperator {
         Mat enhancedMat = new Mat();
         System.gc();
 
-        //Photo.fastNlMeansDenoisingColored(this.outputMat, enhancedMat);
+        Photo.fastNlMeansDenoisingColored(this.outputMat, enhancedMat);
         ImageWriter.getInstance().saveMatrixToImage(enhancedMat, "FINAL_RESULT");
         ProgressDialogHandler.getInstance().hideDialog();
 
@@ -139,7 +140,6 @@ public class WarpedToHROperator {
                 Log.d(TAG, "Row " + row + " Col " + col + " Value: " + data);
             }
         }
-
     }
 
     /*
@@ -175,22 +175,26 @@ public class WarpedToHROperator {
             this.copyMatToHR(fromMat, hrMat, 0, 2);
         }
         else if(index == 3) {
-            this.copyMatToHR(fromMat, hrMat, 1, 0);
+            this.copyMatToHR(fromMat, hrMat, 0, 3);
         }
         else if(index == 4) {
-            this.copyMatToHR(fromMat, hrMat, 1, 1);
+            this.copyMatToHR(fromMat, hrMat, 1, 0);
         }
         else if(index == 5) {
-            this.copyMatToHR(fromMat, hrMat, 1, 2);
+            this.copyMatToHR(fromMat, hrMat, 1, 1);
         }
         else if(index == 6) {
-            this.copyMatToHR(fromMat, hrMat, 2, 0);
+            this.copyMatToHR(fromMat, hrMat, 1, 2);
         }
         else if(index == 7) {
-            this.copyMatToHR(fromMat, hrMat, 2, 1);
+            this.copyMatToHR(fromMat, hrMat, 1, 3);
         }
         else if(index == 8) {
-            this.copyMatToHR(fromMat, hrMat, 2, 2);
+            this.copyMatToHR(fromMat, hrMat, 2, 0);
+        }
+        else if(index == 9) {
+            this.copyMatToHR(fromMat, hrMat, 2, 1);
         }
     }
+
 }
