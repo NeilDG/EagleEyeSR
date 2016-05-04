@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.preprocessing;
+package neildg.com.megatronsr.io;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -34,8 +34,12 @@ public class BitmapURIRepository {
         this.selectedUriList = selectedUriList;
     }
 
-    public int getNumImages() {
+    public int getNumImagesSelected() {
         return this.selectedUriList.size();
+    }
+
+    public Bitmap getOriginalBitmap(int index) {
+        return this.getDownsampledBitmap(index, 1);
     }
 
     public Bitmap getDownsampledBitmap(int index, int downsampleFactor) {

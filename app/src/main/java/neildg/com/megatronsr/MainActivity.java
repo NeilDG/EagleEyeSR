@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import org.opencv.android.*;
@@ -18,10 +19,11 @@ import org.opencv.android.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.platformtools.utils.ApplicationCore;
-import neildg.com.megatronsr.preprocessing.BitmapURIRepository;
+import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 public class MainActivity extends AppCompatActivity{
@@ -95,6 +97,35 @@ public class MainActivity extends AppCompatActivity{
                 startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
             }
         });
+
+        RadioGroup scaleRadioGroup = (RadioGroup) this.findViewById(R.id.scale_radio_group);
+        scaleRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.scale_2_btn) {
+                    Toast.makeText(MainActivity.this, "Scale 2", Toast.LENGTH_LONG).show();
+                    ParameterConfig.setScalingFactor(2);
+                }
+                else if(checkedId == R.id.scale_4_btn) {
+                    Toast.makeText(MainActivity.this, "Scale 4", Toast.LENGTH_LONG).show();
+                    ParameterConfig.setScalingFactor(4);
+                }
+            }
+        });
+
+        RadioGroup techniqueRadioGroup = (RadioGroup) this.findViewById(R.id.technique_radio_group);
+        techniqueRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.single_sr_btn) {
+                    Toast.makeText(MainActivity.this, "Single-Image SR selected", Toast.LENGTH_LONG).show();
+                }
+                else if(checkedId == R.id.scale_4_btn) {
+                    Toast.makeText(MainActivity.this, "Multiple-Image SR selected", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
     }
 
     @Override

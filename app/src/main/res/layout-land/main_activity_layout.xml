@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<neildg.com.megatronsr.ui.ScalableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+<LinearLayout
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
@@ -38,7 +42,8 @@
             <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:id="@+id/scale_radio_group">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -52,22 +57,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2x"
-                    android:id="@+id/radioButton"
+                    android:id="@+id/scale_2_btn"
                     android:checked="true" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="3x"
-                    android:id="@+id/radioButton2"
-                    android:checked="false" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="4x"
-                    android:id="@+id/radioButton3"
-                    android:checked="false" />
+                    android:id="@+id/scale_4_btn"
+                    android:checked="true" />
 
             </RadioGroup>
 
@@ -81,7 +79,8 @@
             <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal"
+                android:id="@+id/technique_radio_group">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -95,14 +94,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Single Image"
-                    android:id="@+id/radioButton7"
+                    android:id="@+id/single_sr_btn"
                     android:checked="false" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Multiple Image"
-                    android:id="@+id/radioButton8"
+                    android:id="@+id/multiple_sr_btn"
                     android:checked="true" />
 
             </RadioGroup>
@@ -134,3 +133,4 @@
     </LinearLayout>
 
 </LinearLayout>
+</neildg.com.megatronsr.ui.ScalableLayout>

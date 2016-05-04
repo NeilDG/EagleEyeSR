@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
-import neildg.com.megatronsr.constants.ParameterConstants;
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
@@ -44,7 +44,7 @@ public class ShiftAddFusionOperator implements IOperator {
     public void perform() {
         this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
 
-        this.hrMat = Mat.ones(referenceMat.rows() * ParameterConstants.SCALING_FACTOR, referenceMat.cols() * ParameterConstants.SCALING_FACTOR, this.referenceMat.type());
+        this.hrMat = Mat.ones(referenceMat.rows() * ParameterConfig.getScalingFactor(), referenceMat.cols() * ParameterConfig.getScalingFactor(), this.referenceMat.type());
 
         //this.copyMatToHR(this.referenceMat, 0, 0);
         //this.bruteForcePutLRMat();
@@ -60,7 +60,7 @@ public class ShiftAddFusionOperator implements IOperator {
     Inserts the referenceMat in the HR matrix
      */
     private void copyMatToHR(Mat fromMat, int xOffset, int yOffset) {
-        int pixelSpace = ParameterConstants.SCALING_FACTOR;
+        int pixelSpace = ParameterConfig.getScalingFactor();
 
         for(int row = 0; row < fromMat.rows(); row++) {
             for(int col = 0; col < fromMat.cols(); col++) {
@@ -79,9 +79,9 @@ public class ShiftAddFusionOperator implements IOperator {
     }
 
     private void bruteForcePutLRMat() {
-        int pixelSpace = ParameterConstants.SCALING_FACTOR;
+        int pixelSpace = ParameterConfig.getScalingFactor();
 
-       /* for(int i = 1; i < BitmapURIRepository.getInstance().getNumImages(); i++) {
+       /* for(int i = 1; i < BitmapURIRepository.getInstance().getNumImagesSelected(); i++) {
             Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i + ".jpg");
             this.copyMatToHR(lrMat, i,0);
 
@@ -106,7 +106,7 @@ public class ShiftAddFusionOperator implements IOperator {
     }
 
     private void assembleHRMatWithInpaint() {
-        int pixelSpace = ParameterConstants.SCALING_FACTOR;
+        int pixelSpace = ParameterConfig.getScalingFactor();
 
         Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 1, ImageFileAttribute.FileType.JPEG);
         this.copyMatToHR(lrMat, 1, 0);
@@ -131,7 +131,7 @@ public class ShiftAddFusionOperator implements IOperator {
     }
 
     private void assembleHRMatWithFeatures() {
-        int pixelSpace = ParameterConstants.SCALING_FACTOR;
+        int pixelSpace = ParameterConfig.getScalingFactor();
 
         Mat descriptors1 = new Mat();
         Mat descriptors2 = new Mat();
