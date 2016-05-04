@@ -1,112 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="neildg.com.megatronsr.MainActivity">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/sr_title"
-        android:id="@+id/textView"
-        android:layout_gravity="center_horizontal"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="768dp"
-        android:layout_height="wrap_content"
-        android:text="@string/sr_intro"
-        android:id="@+id/textView2"
-        android:layout_gravity="center_horizontal"
-        android:textSize="20dp" />
-
+<neildg.com.megatronsr.ui.ScalableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="30dp">
+        android:fitsSystemWindows="true"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="neildg.com.megatronsr.MainActivity">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Megatron SR: A Superresolution Experiment Environment"
+            android:id="@+id/textView"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sr_intro"
+            android:id="@+id/textView2"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center_horizontal">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/scale_radio_group">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Scaling Factor:"
+                        android:id="@+id/textView3"
+                        android:textSize="20dp"
+                        android:layout_marginTop="5dp" />
+
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2x"
+                        android:id="@+id/scale_2_btn"
+                        android:checked="true" />
+
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="4x"
+                        android:id="@+id/scale_4_btn"
+                        android:checked="true" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/technique_radio_group">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Technique"
+                        android:id="@+id/textView5"
+                        android:textSize="20dp"
+                        android:layout_marginTop="5dp" />
+
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Single Image"
+                        android:id="@+id/single_sr_btn"
+                        android:checked="false" />
+
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Multiple Image"
+                        android:id="@+id/multiple_sr_btn"
+                        android:checked="true" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="100">
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp">
 
-            <RadioGroup
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Capture Image"
+                android:id="@+id/capture_btn" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Scaling Factor:"
-                    android:id="@+id/textView3"
-                    android:textSize="20dp"
-                    android:layout_marginTop="5dp" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="2x"
-                    android:id="@+id/radioButton"
-                    android:checked="true" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="3x"
-                    android:id="@+id/radioButton2"
-                    android:checked="false" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="4x"
-                    android:id="@+id/radioButton3"
-                    android:checked="false" />
-
-            </RadioGroup>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Pick Images from Gallery"
+                android:id="@+id/select_image_btn" />
 
         </LinearLayout>
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="100">
-
-            <RadioGroup
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Technique"
-                    android:id="@+id/textView5"
-                    android:textSize="20dp"
-                    android:layout_marginTop="5dp" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Single Image"
-                    android:id="@+id/radioButton7"
-                    android:checked="false" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Multiple Image"
-                    android:id="@+id/radioButton8"
-                    android:checked="true" />
-
-            </RadioGroup>
-
-        </LinearLayout>
-        </LinearLayout>
-</LinearLayout>
+    </LinearLayout>
+</neildg.com.megatronsr.ui.ScalableLayout>
