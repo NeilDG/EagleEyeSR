@@ -8,6 +8,8 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.model.AttributeHolder;
+import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -17,7 +19,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 public class ImagePyramidBuilder implements IOperator {
     private final static String TAG = "ImagePyramidBuilder";
 
-    private final int MAX_DOWNSCALE = 8;
+    private final int MAX_DOWNSCALE = 6;
     public ImagePyramidBuilder() {
 
     }
@@ -33,6 +35,7 @@ public class ImagePyramidBuilder implements IOperator {
             ImageWriter.getInstance().saveBitmapImage(bitmap, FilenameConstants.PYRAMID_DIR, FilenameConstants.PYRAMID_IMAGE_PREFIX + i, ImageFileAttribute.FileType.JPEG);
         }
 
+        AttributeHolder.getSharedInstance().putValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 1 + MAX_DOWNSCALE);
         ProgressDialogHandler.getInstance().hideDialog();
     }
 }
