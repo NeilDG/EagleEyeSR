@@ -87,6 +87,23 @@ public class ImageWriter {
         }
 	}
 
+	public void saveBitmapImage(Bitmap bitmap, String directory, String fileName, ImageFileAttribute.FileType fileType) {
+		try {
+			File dirFile = new File(this.proposedPath + "/" + directory);
+			dirFile.mkdirs();
+
+			File processedImageFile = new File(dirFile.getPath(), fileName + ImageFileAttribute.getFileExtension(fileType));
+
+			FileOutputStream out = new FileOutputStream(processedImageFile);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+			// NOTE: PNG is a lossless format, the compression factor (100) is ignored
+			out.close();
+			Log.d(TAG, "Saved: " +processedImageFile.getAbsolutePath());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void saveMatrixToImage(Mat mat, String fileName, ImageFileAttribute.FileType fileType) {
 		File imageFile = new File(this.proposedPath, fileName + ImageFileAttribute.getFileExtension(fileType));
 		Imgcodecs.imwrite(imageFile.getAbsolutePath(), mat);

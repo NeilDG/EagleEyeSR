@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing;
+package neildg.com.megatronsr.processing.multiple;
 
 import android.util.Log;
 
@@ -25,6 +25,7 @@ import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.io.BitmapURIRepository;
+import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**

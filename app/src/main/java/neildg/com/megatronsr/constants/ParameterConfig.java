@@ -7,7 +7,13 @@ public class ParameterConfig {
 
     private static ParameterConfig sharedInstance = null;
 
+    public enum SRTechnique {
+        SINGLE,
+        MULTIPLE
+    }
+
     private int scalingFactor = 1;
+    private SRTechnique currentTechnique = SRTechnique.MULTIPLE;
 
     private ParameterConfig() {}
 
@@ -25,5 +31,15 @@ public class ParameterConfig {
     public static int getScalingFactor() {
         initialize();
         return sharedInstance.scalingFactor;
+    }
+
+    public static void setTechnique(SRTechnique technique) {
+        initialize();
+        sharedInstance.currentTechnique = technique;
+    }
+
+    public static SRTechnique getCurrentTechnique() {
+        initialize();
+        return sharedInstance.currentTechnique;
     }
 }

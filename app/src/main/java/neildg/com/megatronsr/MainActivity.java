@@ -103,11 +103,11 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId == R.id.scale_2_btn) {
-                    Toast.makeText(MainActivity.this, "Scale 2", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Scale 2", Toast.LENGTH_SHORT).show();
                     ParameterConfig.setScalingFactor(2);
                 }
                 else if(checkedId == R.id.scale_4_btn) {
-                    Toast.makeText(MainActivity.this, "Scale 4", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Scale 4", Toast.LENGTH_SHORT).show();
                     ParameterConfig.setScalingFactor(4);
                 }
             }
@@ -118,10 +118,12 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId == R.id.single_sr_btn) {
-                    Toast.makeText(MainActivity.this, "Single-Image SR selected", Toast.LENGTH_LONG).show();
+                    ParameterConfig.setTechnique(ParameterConfig.SRTechnique.SINGLE);
+                    Toast.makeText(MainActivity.this, "Single-Image SR selected", Toast.LENGTH_SHORT).show();
                 }
-                else if(checkedId == R.id.scale_4_btn) {
-                    Toast.makeText(MainActivity.this, "Multiple-Image SR selected", Toast.LENGTH_LONG).show();
+                else if(checkedId == R.id.multiple_sr_btn) {
+                    ParameterConfig.setTechnique(ParameterConfig.SRTechnique.MULTIPLE);
+                    Toast.makeText(MainActivity.this, "Multiple-Image SR selected", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -152,8 +154,17 @@ public class MainActivity extends AppCompatActivity{
                     imageEncoded  = cursor.getString(columnIndex);
                     cursor.close();
 
-                    Toast.makeText(this, "PLease pick multiple images. Tap and hold to pick multiple images.",
-                            Toast.LENGTH_LONG).show();
+                    if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE) {
+                        Toast.makeText(this, "Technique needs multiple images. Tap and hold to pick multiple images.",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
+                        mArrayUri.add(mImageUri);
+                        BitmapURIRepository.getInstance().setImageURIList(mArrayUri);
+                        this.moveToProcessingActivity();
+                    }
+
 
                 }else {
                     if (data.getClipData() != null) {
@@ -175,9 +186,17 @@ public class MainActivity extends AppCompatActivity{
                             cursor.close();
 
                         }
-                        Log.v("LOG_TAG", "Selected Images " + mArrayUri.size());
-                        BitmapURIRepository.getInstance().setImageURIList(mArrayUri);
-                        this.moveToProcessingActivity();
+
+                        if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE) {
+                            Log.v("LOG_TAG", "Selected Images " + mArrayUri.size());
+                            BitmapURIRepository.getInstance().setImageURIList(mArrayUri);
+                            this.moveToProcessingActivity();
+                        }
+                        else {
+                            Toast.makeText(this, "Technique only requires a single image. Click an image to select.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+
                     }
                 }
             } else {

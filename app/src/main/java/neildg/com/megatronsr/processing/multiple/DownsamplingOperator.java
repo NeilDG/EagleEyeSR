@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing;
+package neildg.com.megatronsr.processing.multiple;
 
 import android.graphics.Bitmap;
 
@@ -6,6 +6,7 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.io.BitmapURIRepository;
+import neildg.com.megatronsr.processing.IOperator;
 
 /**
  * Created by NeilDG on 3/5/2016.
