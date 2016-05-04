@@ -110,6 +110,16 @@ public class ImageWriter {
 
 		Log.d(TAG, "Saved " + imageFile.getAbsolutePath());
 	}
+
+	public synchronized void saveMatrixToImage(Mat mat, String directory, String fileName, ImageFileAttribute.FileType fileType) {
+		File dirFile = new File(this.proposedPath + "/" + directory);
+		dirFile.mkdirs();
+
+		File imageFile = new File(dirFile.getPath(), fileName + ImageFileAttribute.getFileExtension(fileType));
+		Imgcodecs.imwrite(imageFile.getAbsolutePath(), mat);
+
+		Log.d(TAG, "Saved " + imageFile.getAbsolutePath());
+	}
 	
 	public String getFilePath() {
 		return this.proposedPath;

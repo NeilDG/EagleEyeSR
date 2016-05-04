@@ -20,4 +20,7 @@ public class FilenameConstants {
     //for single image SR
     public final static String PYRAMID_DIR = "pyramid";
     public final static String PYRAMID_IMAGE_PREFIX = "image_pyr_";
+
+    public final static String PATCH_DIR = "patches";
+    public final static String PATCH_PREFIX = "patch_";
 }

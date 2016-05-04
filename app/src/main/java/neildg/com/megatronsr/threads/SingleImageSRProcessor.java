@@ -7,6 +7,7 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.processing.single.ImagePyramidBuilder;
+import neildg.com.megatronsr.processing.single.PatchExtractCommander;
 
 /**
  * Created by NeilDG on 5/4/2016.
@@ -22,5 +23,8 @@ public class SingleImageSRProcessor extends Thread {
     public void run() {
         ImagePyramidBuilder pyramidBuilder = new ImagePyramidBuilder();
         pyramidBuilder.perform();
+
+        PatchExtractCommander commander = new PatchExtractCommander();
+        commander.perform();
     }
 }
