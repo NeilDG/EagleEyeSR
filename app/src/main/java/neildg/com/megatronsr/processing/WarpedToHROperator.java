@@ -2,23 +2,18 @@ package neildg.com.megatronsr.processing;
 
 import android.util.Log;
 
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.photo.Photo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
-import neildg.com.megatronsr.constants.ParameterConstants;
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.io.MetricsLogger;
-import neildg.com.megatronsr.metrics.ImageMetrics;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -53,8 +48,8 @@ public class WarpedToHROperator implements IOperator {
     public void perform() {
         ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warping base image");
         Mat baseWarpMat = this.warpedMatrixList.get(0);
-        Mat baseHRWarpMat = Mat.zeros(baseWarpMat.rows() * ParameterConstants.SCALING_FACTOR, baseWarpMat.cols() * ParameterConstants.SCALING_FACTOR, baseWarpMat.type());
-        //Imgproc.resize(baseWarpMat, baseHRWarpMat, baseHRWarpMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
+        Mat baseHRWarpMat = Mat.zeros(baseWarpMat.rows() * ParameterConfig.getScalingFactor(), baseWarpMat.cols() * ParameterConfig.getScalingFactor(), baseWarpMat.type());
+        //Imgproc.resize(baseWarpMat, baseHRWarpMat, baseHRWarpMat.size(), ParameterConstants.getScalingFactor(), ParameterConstants.getScalingFactor(), Imgproc.INTER_CUBIC);
         this.copyMatToHR(baseWarpMat, baseHRWarpMat, 0, 0);
 
         this.baseMaskMat = new Mat(baseHRWarpMat.rows(), baseHRWarpMat.cols(), CvType.CV_8UC1);
@@ -75,9 +70,9 @@ public class WarpedToHROperator implements IOperator {
             ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warped image " + i + " pixel stretching");
 
             Mat warpedMat = this.warpedMatrixList.get(i);
-            Mat hrWarpedMat =  Mat.zeros(warpedMat.rows() * ParameterConstants.SCALING_FACTOR, warpedMat.cols() * ParameterConstants.SCALING_FACTOR, warpedMat.type());
+            Mat hrWarpedMat =  Mat.zeros(warpedMat.rows() * ParameterConfig.getScalingFactor(), warpedMat.cols() * ParameterConfig.getScalingFactor(), warpedMat.type());
 
-            //Imgproc.resize(warpedMat, hrWarpedMat, hrWarpedMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
+            //Imgproc.resize(warpedMat, hrWarpedMat, hrWarpedMat.size(), ParameterConstants.getScalingFactor(), ParameterConstants.getScalingFactor(), Imgproc.INTER_CUBIC);
             this.copyMatToHR(warpedMat, hrWarpedMat, 0, 0);
 
             ImageWriter.getInstance().saveMatrixToImage(hrWarpedMat, "hrwarp_" + i, ImageFileAttribute.FileType.JPEG);
@@ -141,7 +136,7 @@ public class WarpedToHROperator implements IOperator {
   Inserts the referenceMat in the HR matrix
    */
     private void copyMatToHR(Mat fromMat, Mat hrMat, int xOffset, int yOffset) {
-        int pixelSpace = ParameterConstants.SCALING_FACTOR;
+        int pixelSpace = ParameterConfig.getScalingFactor();
 
         for(int row = 0; row < fromMat.rows(); row++) {
             for(int col = 0; col < fromMat.cols(); col++) {

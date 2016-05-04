@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import neildg.com.megatronsr.preprocessing.BitmapURIRepository;
-import neildg.com.megatronsr.processing.SRProcessor;
+import neildg.com.megatronsr.io.BitmapURIRepository;
+import neildg.com.megatronsr.processing.MultipleImageSRProcessor;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /*
@@ -30,7 +30,7 @@ public class ProcessingActivity extends AppCompatActivity {
         super.onResume();
 
         TextView numImagesText = (TextView) this.findViewById(R.id.num_images_txt);
-        numImagesText.setText(Integer.toString(BitmapURIRepository.getInstance().getNumImages()));
+        numImagesText.setText(Integer.toString(BitmapURIRepository.getInstance().getNumImagesSelected()));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class ProcessingActivity extends AppCompatActivity {
         srButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SRProcessor.getSharedInstance().start();
+                new MultipleImageSRProcessor().start();
             }
         });
     }

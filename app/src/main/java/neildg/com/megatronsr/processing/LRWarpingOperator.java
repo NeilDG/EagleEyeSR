@@ -5,17 +5,14 @@ import android.util.Log;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
-import org.opencv.core.DMatch;
 import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
-import org.opencv.features2d.Features2d;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
 import org.opencv.video.Video;
@@ -27,7 +24,7 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.preprocessing.BitmapURIRepository;
+import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -62,7 +59,7 @@ public class LRWarpingOperator implements IOperator {
 
         Log.d(TAG, "LR Homography warping");
 
-        int numImages = BitmapURIRepository.getInstance().getNumImages();
+        int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
         for (int i = 1; i < numImages; i++) {
             Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
 

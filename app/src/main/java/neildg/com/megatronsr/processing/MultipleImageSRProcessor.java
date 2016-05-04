@@ -1,30 +1,23 @@
 package neildg.com.megatronsr.processing;
 
-import neildg.com.megatronsr.constants.ParameterConstants;
+import neildg.com.megatronsr.constants.ParameterConfig;
+import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
  * SRProcessor main entry point
  * Created by NeilDG on 3/5/2016.
  */
-public class SRProcessor extends Thread {
-    private static SRProcessor sharedInstance = null;
-    public static SRProcessor getSharedInstance() {
-        if(sharedInstance == null) {
-            sharedInstance = new SRProcessor();
-        }
+public class MultipleImageSRProcessor extends Thread {
 
-        return sharedInstance;
-    }
-
-    private SRProcessor() {
+    public MultipleImageSRProcessor() {
 
     }
 
     @Override
     public void run() {
         ProgressDialogHandler.getInstance().showDialog("Downsampling images", "Downsampling images selected and saving them in file.");
-        DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConstants.SCALING_FACTOR);
+        DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConfig.getScalingFactor(), BitmapURIRepository.getInstance().getNumImagesSelected());
         downsamplingOperator.perform();
         ProgressDialogHandler.getInstance().hideDialog();
 
@@ -42,8 +35,6 @@ public class SRProcessor extends Thread {
 
         WarpedToHROperator warpedToHROperator = new WarpedToHROperator(warpingOperator.getWarpedMatrixList());
         warpedToHROperator.perform();
-
-        sharedInstance = null;
     }
 
 }

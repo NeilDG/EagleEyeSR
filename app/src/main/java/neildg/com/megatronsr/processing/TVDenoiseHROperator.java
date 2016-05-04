@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
-import neildg.com.megatronsr.constants.ParameterConstants;
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.io.MetricsLogger;
-import neildg.com.megatronsr.preprocessing.BitmapURIRepository;
+import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -34,7 +34,7 @@ public class TVDenoiseHROperator implements IOperator {
 
     @Override
     public void perform() {
-        int numImages = BitmapURIRepository.getInstance().getNumImages();
+        int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
 
         Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
         Imgproc.cvtColor(lrMat, lrMat, Imgproc.COLOR_BGR2GRAY);
@@ -43,16 +43,16 @@ public class TVDenoiseHROperator implements IOperator {
         Imgproc.cvtColor(this.groundTruthMat, this.groundTruthMat, Imgproc.COLOR_BGR2GRAY);
         ImageWriter.getInstance().saveMatrixToImage(this.groundTruthMat, FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
 
-        this.hrMat = Mat.ones(lrMat.rows() * ParameterConstants.SCALING_FACTOR, lrMat.cols() * ParameterConstants.SCALING_FACTOR, lrMat.type());
+        this.hrMat = Mat.ones(lrMat.rows() * ParameterConfig.getScalingFactor(), lrMat.cols() * ParameterConfig.getScalingFactor(), lrMat.type());
 
         Mat nearestMat = new Mat();
-        Imgproc.resize(lrMat, nearestMat, nearestMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_NEAREST);
+        Imgproc.resize(lrMat, nearestMat, nearestMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
         ImageWriter.getInstance().saveMatrixToImage(nearestMat, "nearest", ImageFileAttribute.FileType.JPEG);
         MetricsLogger.getSharedInstance().takeMetrics("GroundTruthVSNearest",this.groundTruthMat, "GroundTruth",nearestMat, "Nearest Neighbor", "Ground Truth vs. Nearest-neighbor");
         nearestMat.release();
 
         Mat cubicMat = new Mat();
-        Imgproc.resize(lrMat, cubicMat, cubicMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
+        Imgproc.resize(lrMat, cubicMat, cubicMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         ImageWriter.getInstance().saveMatrixToImage(cubicMat, "bicubic", ImageFileAttribute.FileType.JPEG);
         MetricsLogger.getSharedInstance().takeMetrics("GroundTruthVSBicubic",this.groundTruthMat, "GroundTruth",cubicMat, "Bicubic", "Ground Truth vs. Bicubic");
         cubicMat.release();
@@ -76,7 +76,7 @@ public class TVDenoiseHROperator implements IOperator {
         Mat denoisedMat = new Mat(lrMat.size(), lrMat.type());
 
         Photo.denoise_TVL1(lrObservations, denoisedMat,30,100);
-        Imgproc.resize(denoisedMat, this.hrMat, this.hrMat.size(), ParameterConstants.SCALING_FACTOR, ParameterConstants.SCALING_FACTOR, Imgproc.INTER_CUBIC);
+        Imgproc.resize(denoisedMat, this.hrMat, this.hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         ImageWriter.getInstance().saveMatrixToImage(denoisedMat, "denoised_lr", ImageFileAttribute.FileType.JPEG);
         ImageWriter.getInstance().saveMatrixToImage(this.hrMat, "denoised_HR", ImageFileAttribute.FileType.JPEG);
 

@@ -18,7 +18,6 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.preprocessing.BitmapURIRepository;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -69,7 +68,7 @@ public class FeatureMatchingOperator implements IOperator {
 
         /*ProgressDialogHandler.getInstance().hideDialog();
 
-        int numImages = BitmapURIRepository.getInstance().getNumImages();
+        int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
 
         for(int i = 1; i < numImages; i++) {
             Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING +i, ImageFileAttribute.FileType.JPEG);
