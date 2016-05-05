@@ -39,18 +39,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b6bfe51e-4a09-4acf-927d-577f50683516" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/appcompat_v7_22_2_1.xml" afterPath="$PROJECT_DIR$/.idea/libraries/appcompat_v7_22_2_1.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/design_22_2_1.xml" afterPath="$PROJECT_DIR$/.idea/libraries/design_22_2_1.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/support_annotations_22_2_1.xml" afterPath="$PROJECT_DIR$/.idea/libraries/support_annotations_22_2_1.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/support_v4_22_2_1.xml" afterPath="$PROJECT_DIR$/.idea/libraries/support_v4_22_2_1.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/app.iml" afterPath="$PROJECT_DIR$/app/app.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/constants/FilenameConstants.java" afterPath="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/constants/FilenameConstants.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/io/ImageWriter.java" afterPath="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/io/ImageWriter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/single/PatchExtractCommander.java" afterPath="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/single/PatchExtractCommander.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/openCVLibrary310/openCVLibrary310.iml" afterPath="$PROJECT_DIR$/openCVLibrary310/openCVLibrary310.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/model/single/ImagePatchPool.java" afterPath="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/model/single/ImagePatchPool.java" />
     </list>
     <ignored path="MegatronSR.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -116,7 +105,7 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/single/PatchExtractCommander.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="29" column="31" selection-start-line="29" selection-start-column="31" selection-end-line="29" selection-end-column="31" />
+              <caret line="41" column="119" selection-start-line="41" selection-start-column="8" selection-end-line="41" selection-end-column="119" />
               <folding />
             </state>
           </provider>
@@ -125,14 +114,26 @@
       <file leaf-file-name="ImagePatchPool.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/model/single/ImagePatchPool.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4651163">
-              <caret line="22" column="4" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="4" />
+            <state vertical-scroll-proportion="0.7906977">
+              <caret line="47" column="40" selection-start-line="47" selection-start-column="40" selection-end-line="47" selection-end-column="40" />
               <folding>
-                <element signature="e#369#370#0" expanded="true" />
-                <element signature="e#422#423#0" expanded="true" />
-                <element signature="e#458#459#0" expanded="true" />
-                <element signature="e#495#496#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#551#552#0" expanded="true" />
+                <element signature="e#604#605#0" expanded="true" />
+                <element signature="e#640#641#0" expanded="true" />
+                <element signature="e#677#678#0" expanded="true" />
+                <element signature="e#849#878#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ImagePyramidBuilder.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/single/ImagePyramidBuilder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="35" column="9" selection-start-line="35" selection-start-column="9" selection-end-line="35" selection-end-column="9" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -141,7 +142,7 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/model/single/ImagePatch.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="48" column="5" selection-start-line="48" selection-start-column="5" selection-end-line="48" selection-end-column="5" />
+              <caret line="37" column="7" selection-start-line="37" selection-start-column="7" selection-end-line="37" selection-end-column="7" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#994#995#0" expanded="true" />
@@ -3306,7 +3307,7 @@
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/single/PatchExtractCommander.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="29" column="31" selection-start-line="29" selection-start-column="31" selection-end-line="29" selection-end-column="31" />
+          <caret line="41" column="119" selection-start-line="41" selection-start-column="8" selection-end-line="41" selection-end-column="119" />
           <folding />
         </state>
       </provider>
@@ -3314,7 +3315,7 @@
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/model/single/ImagePatch.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="48" column="5" selection-start-line="48" selection-start-column="5" selection-end-line="48" selection-end-column="5" />
+          <caret line="37" column="7" selection-start-line="37" selection-start-column="7" selection-end-line="37" selection-end-column="7" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#994#995#0" expanded="true" />
@@ -3323,15 +3324,25 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/single/ImagePyramidBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="35" column="9" selection-start-line="35" selection-start-column="9" selection-end-line="35" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/model/single/ImagePatchPool.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4651163">
-          <caret line="22" column="4" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="4" />
+        <state vertical-scroll-proportion="0.7906977">
+          <caret line="47" column="40" selection-start-line="47" selection-start-column="40" selection-end-line="47" selection-end-column="40" />
           <folding>
-            <element signature="e#369#370#0" expanded="true" />
-            <element signature="e#422#423#0" expanded="true" />
-            <element signature="e#458#459#0" expanded="true" />
-            <element signature="e#495#496#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#551#552#0" expanded="true" />
+            <element signature="e#604#605#0" expanded="true" />
+            <element signature="e#640#641#0" expanded="true" />
+            <element signature="e#677#678#0" expanded="true" />
+            <element signature="e#849#878#0" expanded="true" />
           </folding>
         </state>
       </provider>
