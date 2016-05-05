@@ -104,7 +104,7 @@ public class ImageWriter {
 		}
 	}
 
-	public void saveMatrixToImage(Mat mat, String fileName, ImageFileAttribute.FileType fileType) {
+	public synchronized void saveMatrixToImage(Mat mat, String fileName, ImageFileAttribute.FileType fileType) {
 		File imageFile = new File(this.proposedPath, fileName + ImageFileAttribute.getFileExtension(fileType));
 		Imgcodecs.imwrite(imageFile.getAbsolutePath(), mat);
 
@@ -113,7 +113,9 @@ public class ImageWriter {
 
 	public synchronized void saveMatrixToImage(Mat mat, String directory, String fileName, ImageFileAttribute.FileType fileType) {
 		File dirFile = new File(this.proposedPath + "/" + directory);
-		dirFile.mkdirs();
+		if(dirFile.mkdirs() == false) {
+			dirFile.mkdir();
+		}
 
 		File imageFile = new File(dirFile.getPath(), fileName + ImageFileAttribute.getFileExtension(fileType));
 		Imgcodecs.imwrite(imageFile.getAbsolutePath(), mat);
