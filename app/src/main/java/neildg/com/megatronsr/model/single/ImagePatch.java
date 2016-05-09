@@ -17,14 +17,20 @@ public class ImagePatch {
     private int col = 0;
     private int row = 0;
 
+    private String imageName;
     private String imagePath;
     private Mat patchMat = null;
 
 
-    public ImagePatch(int col, int row, String imagePath) {
+    public ImagePatch(int col, int row, String imageName, String imagePath) {
         this.col = 0;
         this.row = 0;
+        this.imageName = imageName;
         this.imagePath = imagePath;
+    }
+
+    public String getImageName() {
+        return this.imageName;
     }
 
     public Mat getPatchMat() {
@@ -45,17 +51,8 @@ public class ImagePatch {
     public void releaseMat() {
         if(this.patchMat != null) {
             this.patchMat.release();
+            this.patchMat = null;
         }
-    }
-
-    public static double measureSimilarity(ImagePatch patch1, ImagePatch patch2) {
-        Mat resultMat = new Mat();
-        Imgproc.matchTemplate(patch1.getPatchMat(), patch2.getPatchMat(), resultMat,Imgproc.TM_SQDIFF_NORMED);
-
-        double value = Core.norm(resultMat, Core.NORM_L1);
-        resultMat.release();
-
-        return value;
     }
 
 }
