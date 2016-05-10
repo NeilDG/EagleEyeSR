@@ -8,6 +8,7 @@ import neildg.com.megatronsr.model.single.ImagePatch;
 import neildg.com.megatronsr.model.single.ImagePatchPool;
 import neildg.com.megatronsr.model.single.PatchAttribute;
 import neildg.com.megatronsr.model.single.PatchAttributeTable;
+import neildg.com.megatronsr.model.single.PatchRelationTable;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -20,17 +21,17 @@ public class PatchSimilaritySearch implements IOperator {
 
     public PatchSimilaritySearch() {
         ImagePatchPool.initialize();
+        PatchRelationTable.initialize();
     }
 
     @Override
     public void perform() {
-        Thread.currentThread().setName("PatchSimilaritySearch");
         int pyramidDepth = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
 
         //TODO: testing only
         //PATCH_DIR + this.index, PATCH_PREFIX+col+"_"+row
 
-        ProgressDialogHandler.getInstance().showDialog("Test loading patches", "");
+        /*ProgressDialogHandler.getInstance().showDialog("Test loading patches", "");
 
         for(int i = 0; i < pyramidDepth; i++) {
             int numPatches = PatchAttributeTable.getInstance().getNumPatchesAtDepth(i);
@@ -42,7 +43,8 @@ public class PatchSimilaritySearch implements IOperator {
             }
         }
 
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideDialog();*/
 
+        //create HR-LR relationship dictionary
     }
 }

@@ -49,6 +49,10 @@ public class ImagePatchPool {
         }
     }
 
+    public ImagePatch loadPatch(PatchAttribute patchAttribute) {
+        return this.loadPatch(patchAttribute.getPyramidDepth(), patchAttribute.getCol(), patchAttribute.getRow(), patchAttribute.getImageName(), patchAttribute.getImagePath());
+    }
+
     public ImagePatch loadPatch(int pyramidDepth, int col, int row, String imageName, String imagePath) {
         ImagePatch patch  = new ImagePatch(col, row, imageName, imagePath);
 
