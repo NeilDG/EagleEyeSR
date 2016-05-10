@@ -6,8 +6,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
-import neildg.com.megatronsr.processing.MultipleImageSRProcessor;
+import neildg.com.megatronsr.threads.MultipleImageSRProcessor;
+import neildg.com.megatronsr.threads.SingleImageSRProcessor;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /*
@@ -44,9 +46,19 @@ public class ProcessingActivity extends AppCompatActivity {
         srButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new MultipleImageSRProcessor().start();
+               ProcessingActivity.this.executeSRProcessor();
             }
         });
     }
+
+    private void executeSRProcessor() {
+        if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE) {
+            new MultipleImageSRProcessor().start();
+        }
+        else {
+            new SingleImageSRProcessor().start();
+        }
+    }
+
 
 }

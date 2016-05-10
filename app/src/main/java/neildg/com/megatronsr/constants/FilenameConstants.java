@@ -16,4 +16,9 @@ public class FilenameConstants {
     public final static String KEYPOINTS_STRING = "refimage_keypoint";
 
     public final static String METRICS_NAME_STRING = "psnr_metrics";
+
+    //for single image SR
+    public final static String PYRAMID_DIR = "pyramid";
+    public final static String PYRAMID_IMAGE_PREFIX = "image_pyr_";
+
 }
