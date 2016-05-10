@@ -1,0 +1,32 @@
+{
+  "patches": [
+    {
+      "pyramid_depth":0,
+      "col":0,
+      "row":0,
+      "name":"patch_0_0",
+      "path": "SR0/test/patch_0_0"
+    },
+    {
+      "pyramid_depth":0,
+      "col":0,
+      "row":0,
+      "name":"patch_0_0",
+      "path": "SR0/test/patch_0_0"
+    },
+    {
+      "pyramid_depth":0,
+      "col":0,
+      "row":0,
+      "name":"patch_0_0",
+      "path": "SR0/test/patch_0_0"
+    },
+    {
+      "pyramid_depth":0,
+      "col":0,
+      "row":0,
+      "name":"patch_0_0",
+      "path": "SR0/test/patch_0_0"
+    },
+  ]
+}
