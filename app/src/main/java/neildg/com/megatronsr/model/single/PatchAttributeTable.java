@@ -50,7 +50,7 @@ public class PatchAttributeTable {
             patchTable.put(imageName, patchAttribute);
         }
         else {
-            Log.e(TAG, "Patch attribute already exists in the table!");
+            Log.e(TAG, "Patch attribute "+imageName+ " already exists in the table!");
         }
     }
 

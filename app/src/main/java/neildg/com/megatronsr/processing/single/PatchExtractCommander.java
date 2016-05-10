@@ -2,21 +2,18 @@ package neildg.com.megatronsr.processing.single;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
-import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.w3c.dom.Attr;
 
-import java.io.File;
 import java.util.concurrent.Semaphore;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
-import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
+import neildg.com.megatronsr.model.single.PatchAttributeTable;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -35,17 +32,20 @@ public class PatchExtractCommander implements IOperator {
     private Semaphore semaphore;
     public PatchExtractCommander() {
         this.semaphore = new Semaphore(0);
+        PatchAttributeTable.initialize();
     }
 
     @Override
     public void perform() {
+        Thread.currentThread().setName("PatchExtractCommander");
+
         int pyramidDepth = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
         this.requiredFlags = pyramidDepth;
 
         for(int i = 0 ; i < pyramidDepth; i++) {
-            String imagePath = FilenameConstants.PYRAMID_DIR + "/";
-            String imageName = FilenameConstants.PYRAMID_IMAGE_PREFIX + i;
-            PatchExtractor extractor = new PatchExtractor(imagePath, imageName, i, this);
+            String imageDir = FilenameConstants.PYRAMID_DIR + "/";
+            String imagePrefix = FilenameConstants.PYRAMID_IMAGE_PREFIX + i;
+            PatchExtractor extractor = new PatchExtractor(imageDir, imagePrefix, i, this);
             extractor.start();
         }
 
@@ -72,10 +72,16 @@ public class PatchExtractCommander implements IOperator {
         private Mat inputMat;
         private PatchExtractCommander commander;
 
-        public PatchExtractor(String imagePath, String imageName, int index, PatchExtractCommander commander) {
+        private String imagePrefix;
+        private String fullImagePath;
+
+        public PatchExtractor(String imageDir, String imagePrefix, int index, PatchExtractCommander commander) {
             this.index = index;
-            this.inputMat = ImageReader.getInstance().imReadOpenCV(imagePath + imageName, ImageFileAttribute.FileType.JPEG);
+            this.imagePrefix = imagePrefix;
+            this.fullImagePath = imageDir + this.imagePrefix;
+            this.inputMat = ImageReader.getInstance().imReadOpenCV(this.fullImagePath, ImageFileAttribute.FileType.JPEG);
             this.commander = commander;
+
         }
 
         @Override
@@ -87,7 +93,13 @@ public class PatchExtractCommander implements IOperator {
                     Mat patchMat = new Mat();
                     Imgproc.getRectSubPix(this.inputMat, new Size(80,80), point, patchMat);
 
-                    ImageWriter.getInstance().saveMatrixToImage(patchMat, PATCH_DIR + this.index, PATCH_PREFIX+col+"_"+row, ImageFileAttribute.FileType.JPEG);
+                    String patchDir = PATCH_DIR + this.index;
+                    String patchImageName = PATCH_PREFIX +col+"_"+row;
+                    String patchImagePath =  patchDir + "/" +patchImageName;
+                    ImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
+                    PatchAttributeTable.getInstance().addPatchAttribute(this.index, col, row, patchImageName, patchImagePath);
+
+                    patchMat.release();
                 }
             }
 

@@ -1,5 +1,7 @@
 package neildg.com.megatronsr.model.single;
 
+import android.util.Log;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -38,9 +40,10 @@ public class ImagePatch {
         return this.patchMat;
     }
 
-    private void loadPatchMatIfNull() {
+    public void loadPatchMatIfNull() {
       if(this.patchMat == null) {
           this.patchMat = ImageReader.getInstance().imReadOpenCV(this.imagePath, ImageFileAttribute.FileType.JPEG);
+          Log.d(TAG, "Patch "+this.imagePath+ " loaded! Size: " +this.patchMat.elemSize()+ " Cols: " +this.patchMat.cols()+ " Rows: " +this.patchMat.rows());
       }
     }
 

@@ -33,7 +33,7 @@ public class ImagePatchPool {
         sharedInstance = null;
     }
 
-    public static final int MAX_LOADED_PATCHES = 200;
+    public static final int MAX_LOADED_PATCHES = 1000;
 
     private int pyramidDepth = 0;
     private int loadedPatches = 0;
@@ -56,8 +56,8 @@ public class ImagePatchPool {
 
         if(!patchTable.containsKey(imageName) && this.loadedPatches < MAX_LOADED_PATCHES) {
             patchTable.put(imageName, patch);
+            patch.loadPatchMatIfNull();
             this.loadedPatches++;
-            Log.d(TAG, "Patch loaded.");
             return patch;
         }
         else if(this.loadedPatches >= MAX_LOADED_PATCHES) {
@@ -84,11 +84,13 @@ public class ImagePatchPool {
         HashMap<String,ImagePatch> patchTable = this.patchPyramidList.get(pyramidDepth);
 
         List keys = new ArrayList(patchTable.keySet());
-        int randomIndex = rand.nextInt(keys.size());
-        ImagePatch imagePatch = patchTable.get(keys.get(randomIndex));
-        imagePatch.releaseMat();
-        patchTable.remove(keys.get(randomIndex));
-        this.loadedPatches--;
+        if(keys.size() > 0) {
+            int randomIndex = rand.nextInt(keys.size());
+            ImagePatch imagePatch = patchTable.get(keys.get(randomIndex));
+            imagePatch.releaseMat();
+            patchTable.remove(keys.get(randomIndex));
+            this.loadedPatches--;
+        }
     }
 
     public void unloadPatch(int pyramidDepth, String imageName) {
