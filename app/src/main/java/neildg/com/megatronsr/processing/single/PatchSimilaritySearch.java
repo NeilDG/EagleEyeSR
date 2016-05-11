@@ -26,7 +26,7 @@ public class PatchSimilaritySearch implements IOperator {
 
     @Override
     public void perform() {
-        int pyramidDepth = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
+        int maxPyrDepth = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
 
         //TODO: testing only
         //PATCH_DIR + this.index, PATCH_PREFIX+col+"_"+row
@@ -46,5 +46,30 @@ public class PatchSimilaritySearch implements IOperator {
         ProgressDialogHandler.getInstance().hideDialog();*/
 
         //create HR-LR relationship dictionary
+        int patchesInLR = PatchAttributeTable.getInstance().getNumPatchesAtDepth(0);
+
+        for(int i = 0; i < patchesInLR; i++) {
+            ProgressDialogHandler.getInstance().showDialog("Comparing input image patch  to its pyramid", "Patch " +i);
+            PatchAttribute candidatePatchAttrib = PatchAttributeTable.getInstance().getPatchAttributeAt(0, i);
+            ImagePatch candidatePatch = ImagePatchPool.getInstance().loadPatch(candidatePatchAttrib);
+
+            for(int depth = 1; depth < maxPyrDepth; depth++) {
+                int patchesAtDepth = PatchAttributeTable.getInstance().getNumPatchesAtDepth(depth);
+
+                for(int p = 0; p < patchesAtDepth; p++) {
+                    PatchAttribute comparingPatchAttrib = PatchAttributeTable.getInstance().getPatchAttributeAt(depth, p);
+                    ImagePatch comparingPatch = ImagePatchPool.getInstance().loadPatch(comparingPatchAttrib);
+
+                    double similarity = ImagePatchPool.getInstance().measureSimilarity(candidatePatch, comparingPatch);
+
+                    if(similarity <= 0.0005) {
+                        Log.d(TAG, "Patch " +candidatePatch.getImageName()+ " vs Patch " +comparingPatch.getImageName()+ " similarity: " +similarity);
+
+                    }
+
+                }
+            }
+            ProgressDialogHandler.getInstance().hideDialog();
+        }
     }
 }

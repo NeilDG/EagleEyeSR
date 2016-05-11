@@ -28,7 +28,7 @@ public class PatchAttributeTable {
     private PatchAttributeTable() {
         this.pyramidDepth = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
 
-        for(int i = 0; i < this.pyramidDepth; i++) {
+        for(int i = 0; i <= this.pyramidDepth; i++) {
             this.patchList.add(new HashMap<String, PatchAttribute>());
         }
     }
