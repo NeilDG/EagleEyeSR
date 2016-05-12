@@ -18,6 +18,8 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 public class PatchSimilaritySearch implements IOperator {
     private final static String TAG = "PatchSimilaritySearch";
 
+    private final int MAX_NUM_THREADS = 20;
+    private int partition = 0;
 
     public PatchSimilaritySearch() {
         ImagePatchPool.initialize();
