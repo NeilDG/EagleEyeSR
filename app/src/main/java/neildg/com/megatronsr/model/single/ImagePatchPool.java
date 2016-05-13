@@ -73,7 +73,6 @@ public class ImagePatchPool {
             return patch;
         }
         else {
-            Log.e(TAG, "Patch " +imageName+ " already exists.");
             return patchTable.get(imageName);
         }
     }

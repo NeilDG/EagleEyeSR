@@ -134,9 +134,8 @@ public class PatchSimilaritySearch implements IOperator {
 
                         if(similarity <= 0.0005) {
                             Log.d(TAG, "Found by: "+this.threadID+ " Patch " +candidatePatch.getImageName()+ " vs Patch " +comparingPatch.getImageName()+ " similarity: " +similarity);
-
+                            break;
                         }
-
                     }
                 }
             }
