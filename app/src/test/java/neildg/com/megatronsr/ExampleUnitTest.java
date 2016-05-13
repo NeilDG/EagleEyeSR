@@ -16,22 +16,30 @@ public class ExampleUnitTest {
     @Test
     public void testDivideTask() throws Exception{
         int MAX_NUM_THREADS = 20;
-        int numPatches = 100;
+        int numPatches = 590;
 
-        int divisionOfWork = numPatches / MAX_NUM_THREADS;
+        int divisionOfWork =  numPatches / MAX_NUM_THREADS;
 
         int lowerX = 0;
         int upperX = divisionOfWork;
 
-        while(upperX <= numPatches) {
-            System.out.println("Lower X: " +lowerX+ " Upper X: " +upperX);
+        while(lowerX <= numPatches) {
+            System.out.println("Lower X: " +lowerX+ " Upper X: " +upperX + " Numpatches: " +numPatches);
 
             lowerX = upperX + 1;
             upperX += divisionOfWork;
 
-            upperX = clamp(upperX, 0, numPatches);
-            assertTrue(upperX <= numPatches);
+            upperX = clamp(upperX, lowerX, numPatches);
         }
+
+        /*for(int i = 1; i <= MAX_NUM_THREADS; i++) {
+            System.out.println("Lower X: " +lowerX+ " Upper X: " +upperX + " Numpatches: " +numPatches);
+
+            lowerX = upperX + 1;
+            upperX += divisionOfWork;
+
+            upperX = clamp(upperX, lowerX, numPatches);
+        }*/
     }
 
     private static int clamp(int value, int minValue, int maxValue) {

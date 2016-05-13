@@ -33,7 +33,7 @@ public class ImagePatchPool {
         sharedInstance = null;
     }
 
-    public static final int MAX_LOADED_PATCHES = 1000;
+    public static final int MAX_LOADED_PATCHES = 10000;
 
     private int pyramidDepth = 0;
     private int loadedPatches = 0;
@@ -73,7 +73,7 @@ public class ImagePatchPool {
             return patch;
         }
         else {
-            Log.e(TAG, "Patch " +imageName+ "already exists.");
+            Log.e(TAG, "Patch " +imageName+ " already exists.");
             return patchTable.get(imageName);
         }
     }
@@ -82,7 +82,7 @@ public class ImagePatchPool {
         return this.loadedPatches;
     }
 
-    private void unloadRandomPatch(int pyramidDepth) {
+    private synchronized void unloadRandomPatch(int pyramidDepth) {
 
         Random rand = new Random();
         HashMap<String,ImagePatch> patchTable = this.patchPyramidList.get(pyramidDepth);
