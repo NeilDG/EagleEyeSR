@@ -85,6 +85,7 @@ public class PatchSimilaritySearch implements IOperator {
 
         try {
             this.semaphore.acquire();
+            PatchRelationTable.getSharedInstance().saveMapToJSON();
             ProgressDialogHandler.getInstance().hideDialog();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -126,16 +127,21 @@ public class PatchSimilaritySearch implements IOperator {
                 for(int depth = 1; depth < maxPyrDepth; depth++) {
                     int patchesAtDepth = PatchAttributeTable.getInstance().getNumPatchesAtDepth(depth);
 
-                    for(int p = 0; p < patchesAtDepth; p++) {
+                    for(int p = 0; p < 5; p++) {
                         PatchAttribute comparingPatchAttrib = PatchAttributeTable.getInstance().getPatchAttributeAt(depth, p);
-                        ImagePatch comparingPatch = ImagePatchPool.getInstance().loadPatch(comparingPatchAttrib);
 
-                        double similarity = ImagePatchPool.getInstance().measureSimilarity(candidatePatch, comparingPatch);
+                        if(comparingPatchAttrib != null) {
+                            ImagePatch comparingPatch = ImagePatchPool.getInstance().loadPatch(comparingPatchAttrib);
 
-                        if(similarity <= 0.0005) {
-                            Log.d(TAG, "Found by: "+this.threadID+ " Patch " +candidatePatch.getImageName()+ " vs Patch " +comparingPatch.getImageName()+ " similarity: " +similarity);
-                            break;
+                            double similarity = ImagePatchPool.getInstance().measureSimilarity(candidatePatch, comparingPatch);
+
+                            if(similarity <= 0.0005) {
+                                PatchRelationTable.getSharedInstance().addPairwisePatch(comparingPatchAttrib, candidatePatchAttrib);
+                                Log.d(TAG, "Found by: "+this.threadID+ " Patch " +candidatePatch.getImageName()+ " vs Patch " +comparingPatch.getImageName()+ " similarity: " +similarity);
+                                break;
+                            }
                         }
+
                     }
                 }
             }

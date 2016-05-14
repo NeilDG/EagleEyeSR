@@ -4,6 +4,8 @@ import android.util.Log;
 
 import java.util.HashMap;
 
+import neildg.com.megatronsr.io.JSONSaver;
+
 /**
  *
  * Holds the HR-LR patch dictionary pairing
@@ -47,6 +49,10 @@ public class PatchRelationTable {
             Log.e(TAG, " LR attribute " +lrAttrib.getImageName()+ " does not exist.");
             return null;
         }
+    }
+
+    public void saveMapToJSON() {
+        JSONSaver.writeSimilarPatches("patch_table", this.pairwiseTable);
     }
 
 }
