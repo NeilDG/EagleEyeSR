@@ -6,6 +6,7 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.processing.single.ImagePatchMerging;
 import neildg.com.megatronsr.processing.single.ImagePyramidBuilder;
 import neildg.com.megatronsr.processing.single.PatchExtractCommander;
 import neildg.com.megatronsr.processing.single.PatchSimilaritySearch;
@@ -30,5 +31,8 @@ public class SingleImageSRProcessor extends Thread {
 
         PatchSimilaritySearch similaritySearch = new PatchSimilaritySearch();
         similaritySearch.perform();
+
+        ImagePatchMerging patchMerging = new ImagePatchMerging();
+        patchMerging.perform();
     }
 }
