@@ -136,7 +136,7 @@ public class PatchSimilaritySearch implements IOperator {
                             double similarity = ImagePatchPool.getInstance().measureSimilarity(candidatePatch, comparingPatch);
 
                             if(similarity <= 0.0005) {
-                                PatchRelationTable.getSharedInstance().addPairwisePatch(comparingPatchAttrib, candidatePatchAttrib);
+                                PatchRelationTable.getSharedInstance().addPairwisePatch(comparingPatchAttrib, candidatePatchAttrib, similarity);
                                 Log.d(TAG, "Found by: "+this.threadID+ " Patch " +candidatePatch.getImageName()+ " vs Patch " +comparingPatch.getImageName()+ " similarity: " +similarity);
                                 break;
                             }

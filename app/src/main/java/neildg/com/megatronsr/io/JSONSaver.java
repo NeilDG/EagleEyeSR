@@ -2,7 +2,6 @@ package neildg.com.megatronsr.io;
 
 import android.util.JsonWriter;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,10 +11,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
-import java.util.Map;
 
-import neildg.com.megatronsr.metrics.MetricsSnapshot;
 import neildg.com.megatronsr.model.single.PatchAttribute;
+import neildg.com.megatronsr.model.single.PatchRelation;
+import neildg.com.megatronsr.model.single.PatchRelationTable;
 
 /**
  * Created by NeilDG on 5/14/2016.
@@ -23,7 +22,7 @@ import neildg.com.megatronsr.model.single.PatchAttribute;
 public class JSONSaver {
     private final static String TAG = "JSONSaver";
 
-    public static void writeSimilarPatches(String fileName, HashMap<PatchAttribute, PatchAttribute> pairwiseTable) {
+    public static void writeSimilarPatches(String fileName, HashMap<PatchAttribute, PatchRelationTable.PatchRelationList> pairwiseTable) {
         File jsonFile = new File(DirectoryStorage.getSharedInstance().getProposedPath(), fileName + ".json");
         try {
             FileOutputStream out = new FileOutputStream(jsonFile);
@@ -32,9 +31,33 @@ public class JSONSaver {
 
 
             //begin writing
-            JSONObject jsonObject = mapToJson(pairwiseTable);
+            /*JSONObject jsonObject = mapToJson(pairwiseTable);
             jsonWriter.beginArray();
             jsonWriter.value(jsonObject.toString());
+            jsonWriter.endArray();*/
+
+            jsonWriter.beginArray();
+            for(HashMap.Entry<PatchAttribute, PatchRelationTable.PatchRelationList> entry: pairwiseTable.entrySet()) {
+                PatchAttribute lrPatchAttrib = entry.getKey();
+                PatchRelationTable.PatchRelationList patchRelationList = entry.getValue();
+
+                jsonWriter.beginObject();
+                jsonWriter.name("lr_patch_key").value(lrPatchAttrib.getImageName());
+
+                for(int i = 0; i < patchRelationList.getCount(); i++) {
+                    PatchRelation patchRelation = patchRelationList.getPatchRelationAt(i);
+                    PatchAttribute lrAttrib = patchRelation.getLrAttrib();
+                    PatchAttribute hrAttrib = patchRelation.getHrAttrib();
+
+                    jsonWriter.name(""+i).beginObject();
+                    jsonWriter.name("lr").value(lrAttrib.getImageName());
+                    jsonWriter.name("hr").value(hrAttrib.getImageName());
+                    jsonWriter.name("similarity").value(patchRelation.getSimilarity());
+                    jsonWriter.endObject();
+                }
+
+                jsonWriter.endObject();
+            }
             jsonWriter.endArray();
 
             jsonWriter.flush();
