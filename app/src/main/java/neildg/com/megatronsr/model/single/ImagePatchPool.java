@@ -41,7 +41,7 @@ public class ImagePatchPool {
     private List<HashMap<String, ImagePatch>> patchPyramidList = new ArrayList<HashMap<String, ImagePatch>>();
 
     private ImagePatchPool() {
-        this.pyramidDepth = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
+        this.pyramidDepth = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0) + 1; //last depth is used for HR image
 
         for(int i = 0; i < pyramidDepth; i++) {
             HashMap<String, ImagePatch> patchTable = new HashMap<>();
@@ -103,6 +103,18 @@ public class ImagePatchPool {
             patchTable.get(imageName).releaseMat();
             patchTable.remove(imageName);
             this.loadedPatches--;
+        }
+    }
+
+    public void unloadAllPatches() {
+        for(int i = 0; i < this.patchPyramidList.size(); i++) {
+            HashMap<String, ImagePatch> imagePatchMap = this.patchPyramidList.get(i);
+
+            for(ImagePatch patch : imagePatchMap.values()) {
+                patch.releaseMat();
+            }
+
+            imagePatchMap.clear();
         }
     }
 

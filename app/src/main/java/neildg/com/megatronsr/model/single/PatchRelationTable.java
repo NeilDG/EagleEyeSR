@@ -29,12 +29,14 @@ public class PatchRelationTable {
     }
 
     private HashMap<PatchAttribute, PatchRelationList> pairwiseTable = new HashMap<PatchAttribute, PatchRelationList>();
+    private List<PatchRelationList> pairList = new ArrayList<PatchRelationList>();
 
     public void addPairwisePatch(PatchAttribute lrAttrib, PatchAttribute hrAttrib, double similarity) {
         if(this.pairwiseTable.containsKey(lrAttrib) == false) {
             PatchRelationList patchRelationList = new PatchRelationList();
             patchRelationList.addPatchRelation(lrAttrib, hrAttrib, similarity);
             this.pairwiseTable.put(lrAttrib, patchRelationList);
+            this.pairList.add(patchRelationList);
         }
         else {
             PatchRelationList patchRelationList = this.pairwiseTable.get(lrAttrib);
@@ -62,6 +64,15 @@ public class PatchRelationTable {
     public void saveMapToJSON() {
         JSONSaver.writeSimilarPatches("patch_table", this.pairwiseTable);
     }
+
+    public int getPairCount() {
+        return this.pairwiseTable.size();
+    }
+
+    public PatchRelationList getPatchRelationAt(int index) {
+        return this.pairList.get(index);
+    }
+
 
 
     public class PatchRelationList {

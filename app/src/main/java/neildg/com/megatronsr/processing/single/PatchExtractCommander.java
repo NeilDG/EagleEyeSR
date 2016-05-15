@@ -37,8 +37,6 @@ public class PatchExtractCommander implements IOperator {
 
     @Override
     public void perform() {
-        Thread.currentThread().setName("PatchExtractCommander");
-
         int pyramidDepth = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
         this.requiredFlags = pyramidDepth;
 

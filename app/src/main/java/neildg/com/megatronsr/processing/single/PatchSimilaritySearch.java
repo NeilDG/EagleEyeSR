@@ -22,7 +22,6 @@ public class PatchSimilaritySearch implements IOperator {
     private final static String TAG = "PatchSimilaritySearch";
 
     private final int MAX_NUM_THREADS = 20;
-    private int partition = 0;
 
     private int actualThreadCreated = 0;
     private int finishedThreads = 0;
@@ -40,31 +39,6 @@ public class PatchSimilaritySearch implements IOperator {
 
         //create HR-LR relationship dictionary
         int patchesInLR = PatchAttributeTable.getInstance().getNumPatchesAtDepth(0);
-
-        /*for(int i = 0; i < patchesInLR; i++) {
-            ProgressDialogHandler.getInstance().showDialog("Comparing input image patch  to its pyramid", "Patch " +i);
-            PatchAttribute candidatePatchAttrib = PatchAttributeTable.getInstance().getPatchAttributeAt(0, i);
-            ImagePatch candidatePatch = ImagePatchPool.getInstance().loadPatch(candidatePatchAttrib);
-
-            for(int depth = 1; depth < maxPyrDepth; depth++) {
-                int patchesAtDepth = PatchAttributeTable.getInstance().getNumPatchesAtDepth(depth);
-
-                for(int p = 0; p < patchesAtDepth; p++) {
-                    PatchAttribute comparingPatchAttrib = PatchAttributeTable.getInstance().getPatchAttributeAt(depth, p);
-                    ImagePatch comparingPatch = ImagePatchPool.getInstance().loadPatch(comparingPatchAttrib);
-
-                    double similarity = ImagePatchPool.getInstance().measureSimilarity(candidatePatch, comparingPatch);
-
-                    if(similarity <= 0.0005) {
-                        Log.d(TAG, "Patch " +candidatePatch.getImageName()+ " vs Patch " +comparingPatch.getImageName()+ " similarity: " +similarity);
-
-                    }
-
-                }
-            }
-            ProgressDialogHandler.getInstance().hideDialog();
-        }*/
-
         int divisionOfWork = patchesInLR / MAX_NUM_THREADS;
         int lowerX = 0;
         int upperX = divisionOfWork;
@@ -93,7 +67,7 @@ public class PatchSimilaritySearch implements IOperator {
 
     }
 
-    public void onReportCompleted(PatchSearchWorker thread) {
+    private void onReportCompleted(PatchSearchWorker thread) {
         this.finishedThreads++;
 
         if(this.finishedThreads >= this.actualThreadCreated) {
