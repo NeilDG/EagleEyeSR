@@ -63,6 +63,7 @@ public class ImagePatchMerging implements IOperator {
         System.gc();
 
         this.identifyPatchSimilarities();
+        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_GLASNER, ImageFileAttribute.FileType.JPEG);
     }
 
     private void extractHRPatches() {
@@ -121,7 +122,7 @@ public class ImagePatchMerging implements IOperator {
 
         while(lowerX <= numHRPatches) {
 
-            PatchReplaceWorker patchReplaceWorker = new PatchReplaceWorker(lowerX, upperX, threadID, this);
+            PatchReplaceWorker patchReplaceWorker = new PatchReplaceWorker(lowerX, upperX, threadID, this, this.hrMat);
             patchReplaceWorker.start();
 
             threadID++; this.actualThreadCreated++;
@@ -178,7 +179,7 @@ public class ImagePatchMerging implements IOperator {
                     String patchImageName = PatchExtractCommander.PATCH_PREFIX +col+"_"+row;
                     String patchImagePath =  patchDir + "/" +patchImageName;
                     ImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
-                    HRPatchAttributeTable.getInstance().addPatchAttribute(col, row, patchImageName, patchImagePath);
+                    HRPatchAttributeTable.getInstance().addPatchAttribute(col, row, col + 80, row + 80, patchImageName, patchImagePath);
                     patchMat.release();
                 }
             }
@@ -194,12 +195,14 @@ public class ImagePatchMerging implements IOperator {
         private int upperIndex;
         private int ID;
         private ImagePatchMerging patchMerging;
+        private Mat hrMat;
 
-        public PatchReplaceWorker(int lowerIndex, int upperIndex, int ID, ImagePatchMerging patchMerging) {
+        public PatchReplaceWorker(int lowerIndex, int upperIndex, int ID, ImagePatchMerging patchMerging, Mat hrMat) {
             this.lowerIndex = lowerIndex;
             this.upperIndex = upperIndex;
             this.ID = ID;
             this.patchMerging = patchMerging;
+            this.hrMat = hrMat;
         }
 
         @Override
@@ -221,12 +224,25 @@ public class ImagePatchMerging implements IOperator {
                     double similarity = ImagePatchPool.getInstance().measureSimilarity(initialHRPatch, lrPatch);
                     if(similarity <= 0.0005) {
                         Log.d(TAG , "Found a similar patch in relation table by thread " +this.ID+ ". Similarity " +similarity);
+                        this.replacePatchOnROI(hrPatchAttrib, patchRelation.getHrAttrib());
                         break;
                     }
                 }
             }
 
             this.patchMerging.onReportCompleted();
+        }
+
+        private void replacePatchOnROI(PatchAttribute hrPatchAttrib, PatchAttribute hrReplacementAttrib) {
+
+            if(hrPatchAttrib.getRowStart() >= 0 && hrPatchAttrib.getRowEnd() < this.hrMat.rows() && hrPatchAttrib.getColStart() >= 0 && hrPatchAttrib.getColEnd() < this.hrMat.cols()) {
+                Mat subMat = this.hrMat.submat(hrPatchAttrib.getRowStart(),hrPatchAttrib.getRowEnd(), hrPatchAttrib.getColStart(), hrPatchAttrib.getColEnd());
+                ImagePatch hrPatch = ImagePatchPool.getInstance().loadPatch(hrReplacementAttrib);
+
+                Mat test = Mat.ones(80,80,subMat.type());
+                test.copyTo(subMat);
+
+            }
         }
 
     }

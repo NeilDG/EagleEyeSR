@@ -42,10 +42,10 @@ public class PatchAttributeTable {
         ourInstance = null;
     }
 
-    public void addPatchAttribute(int pyramidDepth, int col, int row, String imageName, String imagePath) {
+    public void addPatchAttribute(int pyramidDepth, int colStart, int rowStart, int colEnd, int rowEnd, String imageName, String imagePath) {
         HashMap<String, PatchAttribute> patchTable = this.patchList.get(pyramidDepth);
 
-        PatchAttribute patchAttribute = new PatchAttribute(pyramidDepth, col, row, imageName, imagePath);
+        PatchAttribute patchAttribute = new PatchAttribute(pyramidDepth, colStart, rowStart, colEnd, rowEnd, imageName, imagePath);
         if(patchTable.containsKey(imageName) == false) {
             patchTable.put(imageName, patchAttribute);
         }

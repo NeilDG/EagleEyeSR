@@ -38,10 +38,10 @@ public class HRPatchAttributeTable {
         this.depthIndex = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
     }
 
-    public void addPatchAttribute(int col, int row, String imageName, String imagePath) {
+    public void addPatchAttribute(int colStart, int rowStart, int colEnd, int rowEnd, String imageName, String imagePath) {
 
         if(this.patchList.containsKey(imageName) == false) {
-            PatchAttribute patchAttribute = new PatchAttribute(this.depthIndex, col, row, imageName, imagePath);
+            PatchAttribute patchAttribute = new PatchAttribute(this.depthIndex, colStart, rowStart, colEnd, rowEnd, imageName, imagePath);
             this.patchList.put(imageName, patchAttribute);
         }
         else {
