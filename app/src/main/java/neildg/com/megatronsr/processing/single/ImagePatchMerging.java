@@ -16,6 +16,7 @@ import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
+import neildg.com.megatronsr.model.single.HRPatchAttribute;
 import neildg.com.megatronsr.model.single.HRPatchAttributeTable;
 import neildg.com.megatronsr.model.single.ImagePatch;
 import neildg.com.megatronsr.model.single.ImagePatchPool;
@@ -159,8 +160,7 @@ public class ImagePatchMerging implements IOperator {
                     String patchImageName = PatchExtractCommander.PATCH_PREFIX +col+"_"+row;
                     String patchImagePath =  patchDir + "/" +patchImageName;
                     //ImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
-                    HRPatchAttributeTable.getInstance().addPatchAttribute(col, row, col + patchSize, row + patchSize, patchImageName, patchImagePath);
-                    patchMat.release();
+                    HRPatchAttributeTable.getInstance().addPatchAttribute(col, row, col + patchSize, row + patchSize, patchImageName, patchMat);
                 }
             }
 
@@ -192,8 +192,11 @@ public class ImagePatchMerging implements IOperator {
             PatchRelationTable relationTable = PatchRelationTable.getSharedInstance();
 
             for(int i = lowerIndex; i < upperIndex; i++) {
-                PatchAttribute hrPatchAttrib = HRPatchAttributeTable.getInstance().getPatchAttributeAt(i);
-                ImagePatch initialHRPatch = ImagePatchPool.getInstance().loadPatch(hrPatchAttrib);
+                HRPatchAttribute hrPatchAttrib = HRPatchAttributeTable.getInstance().getPatchAttributeAt(i);
+                if(hrPatchAttrib== null) {
+                    continue;
+                }
+                //ImagePatch initialHRPatch = ImagePatchPool.getInstance().loadPatch(hrPatchAttrib);
 
                 int pairCount = relationTable.getPairCount();
                 for(int relation = 0; relation < pairCount; relation++) {
@@ -203,7 +206,7 @@ public class ImagePatchMerging implements IOperator {
                     //load LR patch and see if it's similar to the HR patch
                     ImagePatch lrPatch = ImagePatchPool.getInstance().loadPatch(patchRelation.getLrAttrib());
 
-                    double similarity = ImagePatchPool.getInstance().measureSimilarity(initialHRPatch, lrPatch);
+                    double similarity = ImagePatchPool.measureMATSimilarity(hrPatchAttrib.getPatchMat(), lrPatch.getPatchMat());
                     if(similarity <= similarityThreshold) {
                         Log.d(TAG , "Found a similar patch in relation table by thread " +this.ID+ ". Similarity " +similarity);
                         this.replacePatchOnROI(hrPatchAttrib, patchRelation.getHrAttrib());
@@ -215,7 +218,7 @@ public class ImagePatchMerging implements IOperator {
             this.patchMerging.onReportCompleted();
         }
 
-        private void replacePatchOnROI(PatchAttribute hrPatchAttrib, PatchAttribute hrReplacementAttrib) {
+        private void replacePatchOnROI(HRPatchAttribute hrPatchAttrib, PatchAttribute hrReplacementAttrib) {
 
             if(hrPatchAttrib.getRowStart() >= 0 && hrPatchAttrib.getRowEnd() < this.hrMat.rows() && hrPatchAttrib.getColStart() >= 0 && hrPatchAttrib.getColEnd() < this.hrMat.cols()) {
                 Mat subMat = this.hrMat.submat(hrPatchAttrib.getRowStart(),hrPatchAttrib.getRowEnd(), hrPatchAttrib.getColStart(), hrPatchAttrib.getColEnd());

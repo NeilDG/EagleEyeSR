@@ -2,6 +2,8 @@ package neildg.com.megatronsr.model.single;
 
 import android.util.Log;
 
+import org.opencv.core.Mat;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,8 +32,8 @@ public class HRPatchAttributeTable {
         sharedInstance = null;
     }
 
-    private HashMap<String, PatchAttribute> patchTable = new HashMap<String, PatchAttribute>();
-    private List<PatchAttribute> patchList = new LinkedList<>();
+    private HashMap<String, HRPatchAttribute> patchTable = new HashMap<String, HRPatchAttribute>();
+    private List<HRPatchAttribute> patchList = new LinkedList<>();
 
     private int depthIndex;
 
@@ -39,10 +41,10 @@ public class HRPatchAttributeTable {
         this.depthIndex = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
     }
 
-    public void addPatchAttribute(int colStart, int rowStart, int colEnd, int rowEnd, String imageName, String imagePath) {
+    public void addPatchAttribute(int colStart, int rowStart, int colEnd, int rowEnd, String imageName, Mat patchMat) {
 
         if(this.patchTable.containsKey(imageName) == false) {
-            PatchAttribute patchAttribute = new PatchAttribute(this.depthIndex, colStart, rowStart, colEnd, rowEnd, imageName, imagePath);
+            HRPatchAttribute patchAttribute = new HRPatchAttribute(colStart, rowStart, colEnd, rowEnd, imageName, patchMat);
             this.patchTable.put(imageName, patchAttribute);
             this.patchList.add(patchAttribute);
         }
@@ -59,7 +61,7 @@ public class HRPatchAttributeTable {
     Returns the patch attribute at a specified index. This is in no particular order. It depends on
     how the hashmap points the index to a specified key.
      */
-    public PatchAttribute getPatchAttributeAt(int patchIndex) {
+    public HRPatchAttribute getPatchAttributeAt(int patchIndex) {
 
         if(patchIndex < this.patchList.size()) {
             return this.patchList.get(patchIndex);
