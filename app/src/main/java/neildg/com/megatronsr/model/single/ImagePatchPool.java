@@ -33,7 +33,7 @@ public class ImagePatchPool {
         sharedInstance = null;
     }
 
-    public static final int MAX_LOADED_PATCHES = 10000;
+    public static final int MAX_LOADED_PATCHES = 100000;
 
     private int pyramidDepth = 0;
     private int loadedPatches = 0;
