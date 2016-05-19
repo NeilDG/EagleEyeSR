@@ -34,7 +34,7 @@ public class ImagePatchMerging implements IOperator {
     private final static String TAG = "";
 
     private Mat hrMat;
-    private final int MAX_NUM_THREADS = 20;
+    private final int MAX_NUM_THREADS = 5;
 
 
     private Semaphore semaphore;
@@ -45,9 +45,8 @@ public class ImagePatchMerging implements IOperator {
 
     @Override
     public void perform() {
-        //ImageWriter.getInstance().saveBitmapImage(originalBitmap, FilenameConstants.PYRAMID_DIR, FilenameConstants.PYRAMID_IMAGE_PREFIX + "0", ImageFileAttribute.FileType.JPEG);
-
         ProgressDialogHandler.getInstance().showDialog("Creating HR image", "Creating HR image");
+
 
         String fullImagePath = FilenameConstants.PYRAMID_DIR +"/"+ FilenameConstants.PYRAMID_IMAGE_PREFIX + "0";
         Mat lrMat = ImageReader.getInstance().imReadOpenCV(fullImagePath, ImageFileAttribute.FileType.JPEG);
@@ -68,24 +67,6 @@ public class ImagePatchMerging implements IOperator {
 
     private void extractHRPatches() {
         ProgressDialogHandler.getInstance().showDialog("Extracting image patches", "Extracting image patches in upsampled image.");
-        /*for(int col = 0; col < this.hrMat.cols(); col+=80) {
-            for(int row = 0; row < this.hrMat.rows(); row+=80) {
-
-                Point point = new Point(col, row);
-                Mat patchMat = new Mat();
-                Imgproc.getRectSubPix(this.hrMat, new Size(80,80), point, patchMat);
-
-                String patchDir = PatchExtractCommander.PATCH_DIR + "hr";
-                String patchImageName = PatchExtractCommander.PATCH_PREFIX +col+"_"+row;
-                String patchImagePath =  patchDir + "/" +patchImageName;
-                ImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
-                HRPatchAttributeTable.getInstance().addPatchAttribute(col, row, patchImageName, patchImagePath);
-                patchMat.release();
-            }
-
-        }
-                ProgressDialogHandler.getInstance().hideDialog();
-                */
 
         int divisionOfWork = this.hrMat.rows() / MAX_NUM_THREADS;
         int lowerX = 0;
@@ -177,7 +158,7 @@ public class ImagePatchMerging implements IOperator {
                     String patchDir = PatchExtractCommander.PATCH_DIR + "hr";
                     String patchImageName = PatchExtractCommander.PATCH_PREFIX +col+"_"+row;
                     String patchImagePath =  patchDir + "/" +patchImageName;
-                    ImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
+                    //ImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
                     HRPatchAttributeTable.getInstance().addPatchAttribute(col, row, col + patchSize, row + patchSize, patchImageName, patchImagePath);
                     patchMat.release();
                 }

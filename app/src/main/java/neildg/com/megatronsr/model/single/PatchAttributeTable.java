@@ -22,14 +22,17 @@ public class PatchAttributeTable {
         return ourInstance;
     }
 
-    private List<HashMap<String, PatchAttribute>> patchList = new LinkedList<HashMap<String, PatchAttribute>>();
+    private List<HashMap<String, PatchAttribute>> patchTable = new LinkedList<>();
+    private List<List<PatchAttribute>> patchGroupList = new LinkedList<>();
+
     private int pyramidDepth = 0;
 
     private PatchAttributeTable() {
         this.pyramidDepth = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
 
         for(int i = 0; i <= this.pyramidDepth; i++) {
-            this.patchList.add(new HashMap<String, PatchAttribute>());
+            this.patchTable.add(new HashMap<String, PatchAttribute>());
+            this.patchGroupList.add(new LinkedList<PatchAttribute>());
         }
     }
 
@@ -38,16 +41,19 @@ public class PatchAttributeTable {
     }
 
     public static void destroy() {
-        ourInstance.patchList.clear();
+        ourInstance.patchTable.clear();
+        ourInstance.patchGroupList.clear();
         ourInstance = null;
     }
 
     public void addPatchAttribute(int pyramidDepth, int colStart, int rowStart, int colEnd, int rowEnd, String imageName, String imagePath) {
-        HashMap<String, PatchAttribute> patchTable = this.patchList.get(pyramidDepth);
+        HashMap<String, PatchAttribute> patchTable = this.patchTable.get(pyramidDepth);
 
         PatchAttribute patchAttribute = new PatchAttribute(pyramidDepth, colStart, rowStart, colEnd, rowEnd, imageName, imagePath);
         if(patchTable.containsKey(imageName) == false) {
             patchTable.put(imageName, patchAttribute);
+            List<PatchAttribute> patchList = this.patchGroupList.get(pyramidDepth);
+            patchList.add(patchAttribute);
         }
         else {
             Log.e(TAG, "Patch attribute "+imageName+ " already exists in the table!");
@@ -55,7 +61,7 @@ public class PatchAttributeTable {
     }
 
     public int getNumPatchesAtDepth(int pyramidDepth) {
-        HashMap<String, PatchAttribute> patchTable = this.patchList.get(pyramidDepth);
+        HashMap<String, PatchAttribute> patchTable = this.patchTable.get(pyramidDepth);
         return patchTable.size();
     }
 
@@ -64,16 +70,13 @@ public class PatchAttributeTable {
     how the hashmap points the index to a specified key.
      */
     public PatchAttribute getPatchAttributeAt(int pyramidDepth, int patchIndex) {
-        int totalPatches = this.getNumPatchesAtDepth(pyramidDepth);
+        List<PatchAttribute> patchList = this.patchGroupList.get(pyramidDepth);
 
-        HashMap<String, PatchAttribute> patchTable = this.patchList.get(pyramidDepth);
-        List keys = new ArrayList(patchTable.keySet());
-
-        if(patchIndex < keys.size()) {
-            return patchTable.get(keys.get(patchIndex));
+        if(patchIndex < patchList.size()) {
+            return patchList.get(patchIndex);
         }
         else {
-            Log.e(TAG, "Patch index of " +patchIndex+ " exceeds the key size which is " +keys.size());
+            Log.e(TAG, "Patch index of " +patchIndex+ " exceeds the key size which is " +patchList.size());
             return null;
         }
     }

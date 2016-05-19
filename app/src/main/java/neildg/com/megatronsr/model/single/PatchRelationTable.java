@@ -3,6 +3,8 @@ package neildg.com.megatronsr.model.single;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,6 +48,17 @@ public class PatchRelationTable {
         }
     }
 
+    public void sort() {
+        /*List<PatchAttribute> keys = new ArrayList<>(this.pairwiseTable.keySet());
+        for(int i = 0; i < keys.size(); i++) {
+            this.pairwiseTable.get(keys).sort();
+        }*/
+
+        for(int i = 0; i < this.pairList.size(); i++) {
+            this.pairList.get(i).sort();
+        }
+    }
+
     public boolean hasHRAttribute(PatchAttribute lrAttrib) {
         return this.pairwiseTable.containsKey(lrAttrib);
     }
@@ -75,7 +88,7 @@ public class PatchRelationTable {
 
 
 
-    public class PatchRelationList {
+    public class PatchRelationList implements Comparator<PatchRelation> {
         private List<PatchRelation> patchRelations = new ArrayList<PatchRelation>();
 
         public PatchRelationList() {
@@ -101,6 +114,24 @@ public class PatchRelationTable {
 
         public boolean hasPatches() {
             return (this.getCount() > 0);
+        }
+
+        public void sort() {
+            Collections.sort(this.patchRelations, this);
+        }
+
+        @Override
+        public int compare(PatchRelation t0, PatchRelation t1) {
+            if(t0.getSimilarity() < t1.getSimilarity()) {
+                return -1;
+            }
+            else if(t0.getSimilarity() > t1.getSimilarity()) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+
         }
 
         public PatchRelation getPatchRelationAt(int index) {

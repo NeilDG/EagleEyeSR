@@ -23,10 +23,7 @@ public class PatchSimilaritySearch implements IOperator {
 
     private final int MAX_NUM_THREADS = 20;
 
-    private int actualThreadCreated = 0;
-    private int finishedThreads = 0;
-
-    private Semaphore semaphore = new Semaphore(0);
+    private Semaphore semaphore;
 
     public PatchSimilaritySearch() {
         ImagePatchPool.initialize();
@@ -42,23 +39,24 @@ public class PatchSimilaritySearch implements IOperator {
         int divisionOfWork = patchesInLR / MAX_NUM_THREADS;
         int lowerX = 0;
         int upperX = divisionOfWork;
-        int threadID = 0;
+        int numThreadsCreated = 0;
 
         ProgressDialogHandler.getInstance().showDialog("Comparing input image patches to its pyramid", "Running " +MAX_NUM_THREADS+ " threads.");
-
+        this.semaphore = new Semaphore(0);
         while(lowerX <= patchesInLR) {
 
-            PatchSearchWorker searchWorker =  new PatchSearchWorker(lowerX, upperX, threadID, this);
+            PatchSearchWorker searchWorker =  new PatchSearchWorker(lowerX, upperX, numThreadsCreated, this);
             searchWorker.start();
 
-            threadID++; this.actualThreadCreated++;
+            numThreadsCreated++;
             lowerX = upperX + 1;
             upperX += divisionOfWork;
             upperX = MathUtils.clamp(upperX, lowerX, patchesInLR);
         }
 
         try {
-            this.semaphore.acquire();
+            this.semaphore.acquire(numThreadsCreated);
+            PatchRelationTable.getSharedInstance().sort();
             PatchRelationTable.getSharedInstance().saveMapToJSON();
             ProgressDialogHandler.getInstance().hideDialog();
         } catch (InterruptedException e) {
@@ -67,12 +65,8 @@ public class PatchSimilaritySearch implements IOperator {
 
     }
 
-    private void onReportCompleted(PatchSearchWorker thread) {
-        this.finishedThreads++;
-
-        if(this.finishedThreads >= this.actualThreadCreated) {
-            this.semaphore.release();
-        }
+    private void onReportCompleted() {
+        this.semaphore.release();
     }
 
     public class PatchSearchWorker extends Thread {
@@ -102,10 +96,10 @@ public class PatchSimilaritySearch implements IOperator {
                 for(int depth = 1; depth < maxPyrDepth; depth++) {
                     int patchesAtDepth = PatchAttributeTable.getInstance().getNumPatchesAtDepth(depth);
 
-                    for(int p = 0; p < 5; p++) {
+                    for(int p = 0; p < patchesAtDepth; p++) {
                         PatchAttribute comparingPatchAttrib = PatchAttributeTable.getInstance().getPatchAttributeAt(depth, p);
 
-                        if(comparingPatchAttrib != null) {
+                        /*if(comparingPatchAttrib != null)*/ {
                             ImagePatch comparingPatch = ImagePatchPool.getInstance().loadPatch(comparingPatchAttrib);
 
                             double similarity = ImagePatchPool.getInstance().measureSimilarity(candidatePatch, comparingPatch);
@@ -121,7 +115,7 @@ public class PatchSimilaritySearch implements IOperator {
                 }
             }
 
-            this.similaritySearch.onReportCompleted(this);
+            this.similaritySearch.onReportCompleted();
 
 
         }

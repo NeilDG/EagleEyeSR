@@ -2,7 +2,6 @@ package neildg.com.megatronsr.model.single;
 
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,11 +26,13 @@ public class HRPatchAttributeTable {
     }
 
     public static void destroy() {
-        sharedInstance.patchList.clear();
+        sharedInstance.patchTable.clear();
         sharedInstance = null;
     }
 
-    private HashMap<String, PatchAttribute> patchList = new HashMap<String, PatchAttribute>();
+    private HashMap<String, PatchAttribute> patchTable = new HashMap<String, PatchAttribute>();
+    private List<PatchAttribute> patchList = new LinkedList<>();
+
     private int depthIndex;
 
     private HRPatchAttributeTable() {
@@ -40,9 +41,10 @@ public class HRPatchAttributeTable {
 
     public void addPatchAttribute(int colStart, int rowStart, int colEnd, int rowEnd, String imageName, String imagePath) {
 
-        if(this.patchList.containsKey(imageName) == false) {
+        if(this.patchTable.containsKey(imageName) == false) {
             PatchAttribute patchAttribute = new PatchAttribute(this.depthIndex, colStart, rowStart, colEnd, rowEnd, imageName, imagePath);
-            this.patchList.put(imageName, patchAttribute);
+            this.patchTable.put(imageName, patchAttribute);
+            this.patchList.add(patchAttribute);
         }
         else {
             Log.e(TAG, "Patch attribute "+imageName+ " already exists in the table!");
@@ -50,7 +52,7 @@ public class HRPatchAttributeTable {
     }
 
     public int getHRPatchCount() {
-       return this.patchList.size();
+       return this.patchTable.size();
     }
 
     /*
@@ -59,13 +61,11 @@ public class HRPatchAttributeTable {
      */
     public PatchAttribute getPatchAttributeAt(int patchIndex) {
 
-        List keys = new ArrayList(this.patchList.keySet());
-
-        if(patchIndex < keys.size()) {
-            return this.patchList.get(keys.get(patchIndex));
+        if(patchIndex < this.patchList.size()) {
+            return this.patchList.get(patchIndex);
         }
         else {
-            Log.e(TAG, "Patch index of " +patchIndex+ " exceeds the key size which is " +keys.size());
+            Log.e(TAG, "Patch index of " +patchIndex+ " exceeds the key size which is " +this.patchList.size());
             return null;
         }
     }
