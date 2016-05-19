@@ -38,14 +38,17 @@ public class ImagePatchPool {
     private int pyramidDepth = 0;
     private int loadedPatches = 0;
 
-    private List<HashMap<String, ImagePatch>> patchPyramidList = new ArrayList<HashMap<String, ImagePatch>>();
+    private List<HashMap<String, ImagePatch>> patchPyramidTable = new ArrayList<HashMap<String, ImagePatch>>();
+    private List<List<ImagePatch>> patchPyramidList = new ArrayList<List<ImagePatch>>();
 
     private ImagePatchPool() {
         this.pyramidDepth = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0) + 1; //last depth is used for HR image
 
         for(int i = 0; i < pyramidDepth; i++) {
             HashMap<String, ImagePatch> patchTable = new HashMap<>();
-            this.patchPyramidList.add(patchTable);
+            List<ImagePatch> patchList = new ArrayList<ImagePatch>();
+            this.patchPyramidTable.add(patchTable);
+            this.patchPyramidList.add(patchList);
         }
     }
 
@@ -56,10 +59,12 @@ public class ImagePatchPool {
     public ImagePatch loadPatch(int pyramidDepth, int col, int row, String imageName, String imagePath) {
         ImagePatch patch  = new ImagePatch(col, row, imageName, imagePath);
 
-        HashMap<String,ImagePatch> patchTable = this.patchPyramidList.get(pyramidDepth);
+        HashMap<String,ImagePatch> patchTable = this.patchPyramidTable.get(pyramidDepth);
+        List<ImagePatch> patchList = this.patchPyramidList.get(0);
 
         if(!patchTable.containsKey(imageName) && this.loadedPatches < MAX_LOADED_PATCHES) {
             patchTable.put(imageName, patch);
+            patchList.add(patch);
             patch.loadPatchMatIfNull();
             this.loadedPatches++;
             return patch;
@@ -83,21 +88,24 @@ public class ImagePatchPool {
 
     private synchronized void unloadRandomPatch(int pyramidDepth) {
 
+        List<ImagePatch> patchList = this.patchPyramidList.get(0);
+        HashMap<String,ImagePatch> patchTable = this.patchPyramidTable.get(pyramidDepth);
         Random rand = new Random();
-        HashMap<String,ImagePatch> patchTable = this.patchPyramidList.get(pyramidDepth);
 
-        List keys = new ArrayList(patchTable.keySet());
-        if(keys.size() > 0) {
-            int randomIndex = rand.nextInt(keys.size());
-            ImagePatch imagePatch = patchTable.get(keys.get(randomIndex));
-            imagePatch.releaseMat();
-            patchTable.remove(keys.get(randomIndex));
-            this.loadedPatches--;
-        }
+        int oldListSize = patchList.size(); int oldTableSize = patchTable.size();
+
+        int randomIndex = rand.nextInt(patchList.size());
+        ImagePatch imagePatch = patchList.get(randomIndex);
+        imagePatch.releaseMat();
+        patchTable.remove(imagePatch.getImageName());
+        patchList.remove(randomIndex);
+        this.loadedPatches--;
+
+        Log.d(TAG, "Removed patch. Old list size " +oldListSize+ " New list size: " +patchList.size()+ " Old table size: " +oldTableSize+ " New table size: " +patchTable.size());
     }
 
     public void unloadPatch(int pyramidDepth, String imageName) {
-        HashMap<String,ImagePatch> patchTable = this.patchPyramidList.get(pyramidDepth);
+        HashMap<String,ImagePatch> patchTable = this.patchPyramidTable.get(pyramidDepth);
 
         if(patchTable.containsKey(imageName)) {
             patchTable.get(imageName).releaseMat();
@@ -107,8 +115,8 @@ public class ImagePatchPool {
     }
 
     public void unloadAllPatches() {
-        for(int i = 0; i < this.patchPyramidList.size(); i++) {
-            HashMap<String, ImagePatch> imagePatchMap = this.patchPyramidList.get(i);
+        for(int i = 0; i < this.patchPyramidTable.size(); i++) {
+            HashMap<String, ImagePatch> imagePatchMap = this.patchPyramidTable.get(i);
 
             for(ImagePatch patch : imagePatchMap.values()) {
                 patch.releaseMat();
@@ -119,7 +127,7 @@ public class ImagePatchPool {
     }
 
     public boolean containsPatch(int pyramidDepth, ImagePatch patch) {
-        HashMap<String, ImagePatch> patchTable = this.patchPyramidList.get(pyramidDepth);
+        HashMap<String, ImagePatch> patchTable = this.patchPyramidTable.get(pyramidDepth);
 
         return (patchTable.containsKey(patch.getImageName()));
     }

@@ -36,10 +36,8 @@ public class ImagePatchMerging implements IOperator {
     private Mat hrMat;
     private final int MAX_NUM_THREADS = 20;
 
-    private int actualThreadCreated = 0;
-    private int finishedThreads = 0;
 
-    private Semaphore semaphore = new Semaphore(0);
+    private Semaphore semaphore;
 
     public ImagePatchMerging() {
         HRPatchAttributeTable.initialize();
@@ -92,20 +90,22 @@ public class ImagePatchMerging implements IOperator {
         int divisionOfWork = this.hrMat.rows() / MAX_NUM_THREADS;
         int lowerX = 0;
         int upperX = divisionOfWork;
-        int threadID = 0;
+        int threadsCreated = 0;
 
         while(lowerX <= this.hrMat.rows()) {
-            HRPatchExtractor extractor = new HRPatchExtractor(this.hrMat, lowerX, upperX, threadID, this);
+            HRPatchExtractor extractor = new HRPatchExtractor(this.hrMat, lowerX, upperX, threadsCreated, this);
             extractor.start();
 
-            threadID++; this.actualThreadCreated++;
+            threadsCreated++;
             lowerX = upperX + 1;
             upperX += divisionOfWork;
             upperX = MathUtils.clamp(upperX, lowerX, this.hrMat.rows());
         }
 
+        this.semaphore = new Semaphore(0);
+
         try {
-            this.semaphore.acquire();
+            this.semaphore.acquire(threadsCreated);
             ProgressDialogHandler.getInstance().hideDialog();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -120,21 +120,23 @@ public class ImagePatchMerging implements IOperator {
         int divisionOfWork = numHRPatches / MAX_NUM_THREADS;
         int lowerX = 0;
         int upperX = divisionOfWork;
-        int threadID = 0;
+        int threadCreated = 0;
 
         while(lowerX <= numHRPatches) {
 
-            PatchReplaceWorker patchReplaceWorker = new PatchReplaceWorker(lowerX, upperX, threadID, this, this.hrMat);
+            PatchReplaceWorker patchReplaceWorker = new PatchReplaceWorker(lowerX, upperX, threadCreated, this, this.hrMat);
             patchReplaceWorker.start();
 
-            threadID++; this.actualThreadCreated++;
+            threadCreated++;
             lowerX = upperX + 1;
             upperX += divisionOfWork;
             upperX = MathUtils.clamp(upperX, lowerX, numHRPatches);
         }
 
+        this.semaphore = new Semaphore(0);
+
         try {
-            this.semaphore.acquire();
+            this.semaphore.acquire(threadCreated);
             ProgressDialogHandler.getInstance().hideDialog();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -142,13 +144,7 @@ public class ImagePatchMerging implements IOperator {
     }
 
     private void onReportCompleted() {
-        this.finishedThreads++;
-
-        if(this.finishedThreads >= this.actualThreadCreated) {
-            this.semaphore.release();
-            this.actualThreadCreated = 0;
-            this.finishedThreads = 0;
-        }
+       this.semaphore.release();
     }
 
     private class HRPatchExtractor extends Thread {
@@ -170,18 +166,19 @@ public class ImagePatchMerging implements IOperator {
 
         @Override
         public void run() {
-            for(int col = 0; col < this.hrMat.cols(); col+=80) {
-                for(int row = lowerIndex; row < upperIndex; row+=80) {
+            int patchSize = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.PATCH_SIZE_KEY, 0);
+            for(int col = 0; col < this.hrMat.cols(); col+=patchSize) {
+                for(int row = lowerIndex; row < upperIndex; row+=patchSize) {
 
                     Point point = new Point(col, row);
                     Mat patchMat = new Mat();
-                    Imgproc.getRectSubPix(this.hrMat, new Size(80,80), point, patchMat);
+                    Imgproc.getRectSubPix(this.hrMat, new Size(patchSize,patchSize), point, patchMat);
 
                     String patchDir = PatchExtractCommander.PATCH_DIR + "hr";
                     String patchImageName = PatchExtractCommander.PATCH_PREFIX +col+"_"+row;
                     String patchImagePath =  patchDir + "/" +patchImageName;
                     ImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
-                    HRPatchAttributeTable.getInstance().addPatchAttribute(col, row, col + 80, row + 80, patchImageName, patchImagePath);
+                    HRPatchAttributeTable.getInstance().addPatchAttribute(col, row, col + patchSize, row + patchSize, patchImageName, patchImagePath);
                     patchMat.release();
                 }
             }
@@ -243,8 +240,9 @@ public class ImagePatchMerging implements IOperator {
                 Mat subMat = this.hrMat.submat(hrPatchAttrib.getRowStart(),hrPatchAttrib.getRowEnd(), hrPatchAttrib.getColStart(), hrPatchAttrib.getColEnd());
                 ImagePatch hrPatch = ImagePatchPool.getInstance().loadPatch(hrReplacementAttrib);
 
-                Mat test = Mat.ones(80,80,subMat.type());
-                test.copyTo(subMat);
+                /*Mat test = Mat.ones(80,80,subMat.type());
+                test.copyTo(subMat);*/
+                hrPatch.getPatchMat().copyTo(subMat);
 
             }
         }

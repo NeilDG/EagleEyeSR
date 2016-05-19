@@ -84,18 +84,19 @@ public class PatchExtractCommander implements IOperator {
 
         @Override
         public void run() {
-            for(int col = 0; col < this.inputMat.cols(); col+=80) {
-                for(int row = 0; row < this.inputMat.rows(); row+=80) {
+            int patchSize = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.PATCH_SIZE_KEY, 0);
+            for(int col = 0; col < this.inputMat.cols(); col+=patchSize) {
+                for(int row = 0; row < this.inputMat.rows(); row+=patchSize) {
 
                     Point point = new Point(col, row);
                     Mat patchMat = new Mat();
-                    Imgproc.getRectSubPix(this.inputMat, new Size(80,80), point, patchMat);
+                    Imgproc.getRectSubPix(this.inputMat, new Size(patchSize,patchSize), point, patchMat);
 
                     String patchDir = PATCH_DIR + this.index;
                     String patchImageName = PATCH_PREFIX +col+"_"+row;
                     String patchImagePath =  patchDir + "/" +patchImageName;
                     ImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
-                    PatchAttributeTable.getInstance().addPatchAttribute(this.index, col, row, col + 80, row + 80, patchImageName, patchImagePath);
+                    PatchAttributeTable.getInstance().addPatchAttribute(this.index, col, row, col + patchSize, row + patchSize, patchImageName, patchImagePath);
 
                     patchMat.release();
                 }
