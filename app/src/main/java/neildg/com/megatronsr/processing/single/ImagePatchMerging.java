@@ -193,8 +193,12 @@ public class ImagePatchMerging implements IOperator {
 
             for(int i = lowerIndex; i < upperIndex; i++) {
                 PatchAttribute hrPatchAttrib = HRPatchAttributeTable.getInstance().getPatchAttributeAt(i);
-                ImagePatch initialHRPatch = ImagePatchPool.getInstance().loadPatch(hrPatchAttrib);
 
+                if(hrPatchAttrib == null) {
+                    continue;
+                }
+
+                ImagePatch initialHRPatch = ImagePatchPool.getInstance().loadPatch(hrPatchAttrib);
                 int pairCount = relationTable.getPairCount();
                 for(int relation = 0; relation < pairCount; relation++) {
                     PatchRelationTable.PatchRelationList relationList = relationTable.getPatchRelationAt(relation);
