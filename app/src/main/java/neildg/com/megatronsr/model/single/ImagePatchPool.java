@@ -53,11 +53,12 @@ public class ImagePatchPool {
     }
 
     public ImagePatch loadPatch(PatchAttribute patchAttribute) {
-        return this.loadPatch(patchAttribute.getPyramidDepth(), patchAttribute.getColStart(), patchAttribute.getRowStart(), patchAttribute.getImageName(), patchAttribute.getImagePath());
+        int patchSize = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.PATCH_SIZE_KEY, 0);
+        return this.loadPatch(patchAttribute.getPyramidDepth(), patchAttribute.getColStart(), patchAttribute.getRowStart(), patchSize, patchAttribute.getImageName(), patchAttribute.getReferenceMat());
     }
 
-    public ImagePatch loadPatch(int pyramidDepth, int col, int row, String imageName, String imagePath) {
-        ImagePatch patch  = new ImagePatch(col, row, imageName, imagePath);
+    public ImagePatch loadPatch(int pyramidDepth, int col, int row, int patchSize, String imageName, Mat parentMat) {
+        ImagePatch patch  = new ImagePatch(col, row, patchSize, imageName, parentMat);
 
         HashMap<String,ImagePatch> patchTable = this.patchPyramidTable.get(pyramidDepth);
         List<ImagePatch> patchList = this.patchPyramidList.get(0);

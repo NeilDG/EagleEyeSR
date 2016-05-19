@@ -44,7 +44,7 @@ public class PatchRelationTable {
             PatchRelationList patchRelationList = this.pairwiseTable.get(lrAttrib);
             patchRelationList.addPatchRelation(lrAttrib, hrAttrib, similarity);
 
-            Log.e(TAG, "Pairwise table of " +lrAttrib.getImageName()+ " and its HR match " +hrAttrib.getImageName()+ " already exists. Adding to list");
+            //Log.e(TAG, "Pairwise table of " +lrAttrib.getImageName()+ " and its HR match " +hrAttrib.getImageName()+ " already exists. Adding to list");
         }
     }
 

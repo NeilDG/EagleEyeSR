@@ -2,6 +2,8 @@ package neildg.com.megatronsr.model.single;
 
 import android.util.Log;
 
+import org.opencv.core.Mat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -46,10 +48,10 @@ public class PatchAttributeTable {
         ourInstance = null;
     }
 
-    public void addPatchAttribute(int pyramidDepth, int colStart, int rowStart, int colEnd, int rowEnd, String imageName, String imagePath) {
+    public void addPatchAttribute(int pyramidDepth, int colStart, int rowStart, int colEnd, int rowEnd, String imageName, String imagePath, Mat referenceMat) {
         HashMap<String, PatchAttribute> patchTable = this.patchTable.get(pyramidDepth);
 
-        PatchAttribute patchAttribute = new PatchAttribute(pyramidDepth, colStart, rowStart, colEnd, rowEnd, imageName, imagePath);
+        PatchAttribute patchAttribute = new PatchAttribute(pyramidDepth, colStart, rowStart, colEnd, rowEnd, imageName, imagePath, referenceMat);
         if(patchTable.containsKey(imageName) == false) {
             patchTable.put(imageName, patchAttribute);
             List<PatchAttribute> patchList = this.patchGroupList.get(pyramidDepth);

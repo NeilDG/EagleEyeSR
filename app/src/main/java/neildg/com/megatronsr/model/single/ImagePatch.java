@@ -4,6 +4,8 @@ import android.util.Log;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import neildg.com.megatronsr.io.ImageFileAttribute;
@@ -18,17 +20,19 @@ public class ImagePatch {
 
     private int col = 0;
     private int row = 0;
-
+    private int patchSize = 0;
     private String imageName;
-    private String imagePath;
+
+    private Mat parentMat = null;
     private Mat patchMat = null;
 
 
-    public ImagePatch(int col, int row, String imageName, String imagePath) {
+    public ImagePatch(int col, int row, int patchSize, String imageName, Mat parentMat) {
         this.col = 0;
         this.row = 0;
         this.imageName = imageName;
-        this.imagePath = imagePath;
+        this.patchSize = patchSize;
+        this.parentMat = parentMat;
     }
 
     public String getImageName() {
@@ -41,10 +45,15 @@ public class ImagePatch {
     }
 
     public void loadPatchMatIfNull() {
-      if(this.patchMat == null) {
+      /*if(this.patchMat == null) {
           this.patchMat = ImageReader.getInstance().imReadOpenCV(this.imagePath, ImageFileAttribute.FileType.JPEG);
           Log.d(TAG, "Patch "+this.imagePath+ " loaded! Size: " +this.patchMat.elemSize()+ " Cols: " +this.patchMat.cols()+ " Rows: " +this.patchMat.rows());
-      }
+      }*/
+        if(this.patchMat == null) {
+            this.patchMat = new Mat();
+            Point point = new Point(this.col, this.row);
+            Imgproc.getRectSubPix(this.parentMat, new Size(this.patchSize, this.patchSize), point, this.patchMat);
+        }
     }
 
     public boolean isLoadedToMemory() {

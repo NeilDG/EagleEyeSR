@@ -34,7 +34,7 @@ public class ImagePatchMerging implements IOperator {
     private final static String TAG = "";
 
     private Mat hrMat;
-    private final int MAX_NUM_THREADS = 5;
+    private final int MAX_NUM_THREADS = 20;
 
 
     private Semaphore semaphore;
@@ -159,7 +159,7 @@ public class ImagePatchMerging implements IOperator {
                     String patchImageName = PatchExtractCommander.PATCH_PREFIX +col+"_"+row;
                     String patchImagePath =  patchDir + "/" +patchImageName;
                     //ImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
-                    HRPatchAttributeTable.getInstance().addPatchAttribute(col, row, col + patchSize, row + patchSize, patchImageName, patchImagePath);
+                    HRPatchAttributeTable.getInstance().addPatchAttribute(col, row, col + patchSize, row + patchSize, patchImageName, patchImagePath, this.hrMat);
                     patchMat.release();
                 }
             }
