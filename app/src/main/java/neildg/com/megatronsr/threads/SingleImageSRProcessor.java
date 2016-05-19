@@ -10,6 +10,7 @@ import neildg.com.megatronsr.processing.single.ImagePatchMerging;
 import neildg.com.megatronsr.processing.single.ImagePyramidBuilder;
 import neildg.com.megatronsr.processing.single.PatchExtractCommander;
 import neildg.com.megatronsr.processing.single.PatchSimilaritySearch;
+import neildg.com.megatronsr.processing.single.VariableSetup;
 
 /**
  * Created by NeilDG on 5/4/2016.
@@ -23,6 +24,9 @@ public class SingleImageSRProcessor extends Thread {
 
     @Override
     public void run() {
+        VariableSetup setup = new VariableSetup();
+        setup.perform();
+
         ImagePyramidBuilder pyramidBuilder = new ImagePyramidBuilder();
         pyramidBuilder.perform();
 

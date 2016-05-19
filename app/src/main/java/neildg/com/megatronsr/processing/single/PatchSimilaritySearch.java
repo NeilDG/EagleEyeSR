@@ -92,6 +92,7 @@ public class PatchSimilaritySearch implements IOperator {
 
         @Override
         public void run() {
+            double similarityThreshold = (double) AttributeHolder.getSharedInstance().getValue(AttributeNames.SIMILARITY_THRESHOLD_KEY, 0);
             for(int i = lowerIndex; i < upperIndex; i++) {
                 PatchAttribute candidatePatchAttrib = PatchAttributeTable.getInstance().getPatchAttributeAt(0, i);
                 ImagePatch candidatePatch = ImagePatchPool.getInstance().loadPatch(candidatePatchAttrib);
@@ -109,7 +110,7 @@ public class PatchSimilaritySearch implements IOperator {
 
                             double similarity = ImagePatchPool.getInstance().measureSimilarity(candidatePatch, comparingPatch);
 
-                            if(similarity <= 0.0005) {
+                            if(similarity <= similarityThreshold) {
                                 PatchRelationTable.getSharedInstance().addPairwisePatch(comparingPatchAttrib, candidatePatchAttrib, similarity);
                                 Log.d(TAG, "Found by: "+this.threadID+ " Patch " +candidatePatch.getImageName()+ " vs Patch " +comparingPatch.getImageName()+ " similarity: " +similarity);
                                 break;

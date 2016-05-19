@@ -14,6 +14,8 @@ import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.model.AttributeHolder;
+import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.single.HRPatchAttributeTable;
 import neildg.com.megatronsr.model.single.ImagePatch;
 import neildg.com.megatronsr.model.single.ImagePatchPool;
@@ -207,6 +209,8 @@ public class ImagePatchMerging implements IOperator {
 
         @Override
         public void run() {
+            double similarityThreshold = (double) AttributeHolder.getSharedInstance().getValue(AttributeNames.SIMILARITY_THRESHOLD_KEY, 0);
+
             PatchRelationTable relationTable = PatchRelationTable.getSharedInstance();
 
             for(int i = lowerIndex; i < upperIndex; i++) {
@@ -222,7 +226,7 @@ public class ImagePatchMerging implements IOperator {
                     ImagePatch lrPatch = ImagePatchPool.getInstance().loadPatch(patchRelation.getLrAttrib());
 
                     double similarity = ImagePatchPool.getInstance().measureSimilarity(initialHRPatch, lrPatch);
-                    if(similarity <= 0.0005) {
+                    if(similarity <= similarityThreshold) {
                         Log.d(TAG , "Found a similar patch in relation table by thread " +this.ID+ ". Similarity " +similarity);
                         this.replacePatchOnROI(hrPatchAttrib, patchRelation.getHrAttrib());
                         break;

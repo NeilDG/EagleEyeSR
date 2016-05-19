@@ -19,7 +19,6 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 public class ImagePyramidBuilder implements IOperator {
     private final static String TAG = "ImagePyramidBuilder";
 
-    private final int MAX_DOWNSCALE = 6;
     public ImagePyramidBuilder() {
 
     }
@@ -30,12 +29,12 @@ public class ImagePyramidBuilder implements IOperator {
         Bitmap originalBitmap = BitmapURIRepository.getInstance().getOriginalBitmap(0);
         ImageWriter.getInstance().saveBitmapImage(originalBitmap, FilenameConstants.PYRAMID_DIR, FilenameConstants.PYRAMID_IMAGE_PREFIX + "0", ImageFileAttribute.FileType.JPEG);
 
-        for(int i = 1; i <= MAX_DOWNSCALE; i++) {
+        int maxDownscale = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
+        for(int i = 1; i <= maxDownscale; i++) {
             Bitmap bitmap = BitmapURIRepository.getInstance().getDownsampledBitmap(0, (int) Math.pow(2, i));
             ImageWriter.getInstance().saveBitmapImage(bitmap, FilenameConstants.PYRAMID_DIR, FilenameConstants.PYRAMID_IMAGE_PREFIX + i, ImageFileAttribute.FileType.JPEG);
         }
 
-        AttributeHolder.getSharedInstance().putValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 1 + MAX_DOWNSCALE);
         ProgressDialogHandler.getInstance().hideDialog();
     }
 }
