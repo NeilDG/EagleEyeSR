@@ -6,6 +6,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.photo.Photo;
 
 import java.util.concurrent.Semaphore;
 
@@ -63,6 +64,8 @@ public class ImagePatchMerging implements IOperator {
         System.gc();
 
         this.identifyPatchSimilarities();
+        Mat copyMat = new Mat(); this.hrMat.copyTo(copyMat);
+        Photo.fastNlMeansDenoisingColored(copyMat, this.hrMat,3,3,7,43);
         ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_GLASNER, ImageFileAttribute.FileType.JPEG);
     }
 
