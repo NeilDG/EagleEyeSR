@@ -19,6 +19,6 @@ public class VariableSetup implements IOperator{
         AttributeHolder.getSharedInstance().reset();
         AttributeHolder.getSharedInstance().putValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 7);
         AttributeHolder.getSharedInstance().putValue(AttributeNames.SIMILARITY_THRESHOLD_KEY, 0.0005);
-        AttributeHolder.getSharedInstance().putValue(AttributeNames.PATCH_SIZE_KEY, 200);
+        AttributeHolder.getSharedInstance().putValue(AttributeNames.PATCH_SIZE_KEY, 5);
     }
 }
