@@ -6,7 +6,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.photo.Photo;
 
 import java.util.concurrent.Semaphore;
 
@@ -22,11 +21,11 @@ import neildg.com.megatronsr.model.single.HRPatchAttributeTable;
 import neildg.com.megatronsr.model.single.ImagePatch;
 import neildg.com.megatronsr.model.single.ImagePatchPool;
 import neildg.com.megatronsr.model.single.PatchAttribute;
-import neildg.com.megatronsr.model.single.PatchAttributeTable;
 import neildg.com.megatronsr.model.single.PatchRelation;
 import neildg.com.megatronsr.model.single.PatchRelationTable;
 import neildg.com.megatronsr.number.MathUtils;
 import neildg.com.megatronsr.processing.IOperator;
+import neildg.com.megatronsr.processing.operators.IntensityMatConverter;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -35,7 +34,9 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 public class ImagePatchMerging implements IOperator {
     private final static String TAG = "";
 
-    private Mat hrMat;
+    //private Mat hrIntensityMat; //mat of intensity value only
+    private Mat originalHRMat;
+
     private final int MAX_NUM_THREADS = 5;
 
 
@@ -52,10 +53,10 @@ public class ImagePatchMerging implements IOperator {
 
         String fullImagePath = FilenameConstants.PYRAMID_DIR +"/"+ FilenameConstants.PYRAMID_IMAGE_PREFIX + "0";
         Mat lrMat = ImageReader.getInstance().imReadOpenCV(fullImagePath, ImageFileAttribute.FileType.JPEG);
-        this.hrMat = Mat.zeros(lrMat.rows() * ParameterConfig.getScalingFactor(), lrMat.cols() * ParameterConfig.getScalingFactor(), lrMat.type());
-        Imgproc.resize(lrMat, this.hrMat, this.hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        this.originalHRMat = Mat.zeros(lrMat.rows() * ParameterConfig.getScalingFactor(), lrMat.cols() * ParameterConfig.getScalingFactor(), lrMat.type());
+        Imgproc.resize(lrMat, this.originalHRMat, this.originalHRMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_LANCZOS4);
+        ImageWriter.getInstance().saveMatrixToImage(this.originalHRMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_CUBIC, ImageFileAttribute.FileType.JPEG);
 
-        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_CUBIC, ImageFileAttribute.FileType.JPEG);
 
         ProgressDialogHandler.getInstance().hideDialog();
 
@@ -64,27 +65,30 @@ public class ImagePatchMerging implements IOperator {
         System.gc();
 
         this.identifyPatchSimilarities();
-        Mat copyMat = new Mat(); this.hrMat.copyTo(copyMat);
-        Photo.fastNlMeansDenoisingColored(copyMat, this.hrMat,3,3,7,43);
-        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_GLASNER, ImageFileAttribute.FileType.JPEG);
+
+        ImageWriter.getInstance().saveMatrixToImage(this.originalHRMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_GLASNER, ImageFileAttribute.FileType.JPEG);
+
+    }
+    public Mat getOriginalHRMat() {
+        return this.originalHRMat;
     }
 
     private void extractHRPatches() {
         ProgressDialogHandler.getInstance().showDialog("Extracting image patches", "Extracting image patches in upsampled image.");
 
-        int divisionOfWork = this.hrMat.rows() / MAX_NUM_THREADS;
+        int divisionOfWork = this.originalHRMat.rows() / MAX_NUM_THREADS;
         int lowerX = 0;
         int upperX = divisionOfWork;
         int threadsCreated = 0;
 
-        while(lowerX <= this.hrMat.rows()) {
-            HRPatchExtractor extractor = new HRPatchExtractor(this.hrMat, lowerX, upperX, threadsCreated, this);
+        while(lowerX <= this.originalHRMat.rows()) {
+            HRPatchExtractor extractor = new HRPatchExtractor(this.originalHRMat, lowerX, upperX, threadsCreated, this);
             extractor.start();
 
             threadsCreated++;
             lowerX = upperX + 1;
             upperX += divisionOfWork;
-            upperX = MathUtils.clamp(upperX, lowerX, this.hrMat.rows());
+            upperX = MathUtils.clamp(upperX, lowerX, this.originalHRMat.rows());
         }
 
         this.semaphore = new Semaphore(0);
@@ -109,7 +113,7 @@ public class ImagePatchMerging implements IOperator {
 
         while(lowerX <= numHRPatches) {
 
-            PatchReplaceWorker patchReplaceWorker = new PatchReplaceWorker(lowerX, upperX, threadCreated, this, this.hrMat);
+            PatchReplaceWorker patchReplaceWorker = new PatchReplaceWorker(lowerX, upperX, threadCreated, this, this.originalHRMat);
             patchReplaceWorker.start();
 
             threadCreated++;
@@ -199,7 +203,6 @@ public class ImagePatchMerging implements IOperator {
                 if(hrPatchAttrib== null) {
                     continue;
                 }
-                //ImagePatch initialHRPatch = ImagePatchPool.getInstance().loadPatch(hrPatchAttrib);
 
                 int pairCount = relationTable.getPairCount();
                 for(int relation = 0; relation < pairCount; relation++) {
@@ -215,6 +218,8 @@ public class ImagePatchMerging implements IOperator {
                         this.replacePatchOnROI(hrPatchAttrib, patchRelation.getHrAttrib());
                         break;
                     }
+
+                    //ImagePatchPool.getInstance().unloadPatch(patchRelation.getLrAttrib());
                 }
             }
 

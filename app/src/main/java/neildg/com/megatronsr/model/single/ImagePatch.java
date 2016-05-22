@@ -16,17 +16,12 @@ import neildg.com.megatronsr.io.ImageReader;
 public class ImagePatch {
     private final static String TAG = "ImagePatch";
 
-    private int col = 0;
-    private int row = 0;
-
     private String imageName;
     private String imagePath;
     private Mat patchMat = null;
 
 
-    public ImagePatch(int col, int row, String imageName, String imagePath) {
-        this.col = 0;
-        this.row = 0;
+    public ImagePatch(String imageName, String imagePath) {
         this.imageName = imageName;
         this.imagePath = imagePath;
     }

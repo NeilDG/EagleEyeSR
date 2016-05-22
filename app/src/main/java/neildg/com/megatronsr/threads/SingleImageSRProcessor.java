@@ -1,16 +1,12 @@
 package neildg.com.megatronsr.threads;
 
-import android.graphics.Bitmap;
-
-import neildg.com.megatronsr.constants.FilenameConstants;
-import neildg.com.megatronsr.io.BitmapURIRepository;
-import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.processing.single.ImagePatchMerging;
 import neildg.com.megatronsr.processing.single.ImagePyramidBuilder;
 import neildg.com.megatronsr.processing.single.PatchExtractCommander;
 import neildg.com.megatronsr.processing.single.PatchSimilaritySearch;
+import neildg.com.megatronsr.processing.single.PostProcessImage;
 import neildg.com.megatronsr.processing.single.VariableSetup;
+import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
  * Created by NeilDG on 5/4/2016.
@@ -38,5 +34,10 @@ public class SingleImageSRProcessor extends Thread {
 
         ImagePatchMerging patchMerging = new ImagePatchMerging();
         patchMerging.perform();
+
+        PostProcessImage postProcessImage = new PostProcessImage(patchMerging.getOriginalHRMat());
+        postProcessImage.perform();
+
+        ProgressDialogHandler.getInstance().hideDialog();
     }
 }

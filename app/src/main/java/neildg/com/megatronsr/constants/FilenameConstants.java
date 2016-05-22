@@ -23,5 +23,6 @@ public class FilenameConstants {
     public final static String RESULTS_DIR = "results";
     public final static String RESULTS_CUBIC = "prehr_cubic";
     public final static String RESULTS_GLASNER = "hr_glasner";
+    public final static String RESULTS_GLASNER_SHARPEN = "hr_glasner_sharpen";
 
 }

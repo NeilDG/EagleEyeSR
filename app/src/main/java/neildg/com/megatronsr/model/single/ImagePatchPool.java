@@ -53,14 +53,14 @@ public class ImagePatchPool {
     }
 
     public ImagePatch loadPatch(PatchAttribute patchAttribute) {
-        return this.loadPatch(patchAttribute.getPyramidDepth(), patchAttribute.getColStart(), patchAttribute.getRowStart(), patchAttribute.getImageName(), patchAttribute.getImagePath());
+        return this.loadPatch(patchAttribute.getPyramidDepth(),patchAttribute.getImageName(), patchAttribute.getImagePath());
     }
 
-    public ImagePatch loadPatch(int pyramidDepth, int col, int row, String imageName, String imagePath) {
-        ImagePatch patch  = new ImagePatch(col, row, imageName, imagePath);
+    public ImagePatch loadPatch(int pyramidDepth, String imageName, String imagePath) {
+        ImagePatch patch  = new ImagePatch(imageName, imagePath);
 
         HashMap<String,ImagePatch> patchTable = this.patchPyramidTable.get(pyramidDepth);
-        List<ImagePatch> patchList = this.patchPyramidList.get(0);
+        List<ImagePatch> patchList = this.patchPyramidList.get(pyramidDepth);
 
         if(!patchTable.containsKey(imageName) && this.loadedPatches < MAX_LOADED_PATCHES) {
             patchTable.put(imageName, patch);
@@ -88,7 +88,7 @@ public class ImagePatchPool {
 
     private synchronized void unloadRandomPatch(int pyramidDepth) {
 
-        List<ImagePatch> patchList = this.patchPyramidList.get(0);
+        List<ImagePatch> patchList = this.patchPyramidList.get(pyramidDepth);
         HashMap<String,ImagePatch> patchTable = this.patchPyramidTable.get(pyramidDepth);
         Random rand = new Random();
 
@@ -104,7 +104,7 @@ public class ImagePatchPool {
         Log.d(TAG, "Removed patch. Old list size " +oldListSize+ " New list size: " +patchList.size()+ " Old table size: " +oldTableSize+ " New table size: " +patchTable.size());
     }
 
-    public void unloadPatch(int pyramidDepth, String imageName) {
+    /*public void unloadPatch(int pyramidDepth, String imageName) {
         HashMap<String,ImagePatch> patchTable = this.patchPyramidTable.get(pyramidDepth);
 
         if(patchTable.containsKey(imageName)) {
@@ -113,6 +113,18 @@ public class ImagePatchPool {
             this.loadedPatches--;
         }
     }
+
+    public void unloadPatch(PatchAttribute patchAttribute) {
+        HashMap<String,ImagePatch> patchTable = this.patchPyramidTable.get(patchAttribute.getPyramidDepth());
+        List<ImagePatch> patchList = this.patchPyramidList.get(patchAttribute.getPyramidDepth());
+
+        ImagePatch imagePatch = patchTable.get(patchAttribute.getImageName());
+        imagePatch.releaseMat();
+        patchTable.remove(patchAttribute.getImageName());
+        patchList.remove(imagePatch);
+
+        this.loadedPatches--;
+    }*/
 
     public void unloadAllPatches() {
         for(int i = 0; i < this.patchPyramidTable.size(); i++) {
@@ -135,6 +147,22 @@ public class ImagePatchPool {
     public  double measureSimilarity(ImagePatch patch1, ImagePatch patch2) {
         Mat resultMat = new Mat();
         Imgproc.matchTemplate(patch1.getPatchMat(), patch2.getPatchMat(), resultMat,Imgproc.TM_SQDIFF_NORMED);
+
+        double value = Core.norm(resultMat, Core.NORM_L1);
+        resultMat.release();
+
+        return value;
+    }
+
+    /*
+     * Same with original function but blurs second patch to attempt to model a pairwise dictionary that has blurring.
+     */
+    public double measureSimilarityWithBlur(ImagePatch patch1, ImagePatch patch2) {
+        Mat blurrredPatch2 = new Mat();
+        Imgproc.medianBlur(patch2.getPatchMat(), blurrredPatch2, 3);
+
+        Mat resultMat = new Mat();
+        Imgproc.matchTemplate(patch1.getPatchMat(), blurrredPatch2, resultMat,Imgproc.TM_SQDIFF_NORMED);
 
         double value = Core.norm(resultMat, Core.NORM_L1);
         resultMat.release();

@@ -1,10 +1,13 @@
 package neildg.com.megatronsr.processing.single;
 
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
@@ -15,6 +18,7 @@ import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.single.PatchAttributeTable;
 import neildg.com.megatronsr.processing.IOperator;
+import neildg.com.megatronsr.processing.operators.IntensityMatConverter;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -78,8 +82,9 @@ public class PatchExtractCommander implements IOperator {
             this.imagePrefix = imagePrefix;
             this.fullImagePath = imageDir + this.imagePrefix;
             this.inputMat = ImageReader.getInstance().imReadOpenCV(this.fullImagePath, ImageFileAttribute.FileType.JPEG);
-            this.commander = commander;
 
+            this.inputMat = IntensityMatConverter.convertMatToIntensity(this.inputMat);
+            this.commander = commander;
         }
 
         @Override
