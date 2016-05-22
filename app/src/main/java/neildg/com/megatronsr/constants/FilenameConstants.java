@@ -20,5 +20,9 @@ public class FilenameConstants {
     //for single image SR
     public final static String PYRAMID_DIR = "pyramid";
     public final static String PYRAMID_IMAGE_PREFIX = "image_pyr_";
+    public final static String RESULTS_DIR = "results";
+    public final static String RESULTS_CUBIC = "prehr_cubic";
+    public final static String RESULTS_GLASNER = "hr_glasner";
+    public final static String RESULTS_GLASNER_SHARPEN = "hr_glasner_sharpen";
 
 }

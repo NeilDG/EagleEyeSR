@@ -1,10 +1,13 @@
 package neildg.com.megatronsr.processing.single;
 
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
@@ -15,6 +18,7 @@ import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.single.PatchAttributeTable;
 import neildg.com.megatronsr.processing.IOperator;
+import neildg.com.megatronsr.processing.operators.IntensityMatConverter;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -37,8 +41,6 @@ public class PatchExtractCommander implements IOperator {
 
     @Override
     public void perform() {
-        Thread.currentThread().setName("PatchExtractCommander");
-
         int pyramidDepth = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 0);
         this.requiredFlags = pyramidDepth;
 
@@ -80,24 +82,26 @@ public class PatchExtractCommander implements IOperator {
             this.imagePrefix = imagePrefix;
             this.fullImagePath = imageDir + this.imagePrefix;
             this.inputMat = ImageReader.getInstance().imReadOpenCV(this.fullImagePath, ImageFileAttribute.FileType.JPEG);
-            this.commander = commander;
 
+            this.inputMat = IntensityMatConverter.convertMatToIntensity(this.inputMat);
+            this.commander = commander;
         }
 
         @Override
         public void run() {
-            for(int col = 0; col < this.inputMat.cols(); col+=80) {
-                for(int row = 0; row < this.inputMat.rows(); row+=80) {
+            int patchSize = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.PATCH_SIZE_KEY, 0);
+            for(int col = 0; col < this.inputMat.cols(); col+=patchSize) {
+                for(int row = 0; row < this.inputMat.rows(); row+=patchSize) {
 
                     Point point = new Point(col, row);
                     Mat patchMat = new Mat();
-                    Imgproc.getRectSubPix(this.inputMat, new Size(80,80), point, patchMat);
+                    Imgproc.getRectSubPix(this.inputMat, new Size(patchSize,patchSize), point, patchMat);
 
                     String patchDir = PATCH_DIR + this.index;
                     String patchImageName = PATCH_PREFIX +col+"_"+row;
                     String patchImagePath =  patchDir + "/" +patchImageName;
                     ImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
-                    PatchAttributeTable.getInstance().addPatchAttribute(this.index, col, row, patchImageName, patchImagePath);
+                    PatchAttributeTable.getInstance().addPatchAttribute(this.index, col, row, col + patchSize, row + patchSize, patchImageName, patchImagePath);
 
                     patchMat.release();
                 }

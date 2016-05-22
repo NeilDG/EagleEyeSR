@@ -23,7 +23,7 @@ public class AttributeHolder {
 
     public void putValue(String key, Object value) {
         if(this.valueTable.containsKey(key)) {
-            Log.e(TAG, key + "already exists in table!");
+            Log.e(TAG, key + " already exists in table!");
         }
         else {
             this.valueTable.put(key, value);
@@ -37,5 +37,9 @@ public class AttributeHolder {
         else {
             return defaultValue;
         }
+    }
+
+    public void reset() {
+        this.valueTable.clear();
     }
 }

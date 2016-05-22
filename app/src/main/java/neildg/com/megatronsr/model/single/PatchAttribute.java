@@ -8,15 +8,19 @@ public class PatchAttribute {
     private final static String TAG = "PatchAttribute";
 
     private int pyramidDepth = 0;
-    private int col = 0;
-    private int row = 0;
+    private int colStart = 0;
+    private int rowStart = 0;
+    private int colEnd = 0;
+    private int rowEnd = 0;
     private String imageName;
     private String imagePath;
 
-    public PatchAttribute(int pyramidDepth, int col, int row, String imageName, String imagePath) {
+    public PatchAttribute(int pyramidDepth, int colStart, int rowStart, int colEnd, int rowEnd, String imageName, String imagePath) {
         this.pyramidDepth = pyramidDepth;
-        this.col = col;
-        this.row = row;
+        this.colStart = colStart;
+        this.rowStart = rowStart;
+        this.colEnd = colEnd;
+        this.rowEnd = rowEnd;
         this.imageName = imageName;
         this.imagePath = imagePath;
     }
@@ -26,12 +30,19 @@ public class PatchAttribute {
         return pyramidDepth;
     }
 
-    public int getCol() {
-        return col;
+    public int getColStart() {
+        return this.colStart;
     }
 
-    public int getRow() {
-        return row;
+    public int getRowStart() {
+        return this.rowStart;
+    }
+
+    public int getColEnd() {
+        return this.colEnd;
+    }
+    public int getRowEnd() {
+        return this.rowEnd;
     }
 
     public String getImageName() {

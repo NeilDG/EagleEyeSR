@@ -120,7 +120,7 @@ public class ImageWriter {
 		File imageFile = new File(dirFile.getPath(), fileName + ImageFileAttribute.getFileExtension(fileType));
 		Imgcodecs.imwrite(imageFile.getAbsolutePath(), mat);
 
-		Log.d(TAG, "Saved " + imageFile.getAbsolutePath());
+		//Log.d(TAG, "Saved " + imageFile.getAbsolutePath());
 	}
 	
 	public String getFilePath() {
