@@ -83,7 +83,7 @@ public class PatchExtractCommander implements IOperator {
             this.fullImagePath = imageDir + this.imagePrefix;
             this.inputMat = ImageReader.getInstance().imReadOpenCV(this.fullImagePath, ImageFileAttribute.FileType.JPEG);
 
-            this.inputMat = IntensityMatConverter.convertMatToIntensity(this.inputMat);
+            //this.inputMat = IntensityMatConverter.convertMatToIntensity(this.inputMat);
             this.commander = commander;
         }
 
