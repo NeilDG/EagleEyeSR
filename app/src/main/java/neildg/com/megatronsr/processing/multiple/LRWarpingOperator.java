@@ -7,13 +7,16 @@ import org.opencv.core.Core;
 import org.opencv.core.DMatch;
 import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfDMatch;
+import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
+import org.opencv.video.Video;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,6 +124,8 @@ public class LRWarpingOperator {
         }
 
         matOfPoint1.fromList(pointList1); matOfPoint2.fromList(pointList2);
+        MatOfByte status = new MatOfByte(); MatOfFloat error = new MatOfFloat();
+        //Video.calcOpticalFlowPyrLK(this.referenceMat, candidateMat, matOfPoint1, matOfPoint2, status, error);
 
         //((M0.type() == CV_32F || M0.type() == CV_64F) && M0.rows == 3 && M0.cols == 3)
 
