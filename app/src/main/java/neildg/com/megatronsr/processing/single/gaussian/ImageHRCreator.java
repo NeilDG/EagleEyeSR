@@ -86,7 +86,6 @@ public class ImageHRCreator implements IOperator, ThreadFinishedListener {
 
         try {
             this.semaphore.acquire(threadCreated);
-            ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
             ProgressDialogHandler.getInstance().hideDialog();
         } catch (InterruptedException e) {
             e.printStackTrace();

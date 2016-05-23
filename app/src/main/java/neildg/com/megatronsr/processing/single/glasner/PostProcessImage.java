@@ -30,7 +30,6 @@ public class PostProcessImage implements IOperator {
         this.performLaplace();
 
         ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_GLASNER_SHARPEN, ImageFileAttribute.FileType.JPEG);
-        ProgressDialogHandler.getInstance().hideDialog();
     }
 
     private void performLaplace() {
