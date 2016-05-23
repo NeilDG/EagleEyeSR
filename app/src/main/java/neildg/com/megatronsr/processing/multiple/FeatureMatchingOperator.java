@@ -15,17 +15,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
+import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
  * Compare LR reference mat and match features to LR2...LRN.
  * Created by NeilDG on 3/6/2016.
  */
-public class FeatureMatchingOperator implements IOperator {
+public class FeatureMatchingOperator {
     private final static String TAG = "FeatureMatchingOperator";
 
     private Mat referenceMat;
@@ -48,26 +48,22 @@ public class FeatureMatchingOperator implements IOperator {
         return this.refKeypoint;
     }
 
-    /*public List<MatOfDMatch> getdMatchesList() {
+    public List<MatOfDMatch> getdMatchesList() {
         return this.dMatchesList;
     }
 
     public List<MatOfKeyPoint> getLrKeypointsList() {
         return this.lrKeypointsList;
-    }*/
+    }
 
-    @Override
     public void perform() {
         ProgressDialogHandler.getInstance().hideDialog();
         ProgressDialogHandler.getInstance().showDialog("Finding features in first image", "Finding features in first image. Succeeding LR images will be matched to it.");
 
         this.detectFeaturesInReference();
-        Mat keypointMat = new Mat();
-        Features2d.drawKeypoints(this.referenceMat,this.refKeypoint,keypointMat);
-        ImageWriter.getInstance().saveMatrixToImage(keypointMat, FilenameConstants.KEYPOINTS_STRING, ImageFileAttribute.FileType.JPEG);
 
+        ProgressDialogHandler.getInstance().hideDialog();
 
-        /*ProgressDialogHandler.getInstance().hideDialog();
 
         int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
 
@@ -90,12 +86,12 @@ public class FeatureMatchingOperator implements IOperator {
 
             Mat matchesShower = new Mat();
             Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList.get(i-1), this.dMatchesList.get(i-1), matchesShower);
-            //ImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
+            ImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
 
             ProgressDialogHandler.getInstance().hideDialog();
 
             matchesShower.release();
-        }*/
+        }
     }
 
     private void detectFeaturesInReference() {
@@ -127,7 +123,7 @@ public class FeatureMatchingOperator implements IOperator {
         List<DMatch> goodMatchesList = new ArrayList<DMatch>();
         for(int i = 0; i < dMatchList.length; i++) {
             Log.d(TAG, "dMatch distance: " +dMatchList[i].distance);
-            /*if(dMatchList[i].distance < 25.0f)*/ { //25.0f original
+            /*if(dMatchList[i].distance < 25.0f)*/ {
                 goodMatchesList.add(dMatchList[i]);
             }
         }

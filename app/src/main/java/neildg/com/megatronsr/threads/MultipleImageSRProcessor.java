@@ -35,7 +35,7 @@ public class MultipleImageSRProcessor extends Thread {
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator();
         matchingOperator.perform();
 
-        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint());
+        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         warpingOperator.perform();
 
         WarpedToHROperator warpedToHROperator = new WarpedToHROperator(warpingOperator.getWarpedMatrixList());
