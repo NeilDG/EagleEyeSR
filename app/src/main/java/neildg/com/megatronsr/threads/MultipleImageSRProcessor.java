@@ -4,9 +4,10 @@ import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.processing.multiple.DownsamplingOperator;
 import neildg.com.megatronsr.processing.multiple.FeatureMatchingOperator;
+import neildg.com.megatronsr.processing.multiple.fusion.FuseInterpolateOperator;
 import neildg.com.megatronsr.processing.multiple.LRToHROperator;
 import neildg.com.megatronsr.processing.multiple.LRWarpingOperator;
-import neildg.com.megatronsr.processing.multiple.WarpedToHROperator;
+import neildg.com.megatronsr.processing.multiple.fusion.ZeroFillFusionOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -26,9 +27,6 @@ public class MultipleImageSRProcessor extends Thread {
         downsamplingOperator.perform();
         ProgressDialogHandler.getInstance().hideDialog();
 
-        /*TVDenoiseHROperator denoiseHROperator = new TVDenoiseHROperator();
-        denoiseHROperator.perform();*/
-
         LRToHROperator lrToHROperator = new LRToHROperator();
         lrToHROperator.perform();
 
@@ -38,8 +36,12 @@ public class MultipleImageSRProcessor extends Thread {
         LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         warpingOperator.perform();
 
-        WarpedToHROperator warpedToHROperator = new WarpedToHROperator(warpingOperator.getWarpedMatrixList());
-        warpedToHROperator.perform();
+        //WarpedToHROperator warpedToHROperator = new WarpedToHROperator(warpingOperator.getWarpedMatrixList());
+        //warpedToHROperator.perform();
+        //FuseInterpolateOperator fuseInterpolateOperator = new FuseInterpolateOperator(warpingOperator.getWarpedMatrixList());
+        //fuseInterpolateOperator.perform();
+        ZeroFillFusionOperator zeroFillFusionOperator = new ZeroFillFusionOperator(warpingOperator.getWarpedMatrixList());
+        zeroFillFusionOperator.perform();
     }
 
 }
