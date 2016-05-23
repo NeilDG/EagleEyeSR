@@ -12,9 +12,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 
-import neildg.com.megatronsr.model.single.PatchAttribute;
-import neildg.com.megatronsr.model.single.PatchRelation;
-import neildg.com.megatronsr.model.single.PatchRelationTable;
+import neildg.com.megatronsr.model.single_glasner.PatchAttribute;
+import neildg.com.megatronsr.model.single_glasner.PatchRelation;
+import neildg.com.megatronsr.model.single_glasner.PatchRelationTable;
 
 /**
  * Created by NeilDG on 5/14/2016.

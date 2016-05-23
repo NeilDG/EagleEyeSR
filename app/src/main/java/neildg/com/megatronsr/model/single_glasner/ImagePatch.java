@@ -1,10 +1,8 @@
-package neildg.com.megatronsr.model.single;
+package neildg.com.megatronsr.model.single_glasner;
 
 import android.util.Log;
 
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;

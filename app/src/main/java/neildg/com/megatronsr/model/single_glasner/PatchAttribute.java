@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.model.single;
+package neildg.com.megatronsr.model.single_glasner;
 
 /**
  * Patch attributes are stored here for convenience on retrieving and formulating of image patch matrices.

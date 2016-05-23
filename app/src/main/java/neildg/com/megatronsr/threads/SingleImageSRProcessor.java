@@ -1,11 +1,14 @@
 package neildg.com.megatronsr.threads;
 
-import neildg.com.megatronsr.processing.single.ImagePatchMerging;
-import neildg.com.megatronsr.processing.single.ImagePyramidBuilder;
-import neildg.com.megatronsr.processing.single.PatchExtractCommander;
-import neildg.com.megatronsr.processing.single.PatchSimilaritySearch;
-import neildg.com.megatronsr.processing.single.PostProcessImage;
-import neildg.com.megatronsr.processing.single.VariableSetup;
+import neildg.com.megatronsr.processing.single.gaussian.ImageHRCreator;
+import neildg.com.megatronsr.processing.single.gaussian.InputImageAssociator;
+import neildg.com.megatronsr.processing.single.gaussian.PatchPairGenerator;
+import neildg.com.megatronsr.processing.single.glasner.ImagePatchMerging;
+import neildg.com.megatronsr.processing.single.glasner.ImagePyramidBuilder;
+import neildg.com.megatronsr.processing.single.glasner.PatchExtractCommander;
+import neildg.com.megatronsr.processing.single.glasner.PatchSimilaritySearch;
+import neildg.com.megatronsr.processing.single.glasner.PostProcessImage;
+import neildg.com.megatronsr.processing.single.glasner.VariableSetup;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -23,7 +26,7 @@ public class SingleImageSRProcessor extends Thread {
         VariableSetup setup = new VariableSetup();
         setup.perform();
 
-        ImagePyramidBuilder pyramidBuilder = new ImagePyramidBuilder();
+        /*ImagePyramidBuilder pyramidBuilder = new ImagePyramidBuilder();
         pyramidBuilder.perform();
 
         PatchExtractCommander commander = new PatchExtractCommander();
@@ -33,9 +36,18 @@ public class SingleImageSRProcessor extends Thread {
         similaritySearch.perform();
 
         ImagePatchMerging patchMerging = new ImagePatchMerging();
-        patchMerging.perform();
+        patchMerging.perform();*/
 
-        PostProcessImage postProcessImage = new PostProcessImage(patchMerging.getOriginalHRMat());
+        InputImageAssociator associator = new InputImageAssociator();
+        associator.perform();
+
+        PatchPairGenerator generator = new PatchPairGenerator();
+        generator.perform();
+
+        ImageHRCreator imageHRCreator = new ImageHRCreator();
+        generator.perform();
+
+        PostProcessImage postProcessImage = new PostProcessImage(imageHRCreator.getHrMat());
         postProcessImage.perform();
 
         ProgressDialogHandler.getInstance().hideDialog();

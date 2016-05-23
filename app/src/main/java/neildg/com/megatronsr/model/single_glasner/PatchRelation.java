@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.model.single;
+package neildg.com.megatronsr.model.single_glasner;
 
 /**
  * Created by NeilDG on 5/10/2016.
