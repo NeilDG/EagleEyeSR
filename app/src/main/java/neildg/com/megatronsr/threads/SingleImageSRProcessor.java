@@ -45,7 +45,7 @@ public class SingleImageSRProcessor extends Thread {
         generator.perform();
 
         ImageHRCreator imageHRCreator = new ImageHRCreator();
-        generator.perform();
+        imageHRCreator.perform();
 
         PostProcessImage postProcessImage = new PostProcessImage(imageHRCreator.getHrMat());
         postProcessImage.perform();

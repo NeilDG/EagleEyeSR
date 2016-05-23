@@ -44,11 +44,24 @@ public class GausianPatchTable {
     }
 
     public LoadedImagePatch getLRPatchAt(int index) {
-        return this.patchPairs.get(index).getLRPatch();
+        if(index < this.patchPairs.size()) {
+            return this.patchPairs.get(index).getLRPatch();
+        }
+        else {
+            Log.e(TAG, "Index value of " +index+ " exceeds the size of " +this.patchPairs.size());
+            return null;
+        }
+
     }
 
     public LoadedImagePatch getHRPatchAt(int index) {
-        return this.patchPairs.get(index).getHRPatch();
+        if(index < this.patchPairs.size()) {
+            return this.patchPairs.get(index).getHRPatch();
+        }
+        else {
+            Log.e(TAG, "Index value of " +index+ " exceeds the size of " +this.patchPairs.size());
+            return null;
+        }
     }
 
     public class LoadedImagePatchPair {

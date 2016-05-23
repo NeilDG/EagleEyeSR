@@ -53,6 +53,8 @@ public class ImageHRCreator implements IOperator, ThreadFinishedListener {
         Mat originalMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_GAUSSIAN_DIR + "/" + FilenameConstants.INPUT_FILE_NAME, ImageFileAttribute.FileType.JPEG);
         this.hrMat = ImageOperator.performInterpolation(originalMat, scalingFactor, Imgproc.INTER_CUBIC);
 
+        originalMat.release();
+
         ImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_CUBIC, ImageFileAttribute.FileType.JPEG);
 
         ProgressDialogHandler.getInstance().showDialog("Replacing patches", "Searching for found patches in table and replacing them.");
@@ -64,13 +66,12 @@ public class ImageHRCreator implements IOperator, ThreadFinishedListener {
     }
 
     private void createPatchPairs() {
-        int numHRPatches = HRPatchAttributeTable.getInstance().getHRPatchCount();
-        int divisionOfWork = numHRPatches / MAX_NUM_THREADS;
+        int divisionOfWork = this.hrMat.rows() / MAX_NUM_THREADS;
         int lowerX = 0;
         int upperX = divisionOfWork;
         int threadCreated = 0;
 
-        while(lowerX <= numHRPatches) {
+        while(lowerX <= this.hrMat.rows()) {
 
             PatchReplaceWorker patchReplaceWorker = new PatchReplaceWorker(this.hrMat, lowerX, upperX, this);
             patchReplaceWorker.start();
@@ -78,7 +79,7 @@ public class ImageHRCreator implements IOperator, ThreadFinishedListener {
             threadCreated++;
             lowerX = upperX + 1;
             upperX += divisionOfWork;
-            upperX = MathUtils.clamp(upperX, lowerX, numHRPatches);
+            upperX = MathUtils.clamp(upperX, lowerX, this.hrMat.rows());
         }
 
         this.semaphore = new Semaphore(0);
@@ -120,8 +121,7 @@ public class ImageHRCreator implements IOperator, ThreadFinishedListener {
             for(int col = 0; col < this.outputMat.cols(); col+=patchSize) {
                 for(int row = lowerIndex; row < upperindex; row+=patchSize) {
 
-                    Size size = new Size(patchSize, patchSize);
-                    LoadedImagePatch imagePatch = new LoadedImagePatch(this.outputMat, size, col, row);
+                    LoadedImagePatch imagePatch = new LoadedImagePatch(this.outputMat, patchSize, col, row);
                     this.searchForSimilarPatches(imagePatch);
                 }
             }

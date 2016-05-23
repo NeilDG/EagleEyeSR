@@ -24,15 +24,18 @@ public class LoadedImagePatch{
     /*
      * Submat is extracted from the parent mat
      */
-    public LoadedImagePatch(Mat parentMat, Size patchSize, int rowStart, int colStart) {
-        this.patchMat = new Mat();
+    public LoadedImagePatch(Mat parentMat, int patchSize, int rowStart, int colStart) {
         Point point = new Point(rowStart, colStart);
-        Imgproc.getRectSubPix(parentMat, patchSize, point, this.patchMat);
+        Size size = new Size(patchSize, patchSize);
+
+        this.patchMat = Mat.zeros(size,parentMat.type());
+
+        Imgproc.getRectSubPix(parentMat, size, point, this.patchMat);
 
         this.rowStart = rowStart;
         this.colStart = colStart;
-        this.rowEnd = this.rowStart + (int) patchSize.width;
-        this.colEnd = this.colEnd + (int) patchSize.height;
+        this.rowEnd = this.rowStart + patchSize;
+        this.colEnd = this.colStart + patchSize;
     }
 
     public int getRowStart() {

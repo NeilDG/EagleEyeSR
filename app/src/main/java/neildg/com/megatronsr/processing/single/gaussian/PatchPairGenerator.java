@@ -24,7 +24,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 public class PatchPairGenerator implements IOperator, ThreadFinishedListener{
     private final static String TAG = "PatchPairGenerator";
 
-    private final int MAX_NUM_THREADS = 10;
+    private final int MAX_NUM_THREADS = 1;
     private Semaphore semaphore;
     public PatchPairGenerator() {
 
@@ -43,13 +43,12 @@ public class PatchPairGenerator implements IOperator, ThreadFinishedListener{
     }
 
     private void createPatchPairs(Mat originalMat, Mat blurredMat) {
-        int numHRPatches = HRPatchAttributeTable.getInstance().getHRPatchCount();
-        int divisionOfWork = numHRPatches / MAX_NUM_THREADS;
+        int divisionOfWork = originalMat.rows() / MAX_NUM_THREADS;
         int lowerX = 0;
         int upperX = divisionOfWork;
         int threadCreated = 0;
 
-        while(lowerX <= numHRPatches) {
+        while(lowerX <= originalMat.rows()) {
 
             PatchPairWorker patchPairWorker = new PatchPairWorker(originalMat, blurredMat, lowerX, upperX, this);
             patchPairWorker.start();
@@ -57,7 +56,7 @@ public class PatchPairGenerator implements IOperator, ThreadFinishedListener{
             threadCreated++;
             lowerX = upperX + 1;
             upperX += divisionOfWork;
-            upperX = MathUtils.clamp(upperX, lowerX, numHRPatches);
+            upperX = MathUtils.clamp(upperX, lowerX, originalMat.rows());
         }
 
         this.semaphore = new Semaphore(0);
@@ -100,10 +99,8 @@ public class PatchPairGenerator implements IOperator, ThreadFinishedListener{
             for(int col = 0; col < this.originalMat.cols(); col+= patchSize) {
                 for(int row = lowerIndex; row < upperindex; row+= patchSize) {
 
-                    Size size = new Size(patchSize, patchSize);
-
-                    LoadedImagePatch lrPatch = new LoadedImagePatch(this.blurredMat, size, row, col);
-                    LoadedImagePatch hrPatch = new LoadedImagePatch(this.originalMat,size, row, col);
+                    LoadedImagePatch lrPatch = new LoadedImagePatch(this.blurredMat, patchSize, row, col);
+                    LoadedImagePatch hrPatch = new LoadedImagePatch(this.originalMat,patchSize, row, col);
 
                     GausianPatchTable.getSharedInstance().addPairwisePatch(lrPatch, hrPatch);
                 }
