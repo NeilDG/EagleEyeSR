@@ -17,6 +17,10 @@ public class FilenameConstants {
 
     public final static String METRICS_NAME_STRING = "psnr_metrics";
 
+    public final static String OPTICAL_FLOW_DIR = "optical_flow";
+    public final static String OPTICAL_FLOW_IMAGE_ORIG = "default_";
+    public final static String OPTICAL_FLOW_IMAGE_PREFIX = "flow_";
+
     //for single image SR
     public final static String PYRAMID_DIR = "pyramid";
     public final static String PYRAMID_IMAGE_PREFIX = "image_pyr_";

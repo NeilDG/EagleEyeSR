@@ -4,6 +4,7 @@ import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.processing.multiple.DownsamplingOperator;
 import neildg.com.megatronsr.processing.multiple.FeatureMatchingOperator;
+import neildg.com.megatronsr.processing.multiple.OpticalFlowOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.FuseInterpolateOperator;
 import neildg.com.megatronsr.processing.multiple.LRToHROperator;
 import neildg.com.megatronsr.processing.multiple.LRWarpingOperator;
@@ -40,8 +41,12 @@ public class MultipleImageSRProcessor extends Thread {
         //warpedToHROperator.perform();
         //FuseInterpolateOperator fuseInterpolateOperator = new FuseInterpolateOperator(warpingOperator.getWarpedMatrixList());
         //fuseInterpolateOperator.perform();
-        ZeroFillFusionOperator zeroFillFusionOperator = new ZeroFillFusionOperator(warpingOperator.getWarpedMatrixList());
-        zeroFillFusionOperator.perform();
+
+        OpticalFlowOperator opticalFlowOperator = new OpticalFlowOperator(warpingOperator.getWarpedMatrixList());
+        opticalFlowOperator.perform();
+
+        //ZeroFillFusionOperator zeroFillFusionOperator = new ZeroFillFusionOperator(warpingOperator.getWarpedMatrixList());
+        //zeroFillFusionOperator.perform();
     }
 
 }

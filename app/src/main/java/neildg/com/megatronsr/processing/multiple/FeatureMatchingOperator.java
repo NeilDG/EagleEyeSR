@@ -44,6 +44,7 @@ public class FeatureMatchingOperator {
         this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
     }
 
+    public Mat getReferenceMat() {return this.referenceMat;}
     public MatOfKeyPoint getRefKeypoint() {
         return this.refKeypoint;
     }
