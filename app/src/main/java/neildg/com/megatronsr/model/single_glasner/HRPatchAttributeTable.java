@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.model.single;
+package neildg.com.megatronsr.model.single_glasner;
 
 import android.util.Log;
 

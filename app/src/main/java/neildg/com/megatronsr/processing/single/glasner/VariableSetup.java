@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.single;
+package neildg.com.megatronsr.processing.single.glasner;
 
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
@@ -18,7 +18,7 @@ public class VariableSetup implements IOperator{
     public void perform() {
         AttributeHolder.getSharedInstance().reset();
         AttributeHolder.getSharedInstance().putValue(AttributeNames.MAX_PYRAMID_DEPTH_KEY, 7);
-        AttributeHolder.getSharedInstance().putValue(AttributeNames.SIMILARITY_THRESHOLD_KEY, 0.0005);
+        AttributeHolder.getSharedInstance().putValue(AttributeNames.SIMILARITY_THRESHOLD_KEY, 0.0001);
         AttributeHolder.getSharedInstance().putValue(AttributeNames.PATCH_SIZE_KEY, 5);
     }
 }

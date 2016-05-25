@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.single;
+package neildg.com.megatronsr.processing.single.glasner;
 
 import android.graphics.Bitmap;
 

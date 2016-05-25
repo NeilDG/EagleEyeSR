@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.single;
+package neildg.com.megatronsr.processing.single.glasner;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -30,7 +30,6 @@ public class PostProcessImage implements IOperator {
         this.performLaplace();
 
         ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_GLASNER_SHARPEN, ImageFileAttribute.FileType.JPEG);
-        ProgressDialogHandler.getInstance().hideDialog();
     }
 
     private void performLaplace() {

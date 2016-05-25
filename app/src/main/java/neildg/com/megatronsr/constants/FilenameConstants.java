@@ -25,4 +25,9 @@ public class FilenameConstants {
     public final static String RESULTS_GLASNER = "hr_glasner";
     public final static String RESULTS_GLASNER_SHARPEN = "hr_glasner_sharpen";
 
+    //for gaussian single image
+    public final static String INPUT_GAUSSIAN_DIR = "input";
+    public final static String INPUT_FILE_NAME = "original";
+    public final static String INPUT_BLUR_FILENAME = "blurred";
+
 }

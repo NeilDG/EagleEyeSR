@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.single;
+package neildg.com.megatronsr.processing.single.glasner;
 
 import android.util.Log;
 
@@ -16,16 +16,16 @@ import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
-import neildg.com.megatronsr.model.single.HRPatchAttribute;
-import neildg.com.megatronsr.model.single.HRPatchAttributeTable;
-import neildg.com.megatronsr.model.single.ImagePatch;
-import neildg.com.megatronsr.model.single.ImagePatchPool;
-import neildg.com.megatronsr.model.single.PatchAttribute;
-import neildg.com.megatronsr.model.single.PatchRelation;
-import neildg.com.megatronsr.model.single.PatchRelationTable;
+import neildg.com.megatronsr.model.single_glasner.HRPatchAttribute;
+import neildg.com.megatronsr.model.single_glasner.HRPatchAttributeTable;
+import neildg.com.megatronsr.model.single_glasner.ImagePatch;
+import neildg.com.megatronsr.model.single_glasner.ImagePatchPool;
+import neildg.com.megatronsr.model.single_glasner.PatchAttribute;
+import neildg.com.megatronsr.model.single_glasner.PatchRelation;
+import neildg.com.megatronsr.model.single_glasner.PatchRelationTable;
 import neildg.com.megatronsr.number.MathUtils;
 import neildg.com.megatronsr.processing.IOperator;
-import neildg.com.megatronsr.processing.operators.IntensityMatConverter;
+import neildg.com.megatronsr.processing.operators.ImageMeasures;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -212,7 +212,7 @@ public class ImagePatchMerging implements IOperator {
                     //load LR patch and see if it's similar to the HR patch
                     ImagePatch lrPatch = ImagePatchPool.getInstance().loadPatch(patchRelation.getLrAttrib());
 
-                    double similarity = ImagePatchPool.measureMATSimilarity(hrPatchAttrib.getPatchMat(), lrPatch.getPatchMat());
+                    double similarity = ImageMeasures.measureMATSimilarity(hrPatchAttrib.getPatchMat(), lrPatch.getPatchMat());
                     if(similarity <= similarityThreshold) {
                         Log.d(TAG , "Found a similar patch in relation table by thread " +this.ID+ ". Similarity " +similarity);
                         this.replacePatchOnROI(hrPatchAttrib, patchRelation.getHrAttrib());

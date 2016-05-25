@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.model.single;
+package neildg.com.megatronsr.model.single_glasner;
 
 import android.util.Log;
 
@@ -15,6 +15,7 @@ import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 
 /**
+ * Image patch pool for memory management
  * Created by neil.dg on 5/5/16.
  */
 public class ImagePatchPool {
@@ -163,16 +164,6 @@ public class ImagePatchPool {
 
         Mat resultMat = new Mat();
         Imgproc.matchTemplate(patch1.getPatchMat(), blurrredPatch2, resultMat,Imgproc.TM_SQDIFF_NORMED);
-
-        double value = Core.norm(resultMat, Core.NORM_L1);
-        resultMat.release();
-
-        return value;
-    }
-
-    public static double measureMATSimilarity(Mat mat1, Mat mat2) {
-        Mat resultMat = new Mat();
-        Imgproc.matchTemplate(mat1, mat2, resultMat,Imgproc.TM_SQDIFF_NORMED);
 
         double value = Core.norm(resultMat, Core.NORM_L1);
         resultMat.release();

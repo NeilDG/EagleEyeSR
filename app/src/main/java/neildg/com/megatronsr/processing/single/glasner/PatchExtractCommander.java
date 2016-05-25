@@ -1,13 +1,10 @@
-package neildg.com.megatronsr.processing.single;
+package neildg.com.megatronsr.processing.single.glasner;
 
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
@@ -16,9 +13,8 @@ import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
-import neildg.com.megatronsr.model.single.PatchAttributeTable;
+import neildg.com.megatronsr.model.single_glasner.PatchAttributeTable;
 import neildg.com.megatronsr.processing.IOperator;
-import neildg.com.megatronsr.processing.operators.IntensityMatConverter;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**

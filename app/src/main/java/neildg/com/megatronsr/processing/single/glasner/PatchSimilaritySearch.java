@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.single;
+package neildg.com.megatronsr.processing.single.glasner;
 
 import android.util.Log;
 
@@ -6,11 +6,11 @@ import java.util.concurrent.Semaphore;
 
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
-import neildg.com.megatronsr.model.single.ImagePatch;
-import neildg.com.megatronsr.model.single.ImagePatchPool;
-import neildg.com.megatronsr.model.single.PatchAttribute;
-import neildg.com.megatronsr.model.single.PatchAttributeTable;
-import neildg.com.megatronsr.model.single.PatchRelationTable;
+import neildg.com.megatronsr.model.single_glasner.ImagePatch;
+import neildg.com.megatronsr.model.single_glasner.ImagePatchPool;
+import neildg.com.megatronsr.model.single_glasner.PatchAttribute;
+import neildg.com.megatronsr.model.single_glasner.PatchAttributeTable;
+import neildg.com.megatronsr.model.single_glasner.PatchRelationTable;
 import neildg.com.megatronsr.number.MathUtils;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
