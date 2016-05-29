@@ -86,4 +86,8 @@ public class FuseInterpolateOperator implements IOperator {
         MetricsLogger.getSharedInstance().debugPSNRTable();
         MetricsLogger.getSharedInstance().logResultsToJSON(FilenameConstants.METRICS_NAME_STRING);
     }
+
+    public Mat getOutputMat() {
+        return this.outputMat;
+    }
 }

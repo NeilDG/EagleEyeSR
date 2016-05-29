@@ -9,6 +9,7 @@ import neildg.com.megatronsr.processing.multiple.fusion.FuseInterpolateOperator;
 import neildg.com.megatronsr.processing.multiple.LRToHROperator;
 import neildg.com.megatronsr.processing.multiple.LRWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.ZeroFillFusionOperator;
+import neildg.com.megatronsr.processing.single.glasner.PostProcessImage;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -41,6 +42,11 @@ public class MultipleImageSRProcessor extends Thread {
         //warpedToHROperator.perform();
         FuseInterpolateOperator fuseInterpolateOperator = new FuseInterpolateOperator(warpingOperator.getWarpedMatrixList());
         fuseInterpolateOperator.perform();
+
+        PostProcessImage postProcessImage = new PostProcessImage(fuseInterpolateOperator.getOutputMat());
+        postProcessImage.perform();
+
+        ProgressDialogHandler.getInstance().hideDialog();
 
         //OpticalFlowOperator opticalFlowOperator = new OpticalFlowOperator(warpingOperator.getWarpedMatrixList(), matchingOperator.getRefKeypoint());
         //opticalFlowOperator.perform();

@@ -8,8 +8,8 @@ public class FilenameConstants {
     public final static String DOWNSAMPLE_PREFIX_STRING = "downsample_";
     public final static String HR_PROCESSED_STRING = "result";
 
-    public final static String INITIAL_HR_NEAREST = "prehr_nearest";
-    public final static String INITIAL_HR_PREFIX_STRING = "prehr_intercubic_";
+    public final static String INITIAL_HR_NEAREST = "nearest";
+    public final static String INITIAL_HR_PREFIX_STRING = "cubic";
     public final static String INITIAL_HR_ZERO_FILLED_STRING = "prehr_zerofill";
 
     public final static String MATCHES_PREFIX_STRING = "refimage_matchto_";
