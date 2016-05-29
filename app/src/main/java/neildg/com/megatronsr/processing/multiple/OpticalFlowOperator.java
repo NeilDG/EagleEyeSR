@@ -11,6 +11,7 @@ import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfKeyPoint;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -48,11 +49,13 @@ public class OpticalFlowOperator implements IOperator {
     private List<MatOfKeyPoint> keyPointList;
 
     private List<Mat> warpedMatrixList;
+    private MatOfKeyPoint refKeyPoint;
 
     private Semaphore zeroFillSem;
 
-    public OpticalFlowOperator(List<Mat> warpedMatrixList) {
+    public OpticalFlowOperator(List<Mat> warpedMatrixList, MatOfKeyPoint refKeypoint) {
         this.warpedMatrixList = warpedMatrixList;
+        this.refKeyPoint = refKeypoint;
     }
 
     @Override
@@ -65,9 +68,12 @@ public class OpticalFlowOperator implements IOperator {
         try {
             this.zeroFillSem.acquire(this.warpedMatrixList.size());
 
-            this.storeZeroFilledMatrices(workerList);
+            /*this.storeZeroFilledMatrices(workerList);
             Mat referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
             referenceMat = ImageOperator.performZeroFill(referenceMat, ParameterConfig.getScalingFactor(), 0, 0);
+            MatOfKeyPoint refKeyPoint = this.redetectKeypoints(referenceMat);*/
+
+            Mat referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
             MatOfKeyPoint refKeyPoint = this.redetectKeypoints(referenceMat);
             this.performOpticalFlow(referenceMat, refKeyPoint);
 
@@ -128,36 +134,90 @@ public class OpticalFlowOperator implements IOperator {
 
         MatOfByte status = new MatOfByte(); MatOfFloat error = new MatOfFloat();
 
-        MatOfPoint2f matOfPoint1 = new MatOfPoint2f();
+        /*MatOfPoint2f matOfPoint1 = new MatOfPoint2f();
         MatOfPoint2f matOfPoint2 = new MatOfPoint2f();
 
         KeyPoint[] keyPoints1 = refKeypoint.toArray();
 
-        /*List<Point> pointList1 = new LinkedList<>();
+        List<Point> pointList1 = new LinkedList<>();
         for(int i = 0; i < keyPoints1.length; i++) {
             pointList1.add(keyPoints1[i].pt);
         }
-        matOfPoint1.fromList(pointList1);*/
+        matOfPoint1.fromList(pointList1);
 
         for(int i = 0; i < this.warpedMatrixList.size(); i++) {
             Mat hrMat = this.warpedMatrixList.get(i);
             Video.calcOpticalFlowPyrLK(referenceMat, hrMat, matOfPoint1, matOfPoint2, status, error);
 
-            Mat xPoints = new Mat(hrMat.size(), CvType.CV_16SC2);
-            Mat zeroMat = new Mat();
+            Mat newPoints = new Mat(hrMat.size(), CvType.CV_16SC2);
+            Mat emptyMat = new Mat();
             //Mat yPoints = new Mat(matOfPoint2.size(), CvType.CV_32FC1);
             for(int row = 0; row <  matOfPoint2.rows(); row++) {
-                xPoints.put(row, 0, matOfPoint2.get(row, 0));
+                newPoints.put(row, 0, matOfPoint2.get(row, 0));
                 //yPoints.put(row, 0, matOfPoint2.get(row, 0)[1]);
-                Log.d(TAG, "xPoint: " +xPoints.get(row,0)[0] + " yPoint: " +xPoints.get(row,0)[1]+ " Length:" + matOfPoint2.rows());
+                //Log.d(TAG, "xPoint: " +xPoints.get(row,0)[0] + " yPoint: " +xPoints.get(row,0)[1]+ " Length:" + matOfPoint2.rows());
             }
 
-            Mat testMat = Mat.ones(hrMat.size(), CvType.CV_16SC2);
-            Imgproc.remap(hrMat, hrMat, testMat, zeroMat, Imgproc.INTER_CUBIC);
+            Imgproc.remap(hrMat, hrMat, newPoints, emptyMat, Imgproc.INTER_CUBIC);
 
             ImageWriter.getInstance().saveMatrixToImage(this.warpedMatrixList.get(i), FilenameConstants.OPTICAL_FLOW_DIR,
                     FilenameConstants.OPTICAL_FLOW_IMAGE_PREFIX + i, ImageFileAttribute.FileType.JPEG);
+        }*/
+
+        /*MatOfPoint2f matOfPoint1 = new MatOfPoint2f();
+        MatOfPoint2f matOfPoint2 = new MatOfPoint2f();
+
+        KeyPoint[] keyPoints1 = refKeypoint.toArray();
+
+        List<Point> pointList1 = new LinkedList<>();
+        for(int i = 0; i < keyPoints1.length; i++) {
+            pointList1.add(keyPoints1[i].pt);
         }
+        matOfPoint1.fromList(pointList1);*/
+
+        Imgproc.cvtColor(referenceMat, referenceMat, Imgproc.COLOR_RGB2GRAY);
+        for(int i = 0; i < this.warpedMatrixList.size(); i++) {
+            Mat hrMat = this.warpedMatrixList.get(i);
+            Mat flowMat = new Mat();
+            ImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.OPTICAL_FLOW_DIR,
+                    FilenameConstants.OPTICAL_FLOW_IMAGE_ORIG+i, ImageFileAttribute.FileType.JPEG);
+
+            Imgproc.cvtColor(hrMat, hrMat, Imgproc.COLOR_RGB2GRAY);
+            Log.d(TAG, "Checking channels " +referenceMat.channels()+ " Next mat: " +hrMat.channels() + " Size: " +referenceMat.size().toString()+ " Next mat size: " +hrMat.size().toString());
+
+            Video.calcOpticalFlowFarneback(referenceMat, hrMat, flowMat, 0.5, 3, 15, 3, 5, 1.2, Video.MOTION_HOMOGRAPHY);
+
+            //test remap
+            Mat xPoints = new Mat(hrMat.size(), CvType.CV_32FC1);
+            Mat yPoints = new Mat(hrMat.size(), CvType.CV_32FC1);
+            for(int y = 0; y < hrMat.rows(); y++) {
+                for(int x = 0; x < hrMat.cols(); x++) {
+                    //Log.d(TAG, "flowMat x: " +x+ " y: " +y+ " channels: "+flowMat.channels()+ " value: " +flowMat.get(y,x)[0]+" "+flowMat.get(y,x)[1]);
+                    Point pt = new Point(x + flowMat.get(y,x)[0], y + flowMat.get(y,x)[1]);
+                    xPoints.put(y,x, pt.x);
+                    yPoints.put(y,x, pt.y);
+                }
+            }
+
+            ProgressDialogHandler.getInstance().showDialog("Optical flow", "Remapping warped image " +i);
+            Imgproc.remap(hrMat, hrMat, xPoints, yPoints, Imgproc.INTER_CUBIC);
+            ImageWriter.getInstance().saveMatrixToImage(this.warpedMatrixList.get(i), FilenameConstants.OPTICAL_FLOW_DIR,
+                    FilenameConstants.OPTICAL_FLOW_IMAGE_PREFIX + i, ImageFileAttribute.FileType.JPEG);
+        }
+    }
+
+    private MatOfPoint2f obtainPixelPoints(Mat referenceMat, int scaling) {
+
+        MatOfPoint2f matOfPoint2f = new MatOfPoint2f();
+        int space = scaling - 1;
+        for(int row = 0; row < referenceMat.rows(); row += space) {
+            for(int col = 0; col < referenceMat.cols(); col += space) {
+                Point pt = new Point(row, col);
+                matOfPoint2f.put(row, 0, pt.x, pt.y);
+            }
+        }
+
+        return matOfPoint2f;
     }
 
     private void debugPrint(MatOfPoint2f point2f) {

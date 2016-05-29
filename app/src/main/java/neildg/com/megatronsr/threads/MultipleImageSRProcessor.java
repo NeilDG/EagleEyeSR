@@ -39,11 +39,11 @@ public class MultipleImageSRProcessor extends Thread {
 
         //WarpedToHROperator warpedToHROperator = new WarpedToHROperator(warpingOperator.getWarpedMatrixList());
         //warpedToHROperator.perform();
-        //FuseInterpolateOperator fuseInterpolateOperator = new FuseInterpolateOperator(warpingOperator.getWarpedMatrixList());
-        //fuseInterpolateOperator.perform();
+        FuseInterpolateOperator fuseInterpolateOperator = new FuseInterpolateOperator(warpingOperator.getWarpedMatrixList());
+        fuseInterpolateOperator.perform();
 
-        OpticalFlowOperator opticalFlowOperator = new OpticalFlowOperator(warpingOperator.getWarpedMatrixList());
-        opticalFlowOperator.perform();
+        //OpticalFlowOperator opticalFlowOperator = new OpticalFlowOperator(warpingOperator.getWarpedMatrixList(), matchingOperator.getRefKeypoint());
+        //opticalFlowOperator.perform();
 
         //ZeroFillFusionOperator zeroFillFusionOperator = new ZeroFillFusionOperator(warpingOperator.getWarpedMatrixList());
         //zeroFillFusionOperator.perform();
