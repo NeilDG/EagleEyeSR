@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
+import neildg.com.megatronsr.threads.DebuggingProcessor;
 import neildg.com.megatronsr.threads.MultipleImageSRProcessor;
 import neildg.com.megatronsr.threads.SingleImageSRProcessor;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -49,6 +50,22 @@ public class ProcessingActivity extends AppCompatActivity {
                ProcessingActivity.this.executeSRProcessor();
             }
         });
+
+        Button debugSaveBtn = (Button) this.findViewById(R.id.save_mat_btn);
+        debugSaveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProcessingActivity.this.executeDebugAction(DebuggingProcessor.DebugType.DEBUG_SAVE_MAT);
+            }
+        });
+
+        Button debugZeroFillBtn = (Button) this.findViewById(R.id.zero_fill_btn);
+        debugZeroFillBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProcessingActivity.this.executeDebugAction(DebuggingProcessor.DebugType.ZERO_FILLING);
+            }
+        });
     }
 
     private void executeSRProcessor() {
@@ -60,5 +77,8 @@ public class ProcessingActivity extends AppCompatActivity {
         }
     }
 
+    private void executeDebugAction(DebuggingProcessor.DebugType debugType) {
+        new DebuggingProcessor(debugType).start();
+    }
 
 }

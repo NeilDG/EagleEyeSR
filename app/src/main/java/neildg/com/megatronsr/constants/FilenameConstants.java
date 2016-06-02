@@ -10,7 +10,7 @@ public class FilenameConstants {
 
     public final static String INITIAL_HR_NEAREST = "nearest";
     public final static String INITIAL_HR_PREFIX_STRING = "cubic";
-    public final static String INITIAL_HR_ZERO_FILLED_STRING = "prehr_zerofill";
+    public final static String INITIAL_HR_ZERO_FILLED_STRING = "zerofill";
 
     public final static String MATCHES_PREFIX_STRING = "refimage_matchto_";
     public final static String KEYPOINTS_STRING = "refimage_keypoint";
@@ -33,5 +33,9 @@ public class FilenameConstants {
     public final static String INPUT_GAUSSIAN_DIR = "input";
     public final static String INPUT_FILE_NAME = "original";
     public final static String INPUT_BLUR_FILENAME = "blurred";
+
+    //for debugging
+    public final static String DEBUG_DIR = "debugging";
+    public final static String MAT_VALUE_PREFIX = "mat_values_";
 
 }
