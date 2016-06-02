@@ -66,6 +66,14 @@ public class ProcessingActivity extends AppCompatActivity {
                 ProcessingActivity.this.executeDebugAction(DebuggingProcessor.DebugType.ZERO_FILLING);
             }
         });
+
+        Button debugWarpBtn = (Button) this.findViewById(R.id.warp_btn);
+        debugWarpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProcessingActivity.this.executeDebugAction(DebuggingProcessor.DebugType.WARP_IMAGES);
+            }
+        });
     }
 
     private void executeSRProcessor() {
