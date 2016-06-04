@@ -13,7 +13,7 @@ import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.io.MetricsLogger;
 import neildg.com.megatronsr.processing.IOperator;
-import neildg.com.megatronsr.processing.operators.ImageOperator;
+import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**

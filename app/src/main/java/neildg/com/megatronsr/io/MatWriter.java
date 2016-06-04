@@ -47,6 +47,37 @@ public class MatWriter {
         }
     }
 
+    public static void writeMat(Mat mat, String fileName) {
+        File dirFile = new File(DirectoryStorage.getSharedInstance().getProposedPath() + "/");
+        if(dirFile.mkdirs() == false) {
+            dirFile.mkdir();
+        }
+
+        File file = new File(dirFile.getPath(), fileName + ".txt");
+
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fileOutputStream));
+
+            for(int row = 0; row < mat.rows(); row++) {
+                String values = "";
+                for(int col = 0; col < mat.cols(); col++) {
+                    values += getFormattedVal(mat, row, col) + " || ";
+                }
+
+                writer.write(values);
+                writer.newLine();
+            }
+
+            writer.flush();
+            writer.close();
+        } catch(FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static String getFormattedVal(Mat mat, int row, int col) {
         double[] values = mat.get(row, col);
 

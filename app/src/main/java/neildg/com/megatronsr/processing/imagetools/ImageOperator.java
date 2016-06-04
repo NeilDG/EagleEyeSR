@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.operators;
+package neildg.com.megatronsr.processing.imagetools;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -74,6 +74,24 @@ public class ImageOperator {
         }
 
         return hrMat;
+    }
+
+    public static void copyMat(Mat fromMat, Mat hrMat, int xOffset, int yOffset) {
+        int pixelSpace = ParameterConfig.getScalingFactor();
+
+        for (int row = 0; row < fromMat.rows(); row++) {
+            for (int col = 0; col < fromMat.cols(); col++) {
+                double[] lrPixelData = fromMat.get(row, col);
+
+                int resultRow = (row * pixelSpace) + yOffset;
+                int resultCol = (col * pixelSpace) + xOffset;
+
+                if (resultRow < hrMat.rows() && resultCol < hrMat.cols()) {
+                    hrMat.put(resultRow, resultCol, lrPixelData);
+                }
+
+            }
+        }
     }
 
     /*

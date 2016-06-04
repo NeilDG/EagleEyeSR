@@ -3,7 +3,6 @@ package neildg.com.megatronsr.processing.single.gaussian;
 import android.util.Log;
 
 import org.opencv.core.Mat;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.concurrent.Semaphore;
@@ -17,15 +16,10 @@ import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.single_gaussian.GausianPatchTable;
 import neildg.com.megatronsr.model.single_gaussian.LoadedImagePatch;
-import neildg.com.megatronsr.model.single_glasner.HRPatchAttribute;
-import neildg.com.megatronsr.model.single_glasner.HRPatchAttributeTable;
-import neildg.com.megatronsr.model.single_glasner.ImagePatch;
-import neildg.com.megatronsr.model.single_glasner.ImagePatchPool;
-import neildg.com.megatronsr.model.single_glasner.PatchAttribute;
 import neildg.com.megatronsr.number.MathUtils;
 import neildg.com.megatronsr.processing.IOperator;
-import neildg.com.megatronsr.processing.operators.ImageMeasures;
-import neildg.com.megatronsr.processing.operators.ImageOperator;
+import neildg.com.megatronsr.processing.imagetools.ImageMeasures;
+import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.single.gaussian.listeners.ThreadFinishedListener;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 

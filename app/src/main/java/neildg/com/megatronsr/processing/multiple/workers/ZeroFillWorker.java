@@ -1,11 +1,10 @@
 package neildg.com.megatronsr.processing.multiple.workers;
 
 import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 
 import java.util.concurrent.Semaphore;
 
-import neildg.com.megatronsr.processing.operators.ImageOperator;
+import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 
 public class ZeroFillWorker extends Thread {
 
