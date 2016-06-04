@@ -44,6 +44,7 @@ public class FeatureMatchingOperator {
         this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
     }
 
+    public Mat getReferenceMat() {return this.referenceMat;}
     public MatOfKeyPoint getRefKeypoint() {
         return this.refKeypoint;
     }
@@ -123,7 +124,7 @@ public class FeatureMatchingOperator {
         List<DMatch> goodMatchesList = new ArrayList<DMatch>();
         for(int i = 0; i < dMatchList.length; i++) {
             Log.d(TAG, "dMatch distance: " +dMatchList[i].distance);
-            /*if(dMatchList[i].distance < 25.0f)*/ {
+            /*if(dMatchList[i].distance < 5.0f)*/ {
                 goodMatchesList.add(dMatchList[i]);
             }
         }

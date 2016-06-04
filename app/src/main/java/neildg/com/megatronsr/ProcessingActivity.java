@@ -8,6 +8,12 @@ import android.widget.TextView;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
+import neildg.com.megatronsr.processing.ITest;
+import neildg.com.megatronsr.processing.debugging.ImageWarpingTest;
+import neildg.com.megatronsr.processing.debugging.MatSavingTest;
+import neildg.com.megatronsr.processing.debugging.ZeroFillingTest;
+import neildg.com.megatronsr.processing.imagetools.OpticalFlowTest;
+import neildg.com.megatronsr.threads.DebuggingProcessor;
 import neildg.com.megatronsr.threads.MultipleImageSRProcessor;
 import neildg.com.megatronsr.threads.SingleImageSRProcessor;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -49,6 +55,42 @@ public class ProcessingActivity extends AppCompatActivity {
                ProcessingActivity.this.executeSRProcessor();
             }
         });
+
+        Button debugSaveBtn = (Button) this.findViewById(R.id.save_mat_btn);
+        debugSaveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MatSavingTest matSavingTest = new MatSavingTest();
+                ProcessingActivity.this.executeDebugAction(matSavingTest);
+            }
+        });
+
+        Button debugZeroFillBtn = (Button) this.findViewById(R.id.zero_fill_btn);
+        debugZeroFillBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ZeroFillingTest zeroFillingTest = new ZeroFillingTest();
+                ProcessingActivity.this.executeDebugAction(zeroFillingTest);
+            }
+        });
+
+        Button debugWarpBtn = (Button) this.findViewById(R.id.warp_btn);
+        debugWarpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ImageWarpingTest warpingTest = new ImageWarpingTest();
+                ProcessingActivity.this.executeDebugAction(warpingTest);
+            }
+        });
+
+        Button debugFlowBtn = (Button) this.findViewById(R.id.optical_flow_btn);
+        debugFlowBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OpticalFlowTest opticalFlowTest = new OpticalFlowTest();
+                ProcessingActivity.this.executeDebugAction(opticalFlowTest);
+            }
+        });
     }
 
     private void executeSRProcessor() {
@@ -60,5 +102,8 @@ public class ProcessingActivity extends AppCompatActivity {
         }
     }
 
+    private void executeDebugAction(ITest test) {
+        new DebuggingProcessor(test).start();
+    }
 
 }

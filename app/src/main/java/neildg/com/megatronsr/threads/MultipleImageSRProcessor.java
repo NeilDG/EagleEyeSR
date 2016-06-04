@@ -4,10 +4,12 @@ import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.processing.multiple.DownsamplingOperator;
 import neildg.com.megatronsr.processing.multiple.FeatureMatchingOperator;
+import neildg.com.megatronsr.processing.multiple.OpticalFlowOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.FuseInterpolateOperator;
 import neildg.com.megatronsr.processing.multiple.LRToHROperator;
 import neildg.com.megatronsr.processing.multiple.LRWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.ZeroFillFusionOperator;
+import neildg.com.megatronsr.processing.single.glasner.PostProcessImage;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -38,10 +40,19 @@ public class MultipleImageSRProcessor extends Thread {
 
         //WarpedToHROperator warpedToHROperator = new WarpedToHROperator(warpingOperator.getWarpedMatrixList());
         //warpedToHROperator.perform();
-        //FuseInterpolateOperator fuseInterpolateOperator = new FuseInterpolateOperator(warpingOperator.getWarpedMatrixList());
-        //fuseInterpolateOperator.perform();
-        ZeroFillFusionOperator zeroFillFusionOperator = new ZeroFillFusionOperator(warpingOperator.getWarpedMatrixList());
-        zeroFillFusionOperator.perform();
+        FuseInterpolateOperator fuseInterpolateOperator = new FuseInterpolateOperator(warpingOperator.getWarpedMatrixList());
+        fuseInterpolateOperator.perform();
+
+        PostProcessImage postProcessImage = new PostProcessImage(fuseInterpolateOperator.getOutputMat());
+        postProcessImage.perform();
+
+        ProgressDialogHandler.getInstance().hideDialog();
+
+        //OpticalFlowOperator opticalFlowOperator = new OpticalFlowOperator(warpingOperator.getWarpedMatrixList(), matchingOperator.getRefKeypoint());
+        //opticalFlowOperator.perform();
+
+        //ZeroFillFusionOperator zeroFillFusionOperator = new ZeroFillFusionOperator(warpingOperator.getWarpedMatrixList());
+        //zeroFillFusionOperator.perform();
     }
 
 }

@@ -25,7 +25,7 @@ import neildg.com.megatronsr.model.single_glasner.PatchRelation;
 import neildg.com.megatronsr.model.single_glasner.PatchRelationTable;
 import neildg.com.megatronsr.number.MathUtils;
 import neildg.com.megatronsr.processing.IOperator;
-import neildg.com.megatronsr.processing.operators.ImageMeasures;
+import neildg.com.megatronsr.processing.imagetools.ImageMeasures;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**

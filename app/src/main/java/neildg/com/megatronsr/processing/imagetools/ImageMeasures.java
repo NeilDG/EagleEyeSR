@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.operators;
+package neildg.com.megatronsr.processing.imagetools;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;

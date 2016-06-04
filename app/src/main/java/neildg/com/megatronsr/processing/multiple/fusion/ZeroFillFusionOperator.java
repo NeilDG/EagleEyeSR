@@ -1,7 +1,6 @@
 package neildg.com.megatronsr.processing.multiple.fusion;
 
 import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +12,8 @@ import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
-import neildg.com.megatronsr.processing.operators.ImageOperator;
+import neildg.com.megatronsr.processing.multiple.workers.ZeroFillWorker;
+import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -105,34 +105,5 @@ public class ZeroFillFusionOperator implements IOperator {
         ProgressDialogHandler.getInstance().hideDialog();
     }
 
-    private class ZeroFillWorker extends Thread {
 
-        private Mat inputMat;
-        private Mat hrMat;
-
-        private int scaling = 1;
-        private int offsetX = 0;
-        private int offsetY = 0;
-
-        private Semaphore semaphore;
-
-        public ZeroFillWorker(Mat inputMat, int scaling, int offsetX, int offsetY, Semaphore semaphore) {
-            this.inputMat = inputMat;
-            this.scaling = scaling;
-            this.offsetX = offsetX;
-            this.offsetY = offsetY;
-
-            this.semaphore = semaphore;
-        }
-
-        @Override
-        public void run() {
-            this.hrMat = ImageOperator.performInterpolation(this.inputMat, this.scaling, Imgproc.INTER_CUBIC);
-            this.semaphore.release();
-        }
-
-        public Mat getHrMat() {
-            return this.hrMat;
-        }
-    }
 }
