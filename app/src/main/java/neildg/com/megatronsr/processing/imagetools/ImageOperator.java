@@ -46,8 +46,9 @@ public class ImageOperator {
         //Add each image from a vector<Mat> inputImages with weight 1.0/n where n is number of images to merge
         for (int i = 0; i < matList.size(); i++) {
             Mat mat = matList.get(i);
-            Core.addWeighted(mergedMat, 1, mat, 1.0/matList.size(), 0, mergedMat);
+            //Core.addWeighted(mergedMat, 1, mat, 1.0/matList.size(), 0, mergedMat);
 
+            Core.add(mergedMat, mat, mergedMat);
             ImageWriter.getInstance().saveMatrixToImage(mergedMat, "fusion", "fuse_"+i, ImageFileAttribute.FileType.JPEG);
         }
 

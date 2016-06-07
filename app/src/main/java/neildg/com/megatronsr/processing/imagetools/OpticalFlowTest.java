@@ -1,5 +1,6 @@
 package neildg.com.megatronsr.processing.imagetools;
 
+import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -8,6 +9,9 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.DenseOpticalFlow;
 import org.opencv.video.Video;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
@@ -44,8 +48,8 @@ public class OpticalFlowTest implements ITest {
         //perform simple remapping to the right
         for(int row = 0; row < imageMat.rows(); row++) {
             for(int col = 0; col < imageMat.cols(); col++) {
-                xPoints.put(row,col, col - 5);
-                yPoints.put(row,col,row + 5);
+                xPoints.put(row,col, col - 10);
+                yPoints.put(row,col,row);
             }
         }
 
@@ -59,8 +63,8 @@ public class OpticalFlowTest implements ITest {
         Imgproc.cvtColor(offsetMat, nextMat, Imgproc.COLOR_RGB2GRAY);
 
         Mat flowMat = new Mat();
-        //Video.calcOpticalFlowFarneback(prevMat, nextMat, flowMat, 0.5, 5, 1, 3, 5, 1.5, Video.MOTION_TRANSLATION);
-        Video.createOptFlow_DualTVL1().calc(prevMat, nextMat, flowMat);
+        Video.calcOpticalFlowFarneback(prevMat, nextMat, flowMat, 0.25, 5, 5, 3, 5, 1.5, Video.MOTION_TRANSLATION);
+        //Video.createOptFlow_DualTVL1().calc(prevMat, nextMat, flowMat);
         MatWriter.writeMat(flowMat, "flow");
 
         xPoints.release(); yPoints.release();
@@ -76,8 +80,38 @@ public class OpticalFlowTest implements ITest {
             }
         }
 
-        Imgproc.remap(offsetMat, offsetMat, xPoints, yPoints, Imgproc.INTER_CUBIC, Core.BORDER_CONSTANT, Scalar.all(0));
+        Mat outputMat = Mat.zeros(offsetMat.size(), offsetMat.type());
+        Imgproc.remap(offsetMat, outputMat, xPoints, yPoints, Imgproc.INTER_CUBIC, Core.BORDER_TRANSPARENT, Scalar.all(0));
+        ImageWriter.getInstance().saveMatrixToImage(outputMat, "test_remap_output", ImageFileAttribute.FileType.JPEG);
+
+        Imgproc.remap(offsetMat, offsetMat, xPoints, yPoints, Imgproc.INTER_CUBIC, Core.BORDER_TRANSPARENT, Scalar.all(0));
         ImageWriter.getInstance().saveMatrixToImage(offsetMat, "test_remap", ImageFileAttribute.FileType.JPEG);
+
+        ProgressDialogHandler.getInstance().showDialog("Debug mode", "Blend images test");
+
+        //test merging
+        List<Mat> toBlend = new LinkedList<>();
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 0, 0));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 0, 1));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 0, 2));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 0, 3));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 1, 0));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 1, 1));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 1, 2));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 1, 3));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 2, 0));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 2, 1));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 2, 2));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 2, 3));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 3, 0));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 3, 1));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 3, 2));
+        toBlend.add(ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 3, 3));
+
+
+        outputMat = ImageOperator.blendImages(toBlend);
+        ImageWriter.getInstance().saveMatrixToImage(outputMat, "test_blend", ImageFileAttribute.FileType.JPEG);
+
         ProgressDialogHandler.getInstance().hideDialog();
 
     }

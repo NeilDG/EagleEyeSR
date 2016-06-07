@@ -123,7 +123,8 @@ public class LRWarpingOperator {
 
         matOfPoint1.fromList(pointList1); matOfPoint2.fromList(pointList2);
         MatOfByte status = new MatOfByte(); MatOfFloat error = new MatOfFloat();
-        //Video.calcOpticalFlowPyrLK(this.referenceMat, candidateMat, matOfPoint1, matOfPoint2, status, error);
+
+        Video.calcOpticalFlowPyrLK(this.referenceMat, candidateMat, matOfPoint1, matOfPoint2, status, error);
 
         //((M0.type() == CV_32F || M0.type() == CV_64F) && M0.rows == 3 && M0.cols == 3)
 
