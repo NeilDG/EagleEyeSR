@@ -1,5 +1,7 @@
 package neildg.com.megatronsr.processing.imagetools;
 
+import android.util.Log;
+
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -18,6 +20,7 @@ import neildg.com.megatronsr.metrics.ImageMetrics;
  * Created by NeilDG on 5/23/2016.
  */
 public class ImageOperator {
+    private final static String TAG = "ImageOperator";
 
     public static Mat produceMask(Mat inputMat) {
         Mat baseMaskMat = new Mat();
@@ -70,6 +73,32 @@ public class ImageOperator {
 
                 if(resultRow < hrMat.rows() && resultCol < hrMat.cols()) {
                     hrMat.put(resultRow, resultCol, lrPixelData);
+                }
+            }
+        }
+
+        return hrMat;
+    }
+
+    /*
+     * PErforms zero-filling according to pixel displacement provided
+     */
+    public static Mat performZeroFill(Mat fromMat, int scaling, Mat xDisplacement, Mat yDisplacement) {
+        Mat hrMat = Mat.zeros(fromMat.rows() * scaling, fromMat.cols() * scaling, fromMat.type());
+
+        for(int row = 0; row < fromMat.rows(); row++) {
+            for (int col = 0; col < fromMat.cols(); col++) {
+                double[] lrPixelData = fromMat.get(row, col);
+
+                double xOffset = xDisplacement.get(row, col)[0];
+                double yOffset = yDisplacement.get(row, col)[0];
+
+                int floorRow = (int) Math.round(yOffset) * scaling;
+                int floorCol = (int) Math.round(xOffset) * scaling;
+
+                if(floorRow < hrMat.rows() && floorCol < hrMat.cols()) {
+                    Log.d(TAG, "Debug values. xOffset: " +xOffset+ " yOffset: " +yOffset+ " X: " +floorCol+ " Y: " +floorRow);
+                    hrMat.put(floorRow, floorCol, lrPixelData);
                 }
             }
         }

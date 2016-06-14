@@ -1,5 +1,8 @@
 package neildg.com.megatronsr.processing.imagetools;
 
+import android.os.Debug;
+import android.util.Log;
+
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -42,13 +45,12 @@ public class OpticalFlowTest implements ITest {
         downsamplingOperator.perform();
 
         Mat imageMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
-
         Mat xPoints = new Mat(imageMat.size(), CvType.CV_32FC1);
         Mat yPoints = new Mat(imageMat.size(), CvType.CV_32FC1);
         //perform simple remapping to the right
         for(int row = 0; row < imageMat.rows(); row++) {
             for(int col = 0; col < imageMat.cols(); col++) {
-                xPoints.put(row,col, col - 10);
+                xPoints.put(row,col, col - 5);
                 yPoints.put(row,col,row);
             }
         }
@@ -63,7 +65,7 @@ public class OpticalFlowTest implements ITest {
         Imgproc.cvtColor(offsetMat, nextMat, Imgproc.COLOR_RGB2GRAY);
 
         Mat flowMat = new Mat();
-        Video.calcOpticalFlowFarneback(prevMat, nextMat, flowMat, 0.25, 5, 5, 3, 5, 1.5, Video.MOTION_TRANSLATION);
+        Video.calcOpticalFlowFarneback(prevMat, nextMat, flowMat, 0.25, 5, 15, 3, 5, 1.5, Video.MOTION_TRANSLATION);
         //Video.createOptFlow_DualTVL1().calc(prevMat, nextMat, flowMat);
         MatWriter.writeMat(flowMat, "flow");
 
@@ -87,7 +89,25 @@ public class OpticalFlowTest implements ITest {
         Imgproc.remap(offsetMat, offsetMat, xPoints, yPoints, Imgproc.INTER_CUBIC, Core.BORDER_TRANSPARENT, Scalar.all(0));
         ImageWriter.getInstance().saveMatrixToImage(offsetMat, "test_remap", ImageFileAttribute.FileType.JPEG);
 
-        ProgressDialogHandler.getInstance().showDialog("Debug mode", "Blend images test");
+        ProgressDialogHandler.getInstance().showDialog("Debug mode", "Testing fusion");
+
+        List<Mat> toBlend = new LinkedList<>();
+        Mat testMat = ImageOperator.performZeroFill(offsetMat, ParameterConfig.getScalingFactor(), xPoints, yPoints);
+        ImageWriter.getInstance().saveMatrixToImage(testMat, "zero_fill_remap", ImageFileAttribute.FileType.JPEG);
+        toBlend.add(testMat);
+
+        Mat testMat2 = ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 0 , 0);
+        ImageWriter.getInstance().saveMatrixToImage(testMat2, "zero_fill_original", ImageFileAttribute.FileType.JPEG);
+        toBlend.add(testMat2);
+
+        for(Mat mat: toBlend) {
+            Mat maskMat = ImageOperator.produceMask(mat);
+            mat.copyTo(outputMat, maskMat);
+
+        }
+        ImageWriter.getInstance().saveMatrixToImage(outputMat, "test_blend", ImageFileAttribute.FileType.JPEG);
+
+        /*ProgressDialogHandler.getInstance().showDialog("Debug mode", "Blend images test");
 
         //test merging
         List<Mat> toBlend = new LinkedList<>();
@@ -110,9 +130,8 @@ public class OpticalFlowTest implements ITest {
 
 
         outputMat = ImageOperator.blendImages(toBlend);
-        ImageWriter.getInstance().saveMatrixToImage(outputMat, "test_blend", ImageFileAttribute.FileType.JPEG);
+        ImageWriter.getInstance().saveMatrixToImage(outputMat, "test_blend", ImageFileAttribute.FileType.JPEG);*/
 
         ProgressDialogHandler.getInstance().hideDialog();
-
     }
 }
