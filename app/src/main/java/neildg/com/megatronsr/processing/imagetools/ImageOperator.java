@@ -33,6 +33,13 @@ public class ImageOperator {
         return baseMaskMat;
     }
 
+    public static Mat rgbToGray(Mat inputMat) {
+        Mat grayScaleMat = new Mat();
+        Imgproc.cvtColor(inputMat, grayScaleMat, Imgproc.COLOR_RGB2GRAY);
+
+        return grayScaleMat;
+    }
+
     public static double measureRMSENoise(Mat mat) {
         Mat medianMat = new Mat();
         Imgproc.medianBlur(mat, medianMat, 3);
