@@ -14,6 +14,7 @@ import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.metrics.ImageMetrics;
+import neildg.com.megatronsr.model.single_gaussian.LoadedImagePatch;
 
 /**
  * Miscellaneous image operators
@@ -104,7 +105,7 @@ public class ImageOperator {
                 int floorCol = (int) Math.round(xOffset) * scaling;
 
                 if(floorRow < hrMat.rows() && floorCol < hrMat.cols()) {
-                    Log.d(TAG, "Debug values. xOffset: " +xOffset+ " yOffset: " +yOffset+ " X: " +floorCol+ " Y: " +floorRow);
+                    //Log.d(TAG, "Debug values. xOffset: " +xOffset+ " yOffset: " +yOffset+ " X: " +floorCol+ " Y: " +floorRow);
                     hrMat.put(floorRow, floorCol, lrPixelData);
                 }
             }
@@ -140,5 +141,15 @@ public class ImageOperator {
         Imgproc.resize(fromMat, hrMat, hrMat.size(), scaling, scaling, interpolationType);
 
         return hrMat;
+    }
+
+    public static void replacePatchOnROI(Mat sourceMat, LoadedImagePatch sourcePatch, LoadedImagePatch replacementPatch) {
+
+        if(sourcePatch.getRowStart() >= 0 && sourcePatch.getRowEnd() < sourceMat.rows() && sourcePatch.getColStart() >= 0 && sourcePatch.getColEnd() < sourceMat.cols()) {
+            Mat subMat = sourceMat.submat(sourcePatch.getRowStart(),sourcePatch.getRowEnd(), sourcePatch.getColStart(), sourcePatch.getColEnd());
+            /*Mat test = Mat.ones(80,80,subMat.type());
+             test.copyTo(subMat);*/
+            replacementPatch.getPatchMat().copyTo(subMat);
+        }
     }
 }

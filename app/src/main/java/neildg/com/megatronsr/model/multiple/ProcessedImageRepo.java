@@ -18,6 +18,8 @@ public class ProcessedImageRepo {
     }
 
     private List<Mat> zeroFilledMatList = new LinkedList<>();
+    private List<Mat> warpedMatList = new LinkedList<>();
+
     private ProcessedImageRepo() {
 
     }
@@ -39,15 +41,15 @@ public class ProcessedImageRepo {
         this.zeroFilledMatList.add(zeroFilledMat);
     }
 
-    public int getZeroFilledMatCount() {
-        return this.zeroFilledMatList.size();
+    public Mat[] getZeroFilledMatList() {
+        return  this.zeroFilledMatList.toArray(new Mat[this.zeroFilledMatList.size()]);
     }
 
-    public Mat getZeroFilledMatAt(int index) {
-        return this.zeroFilledMatList.get(index);
+    public void storeWarpedMat(Mat warpedMat) {
+        this.warpedMatList.add(warpedMat);
     }
 
-    public List<Mat> getZeroFilledMatList() {
-        return this.zeroFilledMatList;
+    public Mat[] getWarpedMatList() {
+        return this.warpedMatList.toArray(new Mat[this.warpedMatList.size()]);
     }
 }

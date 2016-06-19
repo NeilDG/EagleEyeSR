@@ -3,12 +3,8 @@ package neildg.com.megatronsr.threads;
 import neildg.com.megatronsr.processing.single.gaussian.ImageHRCreator;
 import neildg.com.megatronsr.processing.single.gaussian.InputImageAssociator;
 import neildg.com.megatronsr.processing.single.gaussian.PatchPairGenerator;
-import neildg.com.megatronsr.processing.single.glasner.ImagePatchMerging;
-import neildg.com.megatronsr.processing.single.glasner.ImagePyramidBuilder;
-import neildg.com.megatronsr.processing.single.glasner.PatchExtractCommander;
-import neildg.com.megatronsr.processing.single.glasner.PatchSimilaritySearch;
 import neildg.com.megatronsr.processing.single.glasner.PostProcessImage;
-import neildg.com.megatronsr.processing.single.glasner.VariableSetup;
+import neildg.com.megatronsr.processing.single.glasner.GlasnerVariableSetup;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -23,7 +19,7 @@ public class SingleImageSRProcessor extends Thread {
 
     @Override
     public void run() {
-        VariableSetup setup = new VariableSetup();
+        GlasnerVariableSetup setup = new GlasnerVariableSetup();
         setup.perform();
 
         /*ImagePyramidBuilder pyramidBuilder = new ImagePyramidBuilder();

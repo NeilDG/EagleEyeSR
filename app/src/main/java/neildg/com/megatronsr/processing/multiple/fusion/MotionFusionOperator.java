@@ -1,13 +1,13 @@
 package neildg.com.megatronsr.processing.multiple.fusion;
 
+import android.util.Log;
+
 import org.opencv.core.Mat;
 
-import java.util.List;
-
-import neildg.com.megatronsr.constants.ParameterConfig;
+import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
+import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -18,29 +18,29 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 public class MotionFusionOperator implements IOperator {
     private final static String TAG = "MotionFusionOperator";
 
-    private List<Mat> zeroFilledMatSequences;
+    private Mat[] zeroFilledMatSequences;
 
     private Mat outputMat;
 
     /*
      * Accepts zero filled mat sequences that should include the reference mat
      */
-    public MotionFusionOperator(List<Mat> zeroFilledMatSequences) {
+    public MotionFusionOperator(Mat[] zeroFilledMatSequences) {
         this.zeroFilledMatSequences = zeroFilledMatSequences;
 
-        int scaling = ParameterConfig.getScalingFactor();
-        Mat referenceMat = this.zeroFilledMatSequences.get(0);
-        this.outputMat = new Mat(referenceMat.rows() * scaling, referenceMat.cols() * scaling, referenceMat.type());
+        this.outputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
     }
 
     @Override
     public void perform() {
-        for(int i = 0; i < this.zeroFilledMatSequences.size(); i++) {
+        for(int i = 0; i < this.zeroFilledMatSequences.length; i++) {
             ProgressDialogHandler.getInstance().showDialog("Fusing", "Fusing image " +i);
-            Mat mat = this.zeroFilledMatSequences.get(i);
+            Mat mat = this.zeroFilledMatSequences[i];
             Mat mask = ImageOperator.produceMask(mat);
 
-            mat.copyTo(this.outputMat,mask);
+            Log.d(TAG, "Mat size: " +mat.size().toString()+ " OUtput mat size: " +this.outputMat.size().toString()+ " Mask size: " +mask.size().toString());
+            mat.copyTo(this.outputMat, mask);
+            //Core.add(mat, this.outputMat, this.outputMat, mask);
 
             mat.release();
             mask.release();
@@ -52,7 +52,7 @@ public class MotionFusionOperator implements IOperator {
 
         //deallocate memory
         this.outputMat.release();
-        this.zeroFilledMatSequences.clear();
+        this.zeroFilledMatSequences = null;
 
         ProgressDialogHandler.getInstance().hideDialog();
     }

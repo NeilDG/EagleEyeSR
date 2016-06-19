@@ -1,24 +1,10 @@
 package neildg.com.megatronsr.processing.multiple;
 
-import android.media.Image;
-import android.util.Log;
-
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfDMatch;
-import org.opencv.core.MatOfFloat;
-import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
-import org.opencv.features2d.DescriptorExtractor;
-import org.opencv.features2d.DescriptorMatcher;
-import org.opencv.features2d.FeatureDetector;
-import org.opencv.features2d.Features2d;
-import org.opencv.imgproc.Imgproc;
 import org.opencv.video.Video;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -28,13 +14,9 @@ import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.io.MatWriter;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
-import neildg.com.megatronsr.processing.imagetools.OpticalFlowTest;
-import neildg.com.megatronsr.processing.multiple.workers.ZeroFillWorker;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**

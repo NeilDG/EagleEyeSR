@@ -7,10 +7,10 @@ import neildg.com.megatronsr.processing.IOperator;
 /**
  * Created by neil.dg on 5/19/16.
  */
-public class VariableSetup implements IOperator{
+public class GlasnerVariableSetup implements IOperator{
     private final static String TAG = "VariableSetup";
 
-    public VariableSetup() {
+    public GlasnerVariableSetup() {
 
     }
 
