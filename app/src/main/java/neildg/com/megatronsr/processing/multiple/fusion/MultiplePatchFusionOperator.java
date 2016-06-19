@@ -46,8 +46,7 @@ public class MultiplePatchFusionOperator implements IOperator {
 
                 double rmse = Double.MAX_VALUE;
                 for(int i = 0; i < this.warpedMatList.length; i++) {
-                    Imgproc.blur(this.warpedMatList[i], this.warpedMatList[i], new Size(5,5)); //test to remove noise
-
+                    
                     LoadedImagePatch imagePatch = new LoadedImagePatch(this.warpedMatList[i], patchSize, col, row);
                     double newRMSE = ImageMeasures.measureRMSENoise(imagePatch.getPatchMat());
                     double matSimilarity = ImageMeasures.measureMATSimilarity(originPatch.getPatchMat(), imagePatch.getPatchMat());
