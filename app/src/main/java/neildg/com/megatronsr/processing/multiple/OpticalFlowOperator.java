@@ -1,20 +1,8 @@
 package neildg.com.megatronsr.processing.multiple;
 
-import android.util.Log;
-
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfDMatch;
-import org.opencv.core.MatOfFloat;
-import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
-import org.opencv.features2d.DescriptorExtractor;
-import org.opencv.features2d.DescriptorMatcher;
-import org.opencv.features2d.FeatureDetector;
-import org.opencv.features2d.Features2d;
-import org.opencv.imgproc.Imgproc;
 import org.opencv.video.Video;
 
 import java.util.LinkedList;
@@ -23,201 +11,124 @@ import java.util.concurrent.Semaphore;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
+import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.IOperator;
-import neildg.com.megatronsr.processing.multiple.workers.ZeroFillWorker;
+import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
- * Upsamples the warped images and then computes pixel displacements by optical flow
+ * Creates zero-filled images by optical flow
  * Created by NeilDG on 5/25/2016.
  */
 public class OpticalFlowOperator implements IOperator {
     private final static String TAG = "OpticalFlowOperator";
 
-    private List<MatOfDMatch> goodMatchList;
-    private List<MatOfKeyPoint> keyPointList;
+    private Mat originMat;
+    private List<Mat> matSequences = new LinkedList<>();
 
-    private List<Mat> warpedMatrixList;
-    private MatOfKeyPoint refKeyPoint;
+    private Semaphore signalFlag = new Semaphore(0);
 
-    private Semaphore zeroFillSem;
+    public OpticalFlowOperator() {
+       int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
 
-    public OpticalFlowOperator(List<Mat> warpedMatrixList, MatOfKeyPoint refKeypoint) {
-        this.warpedMatrixList = warpedMatrixList;
-        this.refKeyPoint = refKeypoint;
+        this.originMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
+
+        for(int i = 1; i < numImages; i++) {
+            Mat mat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
+            this.matSequences.add(mat);
+        }
     }
 
     @Override
     public void perform() {
         ProgressDialogHandler.getInstance().showDialog("Optical flow","Calculating optical flow of images");
-        List<ZeroFillWorker> workerList = new LinkedList<>();
-        this.zeroFillSem = new Semaphore(0);
-        this.zeroFillWarps(workerList);
+
+        List<OpticalFlowWorker>  flowWorkerList = new LinkedList<>();
+        for(int i = 0; i < this.matSequences.size(); i++) {
+            OpticalFlowWorker flowWorker = new OpticalFlowWorker(this.originMat, this.matSequences.get(i), i + 1, this.signalFlag);
+            flowWorker.start();
+
+            flowWorkerList.add(flowWorker);
+        }
 
         try {
-            this.zeroFillSem.acquire(this.warpedMatrixList.size());
+            this.signalFlag.acquire(this.matSequences.size());
 
-            /*this.storeZeroFilledMatrices(workerList);
-            Mat referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
-            referenceMat = ImageOperator.performZeroFill(referenceMat, ParameterConfig.getScalingFactor(), 0, 0);
-            MatOfKeyPoint refKeyPoint = this.redetectKeypoints(referenceMat);*/
+            this.originMat = ImageOperator.performZeroFill(this.originMat, ParameterConfig.getScalingFactor(), 0, 0);
+            ProcessedImageRepo.getSharedInstance().storeZeroFilledMat(this.originMat);
 
-            Mat referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
-            MatOfKeyPoint refKeyPoint = this.redetectKeypoints(referenceMat);
-            this.performOpticalFlow(referenceMat, refKeyPoint);
+            for(int i = 0; i < flowWorkerList.size(); i++) {
+                Mat mat = flowWorkerList.get(i).getZeroFilledMat();
+                ProcessedImageRepo.getSharedInstance().storeZeroFilledMat(mat);
+            }
 
+            flowWorkerList.clear();
             ProgressDialogHandler.getInstance().hideDialog();
-        }
-        catch(InterruptedException e) {
+
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private void zeroFillWarps(List<ZeroFillWorker> workerList) {
-        int scalingFactor = ParameterConfig.getScalingFactor();
 
-        for(int i = 0; i < this.warpedMatrixList.size(); i++) {
-            ZeroFillWorker zeroFillWorker = new ZeroFillWorker(this.warpedMatrixList.get(i), scalingFactor, 0, 0, this.zeroFillSem);
-            zeroFillWorker.start();
-            workerList.add(zeroFillWorker);
+    private class OpticalFlowWorker extends Thread {
+
+        private Mat comparingMat;
+        private Semaphore signalFlag;
+        private int index;
+
+        private Mat mat1; //grayscale of origin mat
+        private Mat mat2;  //grayscale of comparing mat
+        private Mat zeroFilledMat;
+
+        public OpticalFlowWorker(Mat originMat, Mat comparingMat, int index, Semaphore signalFlag) {
+            this.comparingMat = comparingMat;
+            this.index = index;
+            this.signalFlag = signalFlag;
+
+            this.mat1 = ImageOperator.rgbToGray(originMat);
+            this.mat2 = ImageOperator.rgbToGray(comparingMat);
         }
-    }
 
-    private MatOfKeyPoint redetectKeypoints(Mat referenceMat) {
-        ProgressDialogHandler.getInstance().showDialog("Keypoint detection","Identifying keypoints in reference image.");
+        @Override
+        public void run() {
+            Mat xPoints = new Mat(this.comparingMat.size(), CvType.CV_32FC1);
+            Mat yPoints = new Mat(this.comparingMat.size(), CvType.CV_32FC1);
 
-        FeatureDetector featureDetector = FeatureDetector.create(FeatureDetector.ORB);
-        DescriptorExtractor descriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
-        DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
-
-        Mat referenceDescriptor = new Mat();
-        MatOfKeyPoint refKeypoint = new MatOfKeyPoint();
-
-        featureDetector.detect(referenceMat, refKeypoint);
-        descriptorExtractor.compute(referenceMat, refKeypoint, referenceDescriptor);
-
-        Mat debugMat = new Mat();
-        Features2d.drawKeypoints(referenceMat, refKeypoint, debugMat);
-        ImageWriter.getInstance().saveMatrixToImage(debugMat, FilenameConstants.OPTICAL_FLOW_DIR, "keypoints", ImageFileAttribute.FileType.JPEG);
-        return refKeypoint;
-    }
-
-    private void storeZeroFilledMatrices(List<ZeroFillWorker> workerList) {
-
-        ProgressDialogHandler.getInstance().showDialog("Optical flow", "Saving zero-filled HR warped images");
-            for (int i = 0; i < this.warpedMatrixList.size(); i++) {
-                Mat hrMat = workerList.get(i).getHrMat();
-                hrMat.copyTo(this.warpedMatrixList.get(i));
-                hrMat.release();
-
-                ImageWriter.getInstance().saveMatrixToImage(this.warpedMatrixList.get(i), FilenameConstants.OPTICAL_FLOW_DIR,
-                        FilenameConstants.OPTICAL_FLOW_IMAGE_ORIG+i, ImageFileAttribute.FileType.JPEG);
-            }
-
-            workerList.clear();
-
-    }
-
-    private void performOpticalFlow(Mat referenceMat, MatOfKeyPoint refKeypoint) {
-        ProgressDialogHandler.getInstance().showDialog("Optical flow", "Readjusting warped images");
-
-        MatOfByte status = new MatOfByte(); MatOfFloat error = new MatOfFloat();
-
-        /*MatOfPoint2f matOfPoint1 = new MatOfPoint2f();
-        MatOfPoint2f matOfPoint2 = new MatOfPoint2f();
-
-        KeyPoint[] keyPoints1 = refKeypoint.toArray();
-
-        List<Point> pointList1 = new LinkedList<>();
-        for(int i = 0; i < keyPoints1.length; i++) {
-            pointList1.add(keyPoints1[i].pt);
-        }
-        matOfPoint1.fromList(pointList1);
-
-        for(int i = 0; i < this.warpedMatrixList.size(); i++) {
-            Mat hrMat = this.warpedMatrixList.get(i);
-            Video.calcOpticalFlowPyrLK(referenceMat, hrMat, matOfPoint1, matOfPoint2, status, error);
-
-            Mat newPoints = new Mat(hrMat.size(), CvType.CV_16SC2);
-            Mat emptyMat = new Mat();
-            //Mat yPoints = new Mat(matOfPoint2.size(), CvType.CV_32FC1);
-            for(int row = 0; row <  matOfPoint2.rows(); row++) {
-                newPoints.put(row, 0, matOfPoint2.get(row, 0));
-                //yPoints.put(row, 0, matOfPoint2.get(row, 0)[1]);
-                //Log.d(TAG, "xPoint: " +xPoints.get(row,0)[0] + " yPoint: " +xPoints.get(row,0)[1]+ " Length:" + matOfPoint2.rows());
-            }
-
-            Imgproc.remap(hrMat, hrMat, newPoints, emptyMat, Imgproc.INTER_CUBIC);
-
-            ImageWriter.getInstance().saveMatrixToImage(this.warpedMatrixList.get(i), FilenameConstants.OPTICAL_FLOW_DIR,
-                    FilenameConstants.OPTICAL_FLOW_IMAGE_PREFIX + i, ImageFileAttribute.FileType.JPEG);
-        }*/
-
-        /*MatOfPoint2f matOfPoint1 = new MatOfPoint2f();
-        MatOfPoint2f matOfPoint2 = new MatOfPoint2f();
-
-        KeyPoint[] keyPoints1 = refKeypoint.toArray();
-
-        List<Point> pointList1 = new LinkedList<>();
-        for(int i = 0; i < keyPoints1.length; i++) {
-            pointList1.add(keyPoints1[i].pt);
-        }
-        matOfPoint1.fromList(pointList1);*/
-
-        Imgproc.cvtColor(referenceMat, referenceMat, Imgproc.COLOR_RGB2GRAY);
-        for(int i = 0; i < this.warpedMatrixList.size(); i++) {
-            Mat hrMat = this.warpedMatrixList.get(i);
+            //compute motion translation by optical flow
             Mat flowMat = new Mat();
-            ImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.OPTICAL_FLOW_DIR,
-                    FilenameConstants.OPTICAL_FLOW_IMAGE_ORIG+i, ImageFileAttribute.FileType.JPEG);
+            Video.calcOpticalFlowFarneback(this.mat1, this.mat2, flowMat, 0.25, 5, 15, 3, 5, 1.5, Video.MOTION_TRANSLATION);
+            //MatWriter.writeMat(flowMat, "flow_"+this.index);
 
-            Imgproc.cvtColor(hrMat, hrMat, Imgproc.COLOR_RGB2GRAY);
-            Log.d(TAG, "Checking channels " +referenceMat.channels()+ " Next mat: " +hrMat.channels() + " Size: " +referenceMat.size().toString()+ " Next mat size: " +hrMat.size().toString());
-
-            Video.calcOpticalFlowFarneback(referenceMat, hrMat, flowMat, 0.5, 3, 15, 3, 5, 1.2, Video.MOTION_HOMOGRAPHY);
-
-            //test remap
-            Mat xPoints = new Mat(hrMat.size(), CvType.CV_32FC1);
-            Mat yPoints = new Mat(hrMat.size(), CvType.CV_32FC1);
-            for(int y = 0; y < hrMat.rows(); y++) {
-                for(int x = 0; x < hrMat.cols(); x++) {
-                    //Log.d(TAG, "flowMat x: " +x+ " y: " +y+ " channels: "+flowMat.channels()+ " value: " +flowMat.get(y,x)[0]+" "+flowMat.get(y,x)[1]);
-                    Point pt = new Point(x + flowMat.get(y,x)[0], y + flowMat.get(y,x)[1]);
-                    xPoints.put(y,x, pt.x);
-                    yPoints.put(y,x, pt.y);
+            for(int row = 0; row < this.comparingMat.rows(); row++) {
+                for(int col = 0; col < this.comparingMat.cols(); col++) {
+                    //Log.d(TAG, "flowMat x: " +x+ " row: " +row+ " channels: "+flowMat.channels()+ " value: " +flowMat.get(row,x)[0]+" "+flowMat.get(row,x)[1]);
+                    Point pt = new Point(col + flowMat.get(row,col)[0], row + flowMat.get(row,col)[1]);
+                    xPoints.put(row,col, pt.x);
+                    yPoints.put(row,col, pt.y);
                 }
             }
 
-            ProgressDialogHandler.getInstance().showDialog("Optical flow", "Remapping warped image " +i);
-            Imgproc.remap(hrMat, hrMat, xPoints, yPoints, Imgproc.INTER_CUBIC);
-            ImageWriter.getInstance().saveMatrixToImage(this.warpedMatrixList.get(i), FilenameConstants.OPTICAL_FLOW_DIR,
-                    FilenameConstants.OPTICAL_FLOW_IMAGE_PREFIX + i, ImageFileAttribute.FileType.JPEG);
+            //perform zero-filling based from motion translation
+            int scaling = ParameterConfig.getScalingFactor();
+            this.zeroFilledMat = ImageOperator.performZeroFill(this.comparingMat, scaling, xPoints, yPoints);
+            //ImageWriter.getInstance().saveMatrixToImage(this.zeroFilledMat, "ZeroFill", "zero_fill_"+this.index, ImageFileAttribute.FileType.JPEG);
+
+            //clear memory allocations
+            this.comparingMat.release();
+            this.mat1.release();
+            this.mat2.release();
+
+            this.signalFlag.release(); //release flag of sem
+        }
+
+        public Mat getZeroFilledMat() {
+            return this.zeroFilledMat;
         }
     }
 
-    private MatOfPoint2f obtainPixelPoints(Mat referenceMat, int scaling) {
 
-        MatOfPoint2f matOfPoint2f = new MatOfPoint2f();
-        int space = scaling - 1;
-        for(int row = 0; row < referenceMat.rows(); row += space) {
-            for(int col = 0; col < referenceMat.cols(); col += space) {
-                Point pt = new Point(row, col);
-                matOfPoint2f.put(row, 0, pt.x, pt.y);
-            }
-        }
-
-        return matOfPoint2f;
-    }
-
-    private void debugPrint(MatOfPoint2f point2f) {
-        for (int y = 0; y < point2f.rows(); y++) {
-            for (int x = 0; x < point2f.cols(); x++) {
-                Log.d(TAG, "MatofPoint2 values: " + point2f.get(y, x)[0] + "   "+point2f.get(y,x)[1]);
-                // pointMap.put(y,x, matOfPoint2.get(x,y));
-            }
-        }
-    }
 }

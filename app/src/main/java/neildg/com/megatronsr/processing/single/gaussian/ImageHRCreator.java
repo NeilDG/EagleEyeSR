@@ -144,7 +144,6 @@ public class ImageHRCreator implements IOperator, ThreadFinishedListener {
                 /*Mat test = Mat.ones(80,80,subMat.type());
                 test.copyTo(subMat);*/
                 replacementPatch.getPatchMat().copyTo(subMat);
-
             }
         }
     }

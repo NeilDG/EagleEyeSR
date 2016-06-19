@@ -25,7 +25,7 @@ public class LRToHROperator implements IOperator {
     }
 
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Converting to HR images", "Pixels are \"stretched\" for each LR image.");
+        ProgressDialogHandler.getInstance().showDialog("Debugging", "Creating HR image by interpolation");
         int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
 
         //only interpolate the first reference image

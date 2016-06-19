@@ -19,6 +19,7 @@ import org.opencv.photo.Photo;
 import org.opencv.video.Video;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
@@ -38,23 +39,12 @@ public class LRWarpingOperator {
     private List<MatOfDMatch> goodMatchList;
     private List<MatOfKeyPoint> keyPointList;
 
-    private Mat referenceMat;
-
-    private Mat warpedMat = new Mat();
-    private Mat outputMat = new Mat();
-
-    private List<Mat> warpedMatrixList = new ArrayList<Mat>();
+    private List<Mat> warpedMatrixList = new LinkedList<>();
 
     public LRWarpingOperator(MatOfKeyPoint refKeypoint, List<MatOfDMatch> goodMatchList, List<MatOfKeyPoint> keyPointList) {
         this.goodMatchList = goodMatchList;
         this.keyPointList = keyPointList;
         this.refKeypoint = refKeypoint;
-
-        this.referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
-        this.outputMat = new Mat(this.referenceMat.size(), this.referenceMat.type());
-        this.referenceMat.copyTo(this.outputMat);
-
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "holderimage", ImageFileAttribute.FileType.JPEG);
     }
 
     public void perform() {
@@ -69,17 +59,15 @@ public class LRWarpingOperator {
 
             ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + i + " to reference image.");
 
-            this.warpedMat = new Mat();
-            this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
+            Mat warpedMat = this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
 
-            this.warpedMatrixList.add(this.warpedMat);
-            ImageWriter.getInstance().saveMatrixToImage(this.warpedMat, "warp_" +i, ImageFileAttribute.FileType.JPEG);
+            this.warpedMatrixList.add(warpedMat);
+            ImageWriter.getInstance().saveMatrixToImage(warpedMat, "warp_" +i, ImageFileAttribute.FileType.JPEG);
 
             ProgressDialogHandler.getInstance().hideDialog();
         }
 
         this.finalizeResult();
-        //ImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_PROCESSED_STRING);
     }
 
     public List<Mat> getWarpedMatrixList() {
@@ -98,11 +86,9 @@ public class LRWarpingOperator {
         }
 
         this.keyPointList.clear();
-
-        this.referenceMat.release(); this.referenceMat = null;
     }
 
-    private void warpImage(MatOfDMatch goodMatch, MatOfKeyPoint candidateKeypoint, Mat candidateMat) {
+    private Mat warpImage(MatOfDMatch goodMatch, MatOfKeyPoint candidateKeypoint, Mat candidateMat) {
         MatOfPoint2f matOfPoint1 = new MatOfPoint2f();
         MatOfPoint2f matOfPoint2 = new MatOfPoint2f();
 
@@ -122,7 +108,8 @@ public class LRWarpingOperator {
         }
 
         matOfPoint1.fromList(pointList1); matOfPoint2.fromList(pointList2);
-        MatOfByte status = new MatOfByte(); MatOfFloat error = new MatOfFloat();
+
+        //MatOfByte status = new MatOfByte(); MatOfFloat error = new MatOfFloat();
         //Video.calcOpticalFlowPyrLK(this.referenceMat, candidateMat, matOfPoint1, matOfPoint2, status, error);
 
         //((M0.type() == CV_32F || M0.type() == CV_64F) && M0.rows == 3 && M0.cols == 3)
@@ -133,6 +120,10 @@ public class LRWarpingOperator {
         Mat homography = Calib3d.findHomography(matOfPoint2, matOfPoint1, Calib3d.RANSAC, 1);
 
         Log.d(TAG, "Homography info: ROWS: " + homography.rows() + " COLS: " + homography.cols());
-        Imgproc.warpPerspective(candidateMat, this.warpedMat, homography, this.warpedMat.size(), Imgproc.INTER_NEAREST, Core.BORDER_TRANSPARENT, Scalar.all(0));
+
+        Mat warpedMat = new Mat();
+        Imgproc.warpPerspective(candidateMat, warpedMat, homography, warpedMat.size(), Imgproc.INTER_NEAREST, Core.BORDER_TRANSPARENT, Scalar.all(0));
+
+        return warpedMat;
     }
 }
