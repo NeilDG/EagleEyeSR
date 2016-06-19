@@ -13,6 +13,7 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.ITest;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
@@ -30,6 +31,8 @@ public class ImageWarpingTest implements ITest {
     @Override
     public void performTest() {
         ProgressDialogHandler.getInstance().showDialog("Debug mode", "Performing image warping test. Please wait...");
+
+        ProcessedImageRepo.initialize();
 
         DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConfig.getScalingFactor(), BitmapURIRepository.getInstance().getNumImagesSelected());
         downsamplingOperator.perform();
@@ -51,10 +54,10 @@ public class ImageWarpingTest implements ITest {
         LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         warpingOperator.perform();
 
-        List<Mat> warpedMatrixList = warpingOperator.getWarpedMatrixList();
+        Mat[] warpedMatList= ProcessedImageRepo.getSharedInstance().getWarpedMatList();
         Mat testOutputMat = new Mat();
-        for(int i = 0; i < warpedMatrixList.size(); i++) {
-            Mat warpedMat = warpedMatrixList.get(i);
+        for(int i = 0; i < warpedMatList.length; i++) {
+            Mat warpedMat = warpedMatList[i];
             Mat maskMat = Mat.zeros(warpedMat.size(), warpedMat.type());
 
             warpedMat.copyTo(maskMat);
@@ -68,9 +71,9 @@ public class ImageWarpingTest implements ITest {
             maskMat.release();
         }
 
-        warpedMatrixList.clear();
         ImageWriter.getInstance().saveMatrixToImage(testOutputMat, "test", ImageFileAttribute.FileType.JPEG);
 
+        ProcessedImageRepo.destroy();
         ProgressDialogHandler.getInstance().hideDialog();
     }
 }

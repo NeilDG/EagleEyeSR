@@ -27,6 +27,7 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -39,7 +40,6 @@ public class LRWarpingOperator {
     private List<MatOfDMatch> goodMatchList;
     private List<MatOfKeyPoint> keyPointList;
 
-    private List<Mat> warpedMatrixList = new LinkedList<>();
 
     public LRWarpingOperator(MatOfKeyPoint refKeypoint, List<MatOfDMatch> goodMatchList, List<MatOfKeyPoint> keyPointList) {
         this.goodMatchList = goodMatchList;
@@ -60,18 +60,14 @@ public class LRWarpingOperator {
             ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + i + " to reference image.");
 
             Mat warpedMat = this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
+            ProcessedImageRepo.getSharedInstance().storeWarpedMat(warpedMat);
 
-            this.warpedMatrixList.add(warpedMat);
             ImageWriter.getInstance().saveMatrixToImage(warpedMat, "warp_" +i, ImageFileAttribute.FileType.JPEG);
 
             ProgressDialogHandler.getInstance().hideDialog();
         }
 
         this.finalizeResult();
-    }
-
-    public List<Mat> getWarpedMatrixList() {
-        return this.warpedMatrixList;
     }
 
     private void finalizeResult() {

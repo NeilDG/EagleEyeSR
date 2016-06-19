@@ -41,16 +41,6 @@ public class ImageOperator {
         return grayScaleMat;
     }
 
-    public static double measureRMSENoise(Mat mat) {
-        Mat medianMat = new Mat();
-        Imgproc.medianBlur(mat, medianMat, 3);
-
-        double rmse = ImageMetrics.getRMSE(mat, medianMat);
-        medianMat.release();
-
-        return rmse;
-    }
-
     public static Mat blendImages(List<Mat> matList) {
         Mat matInput = matList.get(0);
         Mat mergedMat = new Mat(matInput.size(), matInput.type(), new Scalar(0));
@@ -145,7 +135,7 @@ public class ImageOperator {
 
     public static void replacePatchOnROI(Mat sourceMat, LoadedImagePatch sourcePatch, LoadedImagePatch replacementPatch) {
 
-        if(sourcePatch.getRowStart() >= 0 && sourcePatch.getRowEnd() < sourceMat.rows() && sourcePatch.getColStart() >= 0 && sourcePatch.getColEnd() < sourceMat.cols()) {
+        if(sourcePatch.getColStart() >= 0 && sourcePatch.getColEnd() < sourceMat.cols() && sourcePatch.getRowStart() >= 0 && sourcePatch.getRowEnd() < sourceMat.rows()) {
             Mat subMat = sourceMat.submat(sourcePatch.getRowStart(),sourcePatch.getRowEnd(), sourcePatch.getColStart(), sourcePatch.getColEnd());
             /*Mat test = Mat.ones(80,80,subMat.type());
              test.copyTo(subMat);*/

@@ -138,8 +138,8 @@ public class ImageHRCreator implements IOperator, ThreadFinishedListener {
 
         private void replacePatchOnROI(LoadedImagePatch lrPatch, LoadedImagePatch replacementPatch) {
 
-            if(lrPatch.getRowStart() >= 0 && lrPatch.getRowEnd() < this.outputMat.rows() && lrPatch.getColStart() >= 0 && lrPatch.getColEnd() < this.outputMat.cols()) {
-                Mat subMat = this.outputMat.submat(lrPatch.getRowStart(),lrPatch.getRowEnd(), lrPatch.getColStart(), lrPatch.getColEnd());
+            if(lrPatch.getColStart() >= 0 && lrPatch.getRowEnd() < this.outputMat.rows() && lrPatch.getRowStart() >= 0 && lrPatch.getColEnd() < this.outputMat.cols()) {
+                Mat subMat = this.outputMat.submat(lrPatch.getColStart(),lrPatch.getRowEnd(), lrPatch.getRowStart(), lrPatch.getColEnd());
 
                 /*Mat test = Mat.ones(80,80,subMat.type());
                 test.copyTo(subMat);*/
