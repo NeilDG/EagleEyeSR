@@ -1,11 +1,16 @@
 package neildg.com.megatronsr.processing.multiple.fusion;
 
+import android.graphics.Color;
 import android.util.Log;
 
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
+
+import java.util.Arrays;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
@@ -14,6 +19,7 @@ import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.single_gaussian.LoadedImagePatch;
 import neildg.com.megatronsr.processing.IOperator;
+import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageMeasures;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -29,9 +35,24 @@ public class MultiplePatchFusionOperator implements IOperator {
     private Mat originMat;
     private Mat[] warpedMatList;
 
+    private Mat[] yuvOriginMat;
+
+
     public MultiplePatchFusionOperator(Mat originMat, Mat[] warpedMatList) {
-        this.originMat = originMat;
-        this.warpedMatList = warpedMatList;
+
+        //TODO: uncomment for RGB processing
+        //this.originMat = originMat;
+        //this.warpedMatList = warpedMatList;
+
+        //convert mat into its Y channels first
+        this.yuvOriginMat = ColorSpaceOperator.convertRGBToYUV(originMat);
+        this.originMat = this.yuvOriginMat[ColorSpaceOperator.Y_CHANNEL];
+
+        this.warpedMatList = new Mat[warpedMatList.length];
+        for(int i = 0 ; i < warpedMatList.length; i++) {
+            Mat[] warpedMatYUV = ColorSpaceOperator.convertRGBToYUV(warpedMatList[i]);
+            this.warpedMatList[i] = warpedMatYUV[ColorSpaceOperator.Y_CHANNEL];
+        }
     }
 
     @Override
@@ -44,9 +65,10 @@ public class MultiplePatchFusionOperator implements IOperator {
             for(int col = 0; col < this.originMat.cols(); col += patchSize) {
                 LoadedImagePatch  originPatch = new LoadedImagePatch(this.originMat, patchSize, col, row);
 
+
                 double rmse = Double.MAX_VALUE;
                 for(int i = 0; i < this.warpedMatList.length; i++) {
-                    
+
                     LoadedImagePatch imagePatch = new LoadedImagePatch(this.warpedMatList[i], patchSize, col, row);
                     double newRMSE = ImageMeasures.measureRMSENoise(imagePatch.getPatchMat());
                     double matSimilarity = ImageMeasures.measureMATSimilarity(originPatch.getPatchMat(), imagePatch.getPatchMat());
@@ -54,7 +76,7 @@ public class MultiplePatchFusionOperator implements IOperator {
                     if(matSimilarity <= 0.001 && newRMSE < rmse) {
                         //Log.d(TAG, "New RMSE is "+newRMSE+ " Old: " +rmse+ " Performing patch replacement.");
                         rmse = newRMSE;
-                        ImageOperator.replacePatchOnROI(this.originMat, originPatch, imagePatch);
+                        ImageOperator.replacePatchOnROI(this.originMat, 1, originPatch, imagePatch);
                     }
 
                     imagePatch.release();
@@ -67,14 +89,39 @@ public class MultiplePatchFusionOperator implements IOperator {
         ProgressDialogHandler.getInstance().showDialog("Forming HR", "Finalizing");
 
         ImageWriter.getInstance().saveMatrixToImage(this.originMat, "initial_output", ImageFileAttribute.FileType.JPEG);
-        Mat outputMat = Mat.ones(this.originMat.rows() * ParameterConfig.getScalingFactor(), this.originMat.cols() * ParameterConfig.getScalingFactor(), this.originMat.type());
-        Imgproc.resize(this.originMat, outputMat, outputMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
 
-        ImageWriter.getInstance().saveMatrixToImage(outputMat, "initial_result", ImageFileAttribute.FileType.JPEG);
+        Mat processedYMat = Mat.ones(this.originMat.rows() * ParameterConfig.getScalingFactor(), this.originMat.cols() * ParameterConfig.getScalingFactor(), this.originMat.type());
+        Imgproc.resize(this.originMat, processedYMat, processedYMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        ImageWriter.getInstance().saveMatrixToImage(processedYMat, "initial_result", ImageFileAttribute.FileType.JPEG);
 
-        Imgproc.medianBlur(outputMat, outputMat, 3);
-        ImageWriter.getInstance().saveMatrixToImage(outputMat, "result", ImageFileAttribute.FileType.JPEG);
+        this.mergeResults(processedYMat);
+        processedYMat.release();
 
         ProgressDialogHandler.getInstance().hideDialog();
+    }
+
+    /*
+     * Merges origin Mat (Y) to bicubic interpolated (UV) mat
+     */
+    private void mergeResults(Mat processedYMat) {
+        this.yuvOriginMat[ColorSpaceOperator.Y_CHANNEL] = processedYMat;
+
+        Mat scaledU = Mat.ones(this.yuvOriginMat[ColorSpaceOperator.U_CHANNEL].rows() * ParameterConfig.getScalingFactor(), this.yuvOriginMat[ColorSpaceOperator.U_CHANNEL].cols() * ParameterConfig.getScalingFactor(), this.yuvOriginMat[ColorSpaceOperator.U_CHANNEL].type());
+        Imgproc.resize(this.yuvOriginMat[ColorSpaceOperator.U_CHANNEL], scaledU, scaledU.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        this.yuvOriginMat[ColorSpaceOperator.U_CHANNEL] = scaledU;
+
+        Mat scaledV =  Mat.ones(this.yuvOriginMat[ColorSpaceOperator.V_CHANNEL].rows() * ParameterConfig.getScalingFactor(), this.yuvOriginMat[ColorSpaceOperator.V_CHANNEL].cols() * ParameterConfig.getScalingFactor(), this.yuvOriginMat[ColorSpaceOperator.V_CHANNEL].type());
+        Imgproc.resize(this.yuvOriginMat[ColorSpaceOperator.V_CHANNEL], scaledV, scaledV.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        this.yuvOriginMat[ColorSpaceOperator.V_CHANNEL] = scaledV;
+
+        Mat outputMat = new Mat();
+
+        Log.d(TAG, "Y size: " +this.yuvOriginMat[ColorSpaceOperator.Y_CHANNEL].size() +
+                " U size: " +this.yuvOriginMat[ColorSpaceOperator.U_CHANNEL].size() +
+                " V size: " +this.yuvOriginMat[ColorSpaceOperator.V_CHANNEL].size());
+
+        Core.merge(Arrays.asList(this.yuvOriginMat), outputMat);
+        Imgproc.cvtColor(outputMat, outputMat, Imgproc.COLOR_YUV2BGR);
+        ImageWriter.getInstance().saveMatrixToImage(outputMat, "result", ImageFileAttribute.FileType.JPEG);
     }
 }

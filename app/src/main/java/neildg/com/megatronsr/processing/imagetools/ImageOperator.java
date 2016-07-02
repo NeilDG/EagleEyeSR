@@ -6,6 +6,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
@@ -27,7 +28,10 @@ public class ImageOperator {
         Mat baseMaskMat = new Mat();
         inputMat.copyTo(baseMaskMat);
 
-        Imgproc.cvtColor(baseMaskMat, baseMaskMat, Imgproc.COLOR_BGR2GRAY);
+        if(inputMat.channels() == 3 || inputMat.channels() == 4) {
+            Imgproc.cvtColor(baseMaskMat, baseMaskMat, Imgproc.COLOR_BGR2GRAY);
+        }
+
         baseMaskMat.convertTo(baseMaskMat, CvType.CV_8UC1);
         Imgproc.threshold(baseMaskMat, baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
 
@@ -133,13 +137,26 @@ public class ImageOperator {
         return hrMat;
     }
 
-    public static void replacePatchOnROI(Mat sourceMat, LoadedImagePatch sourcePatch, LoadedImagePatch replacementPatch) {
+    public static void replacePatchOnROI(Mat sourceMat, int boundary, LoadedImagePatch sourcePatch, LoadedImagePatch replacementPatch) {
 
         if(sourcePatch.getColStart() >= 0 && sourcePatch.getColEnd() < sourceMat.cols() && sourcePatch.getRowStart() >= 0 && sourcePatch.getRowEnd() < sourceMat.rows()) {
             Mat subMat = sourceMat.submat(sourcePatch.getRowStart(),sourcePatch.getRowEnd(), sourcePatch.getColStart(), sourcePatch.getColEnd());
-            /*Mat test = Mat.ones(80,80,subMat.type());
-             test.copyTo(subMat);*/
             replacementPatch.getPatchMat().copyTo(subMat);
+
+            //attempt to perform blurring by extracting a parent mat at the borders of the submat
+            int rowStart = sourcePatch.getRowStart() - boundary;
+            int rowEnd = sourcePatch.getRowEnd() + boundary;
+            int colStart = sourcePatch.getColStart() - boundary;
+            int colEnd = sourcePatch.getColEnd() + boundary;
+
+            if(colStart >= 0 && colEnd < sourceMat.cols() && rowStart >= 0 && rowEnd < sourceMat.rows()) {
+                Mat parentMat = sourceMat.submat(rowStart, rowEnd, colStart, colEnd);
+                Mat blurMat = new Mat();
+                Imgproc.blur(parentMat, blurMat, new Size(3,3));
+                Core.addWeighted(parentMat, 1.5 , blurMat, -0.5, 0, parentMat);
+                blurMat.release();
+            }
+
         }
     }
 }
