@@ -13,6 +13,7 @@ import neildg.com.megatronsr.processing.multiple.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.LRWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.OpticalFlowOperator;
 import neildg.com.megatronsr.processing.multiple.LRToHROperator;
+import neildg.com.megatronsr.processing.multiple.fusion.HDRFusionOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.MotionFusionOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.MultiplePatchFusionOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -46,8 +47,12 @@ public class MultipleImageSRProcessor extends Thread {
         warpingOperator.perform();
 
         Mat originMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
-        MultiplePatchFusionOperator patchFusionOperator = new MultiplePatchFusionOperator(originMat, ProcessedImageRepo.getSharedInstance().getWarpedMatList());
-        patchFusionOperator.perform();
+
+       // MultiplePatchFusionOperator patchFusionOperator = new MultiplePatchFusionOperator(originMat, ProcessedImageRepo.getSharedInstance().getWarpedMatList());
+        //patchFusionOperator.perform();
+
+        HDRFusionOperator hdrFusionOperator = new HDRFusionOperator(originMat, ProcessedImageRepo.getSharedInstance().getWarpedMatList());
+        hdrFusionOperator.perform();
 
         //deallocate some classes
         ProcessedImageRepo.destroy();
