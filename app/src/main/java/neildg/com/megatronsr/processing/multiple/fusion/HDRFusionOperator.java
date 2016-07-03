@@ -6,6 +6,9 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.photo.AlignExposures;
+import org.opencv.photo.AlignMTB;
 import org.opencv.photo.CalibrateDebevec;
 import org.opencv.photo.MergeDebevec;
 import org.opencv.photo.MergeMertens;
@@ -16,9 +19,11 @@ import org.opencv.utils.Converters;
 import java.util.ArrayList;
 import java.util.List;
 
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
+import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -28,23 +33,33 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 public class HDRFusionOperator implements IOperator {
     private final static String TAG = "HDRFusionOperator";
 
-    //private Mat originalMat;
-    //private Mat[] warpedMatList;
-
     private List<Mat> processMatList = new ArrayList<>();
 
-    public HDRFusionOperator(Mat originalMat, Mat[] warpedMatList) {
-        this.processMatList.add(originalMat);
+    private Mat originalMat;
+    private Mat[] warpedMatList;
 
-        for(int i = 0; i < warpedMatList.length; i++) {
-            this.processMatList.add(warpedMatList[i]);
-        }
+    public HDRFusionOperator(Mat originalMat, Mat[] warpedMatList) {
+        this.originalMat = originalMat;
+        this.warpedMatList = warpedMatList;
     }
 
     @Override
     public void perform() {
 
+        ProgressDialogHandler.getInstance().showDialog("Resizing images", "Performing image resizing");
+
+        this.processMatList.add(ImageOperator.performInterpolation(this.originalMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC));
+        this.originalMat.release();
+
+        for(int i = 0; i < this.warpedMatList.length; i++) {
+            this.processMatList.add(ImageOperator.performInterpolation(this.warpedMatList[i], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC));
+            this.warpedMatList[i].release();
+        }
+
         ProgressDialogHandler.getInstance().showDialog("Fusing images", "Fusing images");
+
+        AlignMTB aligner = Photo.createAlignMTB();
+        aligner.process(this.processMatList, this.processMatList);
 
         Mat fusionMat = new Mat();
         MergeMertens fusionMerger = Photo.createMergeMertens();
@@ -56,6 +71,9 @@ public class HDRFusionOperator implements IOperator {
         Log.d(TAG, "FusionMap type: " + CvType.typeToString(fusionMat.type()));
 
         ImageWriter.getInstance().saveMatrixToImage(fusionMat, "exposure_fusion", ImageFileAttribute.FileType.JPEG);
+
+        fusionMat.release();
+        multMat.release();
 
         ProgressDialogHandler.getInstance().hideDialog();
     }
