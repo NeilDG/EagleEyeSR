@@ -48,10 +48,16 @@ public class ImageWarpingTest implements ITest {
             testMatList.add(imageMat);
         }
 
-        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator();
+        Mat referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
+        Mat[] comparingMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected()];
+        for(int i = 0; i < comparingMatList.length; i++) {
+            comparingMatList[i] = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (i+1), ImageFileAttribute.FileType.JPEG);
+        }
+
+        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(referenceMat, comparingMatList);
         matchingOperator.perform();
 
-        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
+        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), comparingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         warpingOperator.perform();
 
         Mat[] warpedMatList= ProcessedImageRepo.getSharedInstance().getWarpedMatList();

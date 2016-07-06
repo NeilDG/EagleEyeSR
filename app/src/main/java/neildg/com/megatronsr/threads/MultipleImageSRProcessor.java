@@ -31,8 +31,10 @@ public class MultipleImageSRProcessor extends Thread {
     @Override
     public void run() {
         ProgressDialogHandler.getInstance().showDialog("Downsampling images", "Downsampling images selected and saving them in file.");
+
         DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConfig.getScalingFactor(), BitmapURIRepository.getInstance().getNumImagesSelected());
         downsamplingOperator.perform();
+
         ProgressDialogHandler.getInstance().hideDialog();
 
         LRToHROperator lrToHROperator = new LRToHROperator();
@@ -40,16 +42,22 @@ public class MultipleImageSRProcessor extends Thread {
 
         ProcessedImageRepo.initialize();
 
-        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator();
+
+        //load the images
+        Mat referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
+        Mat[] comparingMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected() - 1];
+        for(int i = 0; i < comparingMatList.length; i++) {
+            comparingMatList[i] = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (i+1), ImageFileAttribute.FileType.JPEG);
+        }
+
+        //perform feature matching of LR images against the first image as reference mat.
+        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(referenceMat, comparingMatList);
         matchingOperator.perform();
 
-        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
+        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), comparingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         warpingOperator.perform();
 
         Mat originMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
-
-       // MultiplePatchFusionOperator patchFusionOperator = new MultiplePatchFusionOperator(originMat, ProcessedImageRepo.getSharedInstance().getWarpedMatList());
-        //patchFusionOperator.perform();
 
         HDRFusionOperator hdrFusionOperator = new HDRFusionOperator(originMat, ProcessedImageRepo.getSharedInstance().getWarpedMatList());
         hdrFusionOperator.perform();
