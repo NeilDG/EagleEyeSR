@@ -1,6 +1,10 @@
 package neildg.com.megatronsr.threads;
 
+import android.graphics.Color;
+
+import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.utils.Converters;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
@@ -8,6 +12,7 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
+import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.multiple.DownsamplingOperator;
 import neildg.com.megatronsr.processing.multiple.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.LRWarpingOperator;
@@ -42,12 +47,16 @@ public class MultipleImageSRProcessor extends Thread {
 
         ProcessedImageRepo.initialize();
 
-
         //load the images
         Mat referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
+        Mat[] yuvRefMat = ColorSpaceOperator.convertRGBToYUV(referenceMat);
+        referenceMat = yuvRefMat[ColorSpaceOperator.Y_CHANNEL];
+
         Mat[] comparingMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected() - 1];
         for(int i = 0; i < comparingMatList.length; i++) {
-            comparingMatList[i] = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (i+1), ImageFileAttribute.FileType.JPEG);
+            Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (i+1), ImageFileAttribute.FileType.JPEG);
+            Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(lrMat);
+            comparingMatList[i] = yuvMat[ColorSpaceOperator.Y_CHANNEL];
         }
 
         //perform feature matching of LR images against the first image as reference mat.
@@ -57,10 +66,8 @@ public class MultipleImageSRProcessor extends Thread {
         LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), comparingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         warpingOperator.perform();
 
-        Mat originMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
-
-        HDRFusionOperator hdrFusionOperator = new HDRFusionOperator(originMat, ProcessedImageRepo.getSharedInstance().getWarpedMatList());
-        hdrFusionOperator.perform();
+        //HDRFusionOperator hdrFusionOperator = new HDRFusionOperator(referenceMat, ProcessedImageRepo.getSharedInstance().getWarpedMatList());
+        //hdrFusionOperator.perform();
 
         //deallocate some classes
         ProcessedImageRepo.destroy();

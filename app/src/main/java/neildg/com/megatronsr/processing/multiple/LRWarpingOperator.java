@@ -71,6 +71,8 @@ public class LRWarpingOperator {
             Mat warpedMat = this.warpImage(this.goodMatchList[i], this.keyPointList[i], this.imagesToWarpList[i]);
             ProcessedImageRepo.getSharedInstance().storeWarpedMat(warpedMat);
 
+            ImageWriter.getInstance().saveMatrixToImage(warpedMat, "warp_" +i, ImageFileAttribute.FileType.JPEG);
+
             this.imagesToWarpList[i].release();
             ProgressDialogHandler.getInstance().hideDialog();
         }
