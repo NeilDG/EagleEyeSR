@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.multiple;
+package neildg.com.megatronsr.processing.multiple.warping;
 
 import android.util.Log;
 
@@ -27,6 +27,7 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -36,42 +37,49 @@ public class LRWarpingOperator {
     private final static String TAG = "WarpingOperator";
 
     private MatOfKeyPoint refKeypoint;
-    private List<MatOfDMatch> goodMatchList;
-    private List<MatOfKeyPoint> keyPointList;
+    private MatOfDMatch[] goodMatchList;
+    private MatOfKeyPoint[] keyPointList;
+    private Mat[] imagesToWarpList;
 
-    private List<Mat> warpedMatrixList = new LinkedList<>();
-
-    public LRWarpingOperator(MatOfKeyPoint refKeypoint, List<MatOfDMatch> goodMatchList, List<MatOfKeyPoint> keyPointList) {
+    public LRWarpingOperator(MatOfKeyPoint refKeypoint, Mat[] imagesToWarpList, MatOfDMatch[] goodMatchList, MatOfKeyPoint[] keyPointList) {
         this.goodMatchList = goodMatchList;
         this.keyPointList = keyPointList;
         this.refKeypoint = refKeypoint;
+        this.imagesToWarpList = imagesToWarpList;
     }
 
     public void perform() {
         ProgressDialogHandler.getInstance().hideDialog();
 
-        Log.d(TAG, "LR Homography warping");
-
-        int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
+        /*int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
         for (int i = 1; i < numImages; i++) {
             Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
-
 
             ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + i + " to reference image.");
 
             Mat warpedMat = this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
+            ProcessedImageRepo.getSharedInstance().storeWarpedMat(warpedMat);
 
-            this.warpedMatrixList.add(warpedMat);
             ImageWriter.getInstance().saveMatrixToImage(warpedMat, "warp_" +i, ImageFileAttribute.FileType.JPEG);
 
             ProgressDialogHandler.getInstance().hideDialog();
+        }*/
+
+        for(int i = 0; i < this.imagesToWarpList.length; i++) {
+            ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + (i+1) + " to reference image.");
+
+            Mat warpedMat = this.warpImage(this.goodMatchList[i], this.keyPointList[i], this.imagesToWarpList[i]);
+            ProcessedImageRepo.getSharedInstance().storeWarpedMat(warpedMat);
+
+            ImageWriter.getInstance().saveMatrixToImage(warpedMat, "warp_" +i, ImageFileAttribute.FileType.JPEG);
+
+            this.imagesToWarpList[i].release();
+            ProgressDialogHandler.getInstance().hideDialog();
         }
 
-        this.finalizeResult();
-    }
+        this.imagesToWarpList = null;
 
-    public List<Mat> getWarpedMatrixList() {
-        return this.warpedMatrixList;
+        this.finalizeResult();
     }
 
     private void finalizeResult() {
@@ -79,13 +87,12 @@ public class LRWarpingOperator {
         for(MatOfDMatch dMatch: this.goodMatchList) {
             dMatch.release();
         }
-        this.goodMatchList.clear();
+        this.goodMatchList = null;
 
         for(MatOfKeyPoint keyPoint: this.keyPointList) {
             keyPoint.release();
         }
-
-        this.keyPointList.clear();
+        this.keyPointList = null;
     }
 
     private Mat warpImage(MatOfDMatch goodMatch, MatOfKeyPoint candidateKeypoint, Mat candidateMat) {

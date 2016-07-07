@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.multiple;
+package neildg.com.megatronsr.processing.multiple.warping;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -16,6 +16,7 @@ import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.IOperator;
+import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -89,8 +90,8 @@ public class OpticalFlowOperator implements IOperator {
             this.index = index;
             this.signalFlag = signalFlag;
 
-            this.mat1 = ImageOperator.rgbToGray(originMat);
-            this.mat2 = ImageOperator.rgbToGray(comparingMat);
+            this.mat1 = ColorSpaceOperator.rgbToGray(originMat);
+            this.mat2 = ColorSpaceOperator.rgbToGray(comparingMat);
         }
 
         @Override

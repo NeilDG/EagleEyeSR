@@ -13,12 +13,12 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.processing.IOperator;
+import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.ITest;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
-import neildg.com.megatronsr.processing.multiple.DownsamplingOperator;
-import neildg.com.megatronsr.processing.multiple.FeatureMatchingOperator;
-import neildg.com.megatronsr.processing.multiple.LRWarpingOperator;
+import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
+import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
+import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -30,6 +30,8 @@ public class ImageWarpingTest implements ITest {
     @Override
     public void performTest() {
         ProgressDialogHandler.getInstance().showDialog("Debug mode", "Performing image warping test. Please wait...");
+
+        ProcessedImageRepo.initialize();
 
         DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConfig.getScalingFactor(), BitmapURIRepository.getInstance().getNumImagesSelected());
         downsamplingOperator.perform();
@@ -45,16 +47,22 @@ public class ImageWarpingTest implements ITest {
             testMatList.add(imageMat);
         }
 
-        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator();
+        Mat referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
+        Mat[] comparingMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected()];
+        for(int i = 0; i < comparingMatList.length; i++) {
+            comparingMatList[i] = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (i+1), ImageFileAttribute.FileType.JPEG);
+        }
+
+        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(referenceMat, comparingMatList);
         matchingOperator.perform();
 
-        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
+        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), comparingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         warpingOperator.perform();
 
-        List<Mat> warpedMatrixList = warpingOperator.getWarpedMatrixList();
+        Mat[] warpedMatList= ProcessedImageRepo.getSharedInstance().getWarpedMatList();
         Mat testOutputMat = new Mat();
-        for(int i = 0; i < warpedMatrixList.size(); i++) {
-            Mat warpedMat = warpedMatrixList.get(i);
+        for(int i = 0; i < warpedMatList.length; i++) {
+            Mat warpedMat = warpedMatList[i];
             Mat maskMat = Mat.zeros(warpedMat.size(), warpedMat.type());
 
             warpedMat.copyTo(maskMat);
@@ -68,9 +76,9 @@ public class ImageWarpingTest implements ITest {
             maskMat.release();
         }
 
-        warpedMatrixList.clear();
         ImageWriter.getInstance().saveMatrixToImage(testOutputMat, "test", ImageFileAttribute.FileType.JPEG);
 
+        ProcessedImageRepo.destroy();
         ProgressDialogHandler.getInstance().hideDialog();
     }
 }

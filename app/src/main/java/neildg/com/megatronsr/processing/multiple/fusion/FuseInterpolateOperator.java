@@ -13,6 +13,7 @@ import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.io.MetricsLogger;
 import neildg.com.megatronsr.processing.IOperator;
+import neildg.com.megatronsr.processing.imagetools.ImageMeasures;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -45,7 +46,7 @@ public class FuseInterpolateOperator implements IOperator {
         this.groundTruthMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
         this.fusedMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
-        Mat initialHRMat= ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
+        Mat initialHRMat= ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_CUBIC + 0, ImageFileAttribute.FileType.JPEG);
         Mat nearestMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_NEAREST, ImageFileAttribute.FileType.JPEG);
         MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_nearest", this.groundTruthMat, "GroundTruth", nearestMat,
                 "NearestMat", "Ground truth vs Nearest");
@@ -67,7 +68,7 @@ public class FuseInterpolateOperator implements IOperator {
             Mat baseWarpMat = this.warpedMatrixList.get(i);
             Mat maskMat = ImageOperator.produceMask(baseWarpMat);
 
-            double newRMSE = ImageOperator.measureRMSENoise(baseWarpMat);
+            double newRMSE = ImageMeasures.measureRMSENoise(baseWarpMat);
             if(newRMSE <= threshold) {
                 threshold = newRMSE;
                 blendMatList.add(baseWarpMat);
