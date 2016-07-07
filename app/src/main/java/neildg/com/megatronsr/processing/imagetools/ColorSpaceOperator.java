@@ -28,7 +28,7 @@ public class ColorSpaceOperator {
      */
     public static Mat[] convertRGBToYUV(Mat mat) {
         Mat yuvMat = new Mat();
-        Imgproc.cvtColor(mat, yuvMat, Imgproc.COLOR_RGB2YUV);
+        Imgproc.cvtColor(mat, yuvMat, Imgproc.COLOR_BGR2YUV);
 
         List matList = new ArrayList();
         Core.split(yuvMat, matList);
@@ -39,7 +39,7 @@ public class ColorSpaceOperator {
     public static Mat rgbToGray(Mat inputMat) {
         Mat grayScaleMat = new Mat();
         if(inputMat.channels() == 3 || inputMat.channels() == 4) {
-            Imgproc.cvtColor(inputMat, grayScaleMat, Imgproc.COLOR_RGB2GRAY);
+            Imgproc.cvtColor(inputMat, grayScaleMat, Imgproc.COLOR_BGR2GRAY);
         }
         else {
             grayScaleMat.release();
