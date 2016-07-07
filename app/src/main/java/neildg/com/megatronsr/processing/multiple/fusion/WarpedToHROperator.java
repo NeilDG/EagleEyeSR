@@ -91,8 +91,8 @@ public class WarpedToHROperator {
             Log.d(TAG, "New RMSE: " +newRMSE+ " Old RMSE: " +this.rmse);
             //if RMSE is lower than previous, candidate is reliable. That means its noise is not too much.
             if(newRMSE <= this.rmse) {
-                //baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat);
-                medianMat.copyTo(this.outputMat, this.baseMaskMat); //TODO: test only
+                baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat);
+                //medianMat.copyTo(this.outputMat, this.baseMaskMat); //TODO: test only
                 this.rmse = newRMSE;
             }
             else {

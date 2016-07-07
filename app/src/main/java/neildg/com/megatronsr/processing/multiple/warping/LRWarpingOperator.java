@@ -51,20 +51,6 @@ public class LRWarpingOperator {
     public void perform() {
         ProgressDialogHandler.getInstance().hideDialog();
 
-        /*int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
-        for (int i = 1; i < numImages; i++) {
-            Mat comparingMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
-
-            ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + i + " to reference image.");
-
-            Mat warpedMat = this.warpImage(this.goodMatchList.get(i - 1), this.keyPointList.get(i - 1), comparingMat);
-            ProcessedImageRepo.getSharedInstance().storeWarpedMat(warpedMat);
-
-            ImageWriter.getInstance().saveMatrixToImage(warpedMat, "warp_" +i, ImageFileAttribute.FileType.JPEG);
-
-            ProgressDialogHandler.getInstance().hideDialog();
-        }*/
-
         for(int i = 0; i < this.imagesToWarpList.length; i++) {
             ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + (i+1) + " to reference image.");
 
