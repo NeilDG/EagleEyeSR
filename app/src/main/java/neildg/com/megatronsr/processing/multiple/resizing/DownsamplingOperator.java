@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.multiple;
+package neildg.com.megatronsr.processing.multiple.resizing;
 
 import android.graphics.Bitmap;
 

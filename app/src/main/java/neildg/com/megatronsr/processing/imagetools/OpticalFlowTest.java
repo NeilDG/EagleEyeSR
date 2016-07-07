@@ -1,16 +1,11 @@
 package neildg.com.megatronsr.processing.imagetools;
 
-import android.os.Debug;
-import android.util.Log;
-
-import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.video.DenseOpticalFlow;
 import org.opencv.video.Video;
 
 import java.util.LinkedList;
@@ -24,7 +19,7 @@ import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.io.MatWriter;
 import neildg.com.megatronsr.processing.ITest;
-import neildg.com.megatronsr.processing.multiple.DownsamplingOperator;
+import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**

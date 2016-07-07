@@ -8,9 +8,8 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.MatWriter;
-import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.ITest;
-import neildg.com.megatronsr.processing.multiple.DownsamplingOperator;
+import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**

@@ -1,5 +1,7 @@
 package neildg.com.megatronsr.model.multiple;
 
+import android.util.Log;
+
 import org.opencv.core.Mat;
 
 import java.util.LinkedList;
@@ -19,6 +21,8 @@ public class ProcessedImageRepo {
 
     private List<Mat> zeroFilledMatList = new LinkedList<>();
     private List<Mat> warpedMatList = new LinkedList<>();
+
+    private Mat[] referenceMatYUV;
 
     private ProcessedImageRepo() {
 
@@ -51,5 +55,18 @@ public class ProcessedImageRepo {
 
     public Mat[] getWarpedMatList() {
         return this.warpedMatList.toArray(new Mat[this.warpedMatList.size()]);
+    }
+
+    public void storeYUVReferenceMat(Mat[] referenceMatYUV) {
+        this.referenceMatYUV = referenceMatYUV;
+    }
+
+    public Mat[] getReferenceMatYUV() {
+        if(this.referenceMatYUV == null) {
+            Log.e(TAG, "YUV reference mat is null!");
+            return null;
+        }
+
+        return this.referenceMatYUV;
     }
 }

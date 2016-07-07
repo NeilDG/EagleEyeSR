@@ -38,13 +38,6 @@ public class ImageOperator {
         return baseMaskMat;
     }
 
-    public static Mat rgbToGray(Mat inputMat) {
-        Mat grayScaleMat = new Mat();
-        Imgproc.cvtColor(inputMat, grayScaleMat, Imgproc.COLOR_RGB2GRAY);
-
-        return grayScaleMat;
-    }
-
     public static Mat blendImages(List<Mat> matList) {
         Mat matInput = matList.get(0);
         Mat mergedMat = new Mat(matInput.size(), matInput.type(), new Scalar(0));
@@ -108,15 +101,17 @@ public class ImageOperator {
         return hrMat;
     }
 
-    public static void copyMat(Mat fromMat, Mat hrMat, int xOffset, int yOffset) {
-        int pixelSpace = ParameterConfig.getScalingFactor();
+    /*
+     * Copies the rows of a given mat to the hr mat by zero-filling.
+     */
+    public static void copyMat(Mat fromMat, Mat hrMat, int scaling, int xOffset, int yOffset) {
 
         for (int row = 0; row < fromMat.rows(); row++) {
             for (int col = 0; col < fromMat.cols(); col++) {
                 double[] lrPixelData = fromMat.get(row, col);
 
-                int resultRow = (row * pixelSpace) + yOffset;
-                int resultCol = (col * pixelSpace) + xOffset;
+                int resultRow = (row * scaling) + yOffset;
+                int resultCol = (col * scaling) + xOffset;
 
                 if (resultRow < hrMat.rows() && resultCol < hrMat.cols()) {
                     hrMat.put(resultRow, resultCol, lrPixelData);

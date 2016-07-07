@@ -1,10 +1,7 @@
 package neildg.com.megatronsr.threads;
 
-import android.graphics.Color;
-
-import org.opencv.android.Utils;
 import org.opencv.core.Mat;
-import org.opencv.utils.Converters;
+import org.opencv.imgproc.Imgproc;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
@@ -13,14 +10,12 @@ import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
-import neildg.com.megatronsr.processing.multiple.DownsamplingOperator;
-import neildg.com.megatronsr.processing.multiple.FeatureMatchingOperator;
-import neildg.com.megatronsr.processing.multiple.LRWarpingOperator;
-import neildg.com.megatronsr.processing.multiple.OpticalFlowOperator;
-import neildg.com.megatronsr.processing.multiple.LRToHROperator;
-import neildg.com.megatronsr.processing.multiple.fusion.HDRFusionOperator;
-import neildg.com.megatronsr.processing.multiple.fusion.MotionFusionOperator;
-import neildg.com.megatronsr.processing.multiple.fusion.MultiplePatchFusionOperator;
+import neildg.com.megatronsr.processing.imagetools.ImageOperator;
+import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
+import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
+import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
+import neildg.com.megatronsr.processing.multiple.resizing.LRToHROperator;
+import neildg.com.megatronsr.processing.multiple.fusion.WarpedToHROperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -50,6 +45,7 @@ public class MultipleImageSRProcessor extends Thread {
         //load the images
         Mat referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
         Mat[] yuvRefMat = ColorSpaceOperator.convertRGBToYUV(referenceMat);
+        ProcessedImageRepo.getSharedInstance().storeYUVReferenceMat(yuvRefMat);
         referenceMat = yuvRefMat[ColorSpaceOperator.Y_CHANNEL];
 
         Mat[] comparingMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected() - 1];
@@ -65,6 +61,10 @@ public class MultipleImageSRProcessor extends Thread {
 
         LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), comparingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         warpingOperator.perform();
+
+        Mat initialMat = ImageOperator.performInterpolation(referenceMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        WarpedToHROperator warpedToHROperator = new WarpedToHROperator(initialMat, ProcessedImageRepo.getSharedInstance().getWarpedMatList());
+        warpedToHROperator.perform();
 
         //HDRFusionOperator hdrFusionOperator = new HDRFusionOperator(referenceMat, ProcessedImageRepo.getSharedInstance().getWarpedMatList());
         //hdrFusionOperator.perform();

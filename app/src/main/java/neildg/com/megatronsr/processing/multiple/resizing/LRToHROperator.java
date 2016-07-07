@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.multiple;
+package neildg.com.megatronsr.processing.multiple.resizing;
 
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -37,7 +37,7 @@ public class LRToHROperator implements IOperator {
         ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.INITIAL_HR_NEAREST, ImageFileAttribute.FileType.JPEG);
 
         Imgproc.resize(lrMat, this.hrMat, this.hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.INITIAL_HR_CUBIC + 0, ImageFileAttribute.FileType.JPEG);
+        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.INITIAL_HR_CUBIC, ImageFileAttribute.FileType.JPEG);
 
         Mat zeroFillMat = ImageOperator.performZeroFill(lrMat, ParameterConfig.getScalingFactor(), 0, 0);
         ImageWriter.getInstance().saveMatrixToImage(zeroFillMat, FilenameConstants.INITIAL_HR_ZERO_FILLED_STRING, ImageFileAttribute.FileType.JPEG);

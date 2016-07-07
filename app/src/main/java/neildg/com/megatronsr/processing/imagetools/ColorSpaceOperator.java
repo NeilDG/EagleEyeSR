@@ -35,4 +35,17 @@ public class ColorSpaceOperator {
 
         return (Mat[]) matList.toArray(new Mat[matList.size()]);
     }
+
+    public static Mat rgbToGray(Mat inputMat) {
+        Mat grayScaleMat = new Mat();
+        if(inputMat.channels() == 3 || inputMat.channels() == 4) {
+            Imgproc.cvtColor(inputMat, grayScaleMat, Imgproc.COLOR_RGB2GRAY);
+        }
+        else {
+            grayScaleMat.release();
+            grayScaleMat = inputMat;
+        }
+
+        return grayScaleMat;
+    }
 }
