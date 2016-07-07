@@ -33,7 +33,7 @@ public class ImageOperator {
         }
 
         baseMaskMat.convertTo(baseMaskMat, CvType.CV_8UC1);
-        Imgproc.threshold(baseMaskMat, baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
+        Imgproc.threshold(baseMaskMat, baseMaskMat, 1, 1, Imgproc.THRESH_BINARY);
 
         return baseMaskMat;
     }

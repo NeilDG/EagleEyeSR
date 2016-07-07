@@ -77,7 +77,7 @@ public class MultipleImageSRProcessor extends Thread {
         Mat[] combinedMatList = new Mat[warpedMatList.length + 1];
         combinedMatList[0] = initialMat;
         for(int i = 1; i < combinedMatList.length; i++) {
-            combinedMatList[i] = warpedMatList[i - 1];
+            combinedMatList[i] = ImageOperator.performInterpolation(warpedMatList[i - 1], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         }
         MeanFusionOperator meanFusionOperator = new MeanFusionOperator(combinedMatList);
         meanFusionOperator.perform();
