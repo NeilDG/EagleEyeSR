@@ -4,11 +4,14 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
 
+import java.io.File;
+
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
+import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
@@ -65,13 +68,13 @@ public class MultipleImageSRProcessor extends Thread {
         }
 
         //perform feature matching of LR images against the first image as reference mat.
-        /*FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(yMat, comparingMatList);
+        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(yMat, comparingMatList);
         matchingOperator.perform();
 
         LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), comparingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
-        warpingOperator.perform();*/
+        warpingOperator.perform();
 
-        /*
+
         ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
         Mat initialMat = ImageOperator.performInterpolation(yMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         Mat[] warpedMatList = ProcessedImageRepo.getSharedInstance().getWarpedMatList();
@@ -81,9 +84,9 @@ public class MultipleImageSRProcessor extends Thread {
             combinedMatList[i] = ImageOperator.performInterpolation(warpedMatList[i - 1], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         }
         ProgressDialogHandler.getInstance().hideDialog();
-        */
 
-        OpticalFlowZeroFillOperator opticalFlowZeroFillOperator = new OpticalFlowZeroFillOperator(yMat, comparingMatList);
+
+        /*OpticalFlowZeroFillOperator opticalFlowZeroFillOperator = new OpticalFlowZeroFillOperator(yMat, comparingMatList);
         opticalFlowZeroFillOperator.perform();
 
         ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
@@ -94,7 +97,7 @@ public class MultipleImageSRProcessor extends Thread {
         for(int i = 1; i < combinedMatList.length; i++) {
             combinedMatList[i] = zeroFilledMatList[i - 1];
         }
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideDialog();*/
 
         MeanFusionOperator meanFusionOperator = new MeanFusionOperator(combinedMatList);
         meanFusionOperator.perform();
@@ -103,11 +106,7 @@ public class MultipleImageSRProcessor extends Thread {
             combinedMatList[i].release();
         }
 
-        ProgressDialogHandler.getInstance().showDialog("Inpainting", "Testing inpainting");
-        Mat testMat = new Mat();
-        Photo.inpaint(meanFusionOperator.getResult(), ImageOperator.produceMask(meanFusionOperator.getResult()), testMat, 4, Photo.INPAINT_TELEA);
-
-        ChannelMergeOperator mergeOperator = new ChannelMergeOperator(testMat, yuvRefMat[ColorSpaceOperator.U_CHANNEL], yuvRefMat[ColorSpaceOperator.V_CHANNEL]);
+        ChannelMergeOperator mergeOperator = new ChannelMergeOperator(meanFusionOperator.getResult(), yuvRefMat[ColorSpaceOperator.U_CHANNEL], yuvRefMat[ColorSpaceOperator.V_CHANNEL]);
         mergeOperator.perform();
 
         //deallocate some classes

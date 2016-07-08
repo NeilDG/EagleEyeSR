@@ -38,6 +38,15 @@ public class ImageOperator {
         return baseMaskMat;
     }
 
+    /*
+     * Zero values are labelled as 1, 0 for nonzero values
+     */
+    public static Mat produceOppositeMask(Mat inputMat) {
+        Mat maskMat = produceMask(inputMat);
+        Core.bitwise_not(maskMat,maskMat);
+        return maskMat;
+    }
+
     public static Mat blendImages(List<Mat> matList) {
         Mat matInput = matList.get(0);
         Mat mergedMat = new Mat(matInput.size(), matInput.type(), new Scalar(0));
