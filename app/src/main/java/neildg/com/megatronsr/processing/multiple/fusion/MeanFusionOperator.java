@@ -7,6 +7,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.photo.Photo;
 
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
@@ -60,6 +61,8 @@ public class MeanFusionOperator implements IOperator {
         for(int i = 0; i < this.combineMatList.length; i++) {
             this.combineMatList[i].convertTo(this.combineMatList[i], CvType.CV_32FC1);
             Mat maskMat = ImageOperator.produceMask(this.combineMatList[i]);
+
+            Log.d(TAG, "CombineMat size: " +this.combineMatList[i].size().toString() +" sum Mat size: " +sumMat.size().toString());
             Core.add(this.combineMatList[i], sumMat, sumMat, maskMat);
 
             maskMat.convertTo(maskMat, CvType.CV_32FC1);

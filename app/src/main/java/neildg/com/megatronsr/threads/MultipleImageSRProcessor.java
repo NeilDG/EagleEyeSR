@@ -2,6 +2,7 @@ package neildg.com.megatronsr.threads;
 
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.photo.Photo;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
@@ -19,6 +20,7 @@ import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator
 import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.LRToHROperator;
 import neildg.com.megatronsr.processing.multiple.fusion.WarpedToHROperator;
+import neildg.com.megatronsr.processing.multiple.warping.OpticalFlowZeroFillOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -63,15 +65,14 @@ public class MultipleImageSRProcessor extends Thread {
         }
 
         //perform feature matching of LR images against the first image as reference mat.
-        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(yMat, comparingMatList);
+        /*FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(yMat, comparingMatList);
         matchingOperator.perform();
 
         LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), comparingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
-        warpingOperator.perform();
+        warpingOperator.perform();*/
 
-        //WarpedToHROperator warpedToHROperator = new WarpedToHROperator(initialMat, ProcessedImageRepo.getSharedInstance().getWarpedMatList());
-        //warpedToHROperator.perform();
-
+        /*
+        ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
         Mat initialMat = ImageOperator.performInterpolation(yMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         Mat[] warpedMatList = ProcessedImageRepo.getSharedInstance().getWarpedMatList();
         Mat[] combinedMatList = new Mat[warpedMatList.length + 1];
@@ -79,14 +80,35 @@ public class MultipleImageSRProcessor extends Thread {
         for(int i = 1; i < combinedMatList.length; i++) {
             combinedMatList[i] = ImageOperator.performInterpolation(warpedMatList[i - 1], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         }
+        ProgressDialogHandler.getInstance().hideDialog();
+        */
+
+        OpticalFlowZeroFillOperator opticalFlowZeroFillOperator = new OpticalFlowZeroFillOperator(yMat, comparingMatList);
+        opticalFlowZeroFillOperator.perform();
+
+        ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
+        Mat initialMat = ImageOperator.performZeroFill(yMat, ParameterConfig.getScalingFactor(), 0 , 0);
+        Mat[] zeroFilledMatList = ProcessedImageRepo.getSharedInstance().getZeroFilledMatList();
+        Mat[] combinedMatList = new Mat[zeroFilledMatList.length + 1];
+        combinedMatList[0] = initialMat;
+        for(int i = 1; i < combinedMatList.length; i++) {
+            combinedMatList[i] = zeroFilledMatList[i - 1];
+        }
+        ProgressDialogHandler.getInstance().hideDialog();
+
         MeanFusionOperator meanFusionOperator = new MeanFusionOperator(combinedMatList);
         meanFusionOperator.perform();
 
-        ChannelMergeOperator mergeOperator = new ChannelMergeOperator(meanFusionOperator.getResult(), yuvRefMat[ColorSpaceOperator.U_CHANNEL], yuvRefMat[ColorSpaceOperator.V_CHANNEL]);
-        mergeOperator.perform();
+        for(int i = 1; i < combinedMatList.length; i++) {
+            combinedMatList[i].release();
+        }
 
-        //HDRFusionOperator hdrFusionOperator = new HDRFusionOperator(referenceMat, ProcessedImageRepo.getSharedInstance().getWarpedMatList());
-        //hdrFusionOperator.perform();
+        ProgressDialogHandler.getInstance().showDialog("Inpainting", "Testing inpainting");
+        Mat testMat = new Mat();
+        Photo.inpaint(meanFusionOperator.getResult(), ImageOperator.produceMask(meanFusionOperator.getResult()), testMat, 4, Photo.INPAINT_TELEA);
+
+        ChannelMergeOperator mergeOperator = new ChannelMergeOperator(testMat, yuvRefMat[ColorSpaceOperator.U_CHANNEL], yuvRefMat[ColorSpaceOperator.V_CHANNEL]);
+        mergeOperator.perform();
 
         //deallocate some classes
         ProcessedImageRepo.destroy();

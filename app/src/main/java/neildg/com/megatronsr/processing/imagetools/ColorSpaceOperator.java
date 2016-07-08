@@ -42,8 +42,7 @@ public class ColorSpaceOperator {
             Imgproc.cvtColor(inputMat, grayScaleMat, Imgproc.COLOR_BGR2GRAY);
         }
         else {
-            grayScaleMat.release();
-            grayScaleMat = inputMat;
+            inputMat.copyTo(grayScaleMat);
         }
 
         return grayScaleMat;

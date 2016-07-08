@@ -1,8 +1,11 @@
 package neildg.com.megatronsr.processing.multiple.warping;
 
+import android.util.Log;
+
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.utils.Converters;
 import org.opencv.video.Video;
 
 import java.util.LinkedList;
@@ -14,6 +17,7 @@ import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
+import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
@@ -24,23 +28,21 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
  * Creates zero-filled images by optical flow
  * Created by NeilDG on 5/25/2016.
  */
-public class OpticalFlowOperator implements IOperator {
+public class OpticalFlowZeroFillOperator implements IOperator {
     private final static String TAG = "OpticalFlowOperator";
 
     private Mat originMat;
-    private List<Mat> matSequences = new LinkedList<>();
+    private Mat[] matSequences;
 
     private Semaphore signalFlag = new Semaphore(0);
 
-    public OpticalFlowOperator() {
-       int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
-
-        this.originMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
-
-        for(int i = 1; i < numImages; i++) {
-            Mat mat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
-            this.matSequences.add(mat);
-        }
+    /*
+     * Origin mat - Original upsampled origin mat for reference in optical flow
+     * Mat sequences - List of succeeding LR frames for flow calculation.
+     */
+    public OpticalFlowZeroFillOperator(Mat originMat, Mat[] matSequences) {
+       this.originMat = originMat;
+       this.matSequences = matSequences;
     }
 
     @Override
@@ -48,19 +50,17 @@ public class OpticalFlowOperator implements IOperator {
         ProgressDialogHandler.getInstance().showDialog("Optical flow","Calculating optical flow of images");
 
         List<OpticalFlowWorker>  flowWorkerList = new LinkedList<>();
-        for(int i = 0; i < this.matSequences.size(); i++) {
-            OpticalFlowWorker flowWorker = new OpticalFlowWorker(this.originMat, this.matSequences.get(i), i + 1, this.signalFlag);
+        for(int i = 0; i < this.matSequences.length; i++) {
+            OpticalFlowWorker flowWorker = new OpticalFlowWorker(this.originMat, this.matSequences[i], i + 1, this.signalFlag);
             flowWorker.start();
 
             flowWorkerList.add(flowWorker);
         }
 
         try {
-            this.signalFlag.acquire(this.matSequences.size());
+            this.signalFlag.acquire(this.matSequences.length);
 
-            this.originMat = ImageOperator.performZeroFill(this.originMat, ParameterConfig.getScalingFactor(), 0, 0);
-            ProcessedImageRepo.getSharedInstance().storeZeroFilledMat(this.originMat);
-
+            //zero filled displaced mat are stored in process image repo
             for(int i = 0; i < flowWorkerList.size(); i++) {
                 Mat mat = flowWorkerList.get(i).getZeroFilledMat();
                 ProcessedImageRepo.getSharedInstance().storeZeroFilledMat(mat);
@@ -106,17 +106,16 @@ public class OpticalFlowOperator implements IOperator {
 
             for(int row = 0; row < this.comparingMat.rows(); row++) {
                 for(int col = 0; col < this.comparingMat.cols(); col++) {
-                    //Log.d(TAG, "flowMat x: " +x+ " row: " +row+ " channels: "+flowMat.channels()+ " value: " +flowMat.get(row,x)[0]+" "+flowMat.get(row,x)[1]);
+                    //Log.d(TAG, "flowMat col: " +col+ " row: " +row+ " channels: "+flowMat.channels()+ " value: " +flowMat.get(row,col)[0]+" "+flowMat.get(row,col)[1]);
                     Point pt = new Point(col + flowMat.get(row,col)[0], row + flowMat.get(row,col)[1]);
                     xPoints.put(row,col, pt.x);
                     yPoints.put(row,col, pt.y);
                 }
             }
-
             //perform zero-filling based from motion translation
             int scaling = ParameterConfig.getScalingFactor();
             this.zeroFilledMat = ImageOperator.performZeroFill(this.comparingMat, scaling, xPoints, yPoints);
-            //ImageWriter.getInstance().saveMatrixToImage(this.zeroFilledMat, "ZeroFill", "zero_fill_"+this.index, ImageFileAttribute.FileType.JPEG);
+            ImageWriter.getInstance().saveMatrixToImage(this.zeroFilledMat, "ZeroFill", "zero_fill_"+this.index, ImageFileAttribute.FileType.JPEG);
 
             //clear memory allocations
             this.comparingMat.release();
