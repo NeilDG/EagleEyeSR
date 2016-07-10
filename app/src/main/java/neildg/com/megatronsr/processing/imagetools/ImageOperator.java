@@ -24,6 +24,17 @@ import neildg.com.megatronsr.model.single_gaussian.LoadedImagePatch;
 public class ImageOperator {
     private final static String TAG = "ImageOperator";
 
+
+    /*
+     * Adds random noise. Returns the same mat with the noise operator applied.
+     */
+    public static Mat induceNoise(Mat inputMat) {
+        Mat noiseMat = new Mat(inputMat.size(), inputMat.type());
+        Core.randn(noiseMat, 5, 20);
+
+        Core.add(noiseMat, inputMat, inputMat);
+        return inputMat;
+    }
     public static Mat produceMask(Mat inputMat) {
         Mat baseMaskMat = new Mat();
         inputMat.copyTo(baseMaskMat);
