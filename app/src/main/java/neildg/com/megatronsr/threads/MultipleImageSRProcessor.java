@@ -41,9 +41,9 @@ public class MultipleImageSRProcessor extends Thread {
 
         ProgressDialogHandler.getInstance().hideDialog();
 
-        //add custom blur
-        DegradationOperator degradationOperator = new DegradationOperator();
-        degradationOperator.perform();
+        //simulate degradation
+        //DegradationOperator degradationOperator = new DegradationOperator();
+        //degradationOperator.perform();
 
         //load images and use Y channel as input for succeeding operators
         Mat[] inputMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected()];
