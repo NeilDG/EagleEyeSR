@@ -9,6 +9,7 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
+import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
@@ -57,6 +58,10 @@ public class MultipleImageSRProcessor extends Thread {
         //perform denoising
         DenoisingOperator denoisingOperator = new DenoisingOperator(inputMatList);
         denoisingOperator.perform();
+
+        //extract features
+        YangFilter yangFilter = new YangFilter(denoisingOperator.getResult());
+        yangFilter.perform();
 
         LRToHROperator lrToHROperator = new LRToHROperator(ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (0), ImageFileAttribute.FileType.JPEG));
         lrToHROperator.perform();
