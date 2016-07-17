@@ -104,7 +104,7 @@ public class MultipleImageSRProcessor extends Thread {
         }
         ProgressDialogHandler.getInstance().hideDialog();*/
 
-        MeanFusionOperator meanFusionOperator = new MeanFusionOperator(combinedMatList);
+        MeanFusionOperator meanFusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
         meanFusionOperator.perform();
 
         for(int i = 1; i < combinedMatList.length; i++) {

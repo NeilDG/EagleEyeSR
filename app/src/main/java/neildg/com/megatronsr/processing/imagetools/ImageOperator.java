@@ -49,6 +49,20 @@ public class ImageOperator {
         return baseMaskMat;
     }
 
+    public static Mat produceMask(Mat inputMat, int threshold) {
+        Mat baseMaskMat = new Mat();
+        inputMat.copyTo(baseMaskMat);
+
+        if(inputMat.channels() == 3 || inputMat.channels() == 4) {
+            Imgproc.cvtColor(baseMaskMat, baseMaskMat, Imgproc.COLOR_BGR2GRAY);
+        }
+
+        baseMaskMat.convertTo(baseMaskMat, CvType.CV_8UC1);
+        Imgproc.threshold(baseMaskMat, baseMaskMat, threshold, 1, Imgproc.THRESH_BINARY);
+
+        return baseMaskMat;
+    }
+
     /*
      * Zero values are labelled as 1, 0 for nonzero values
      */

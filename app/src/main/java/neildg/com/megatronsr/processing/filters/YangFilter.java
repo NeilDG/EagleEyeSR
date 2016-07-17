@@ -2,6 +2,7 @@ package neildg.com.megatronsr.processing.filters;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 
@@ -10,6 +11,8 @@ import java.util.Arrays;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
+import neildg.com.megatronsr.processing.imagetools.ImageOperator;
+import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -45,27 +48,43 @@ public class YangFilter implements IOperator {
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Feature detection", "Extracting edge features");
 
         for(int i = 0; i < this.inputMatList.length; i++) {
             Mat inputf1 = new Mat(); Mat inputf2 = new Mat(); Mat inputf3 = new Mat(); Mat inputf4 = new Mat();
+            Mat[] combinedFilterList = new Mat[4];
+
+            //ProgressDialogHandler.getInstance().showDialog("Feature detection", "Extracting edge features for image " +i);
+
             Imgproc.filter2D(this.inputMatList[i], inputf1, this.inputMatList[i].depth(), this.f1Kernel);
-            ImageWriter.getInstance().saveMatrixToImage(inputf1, "YangEdges", "image_f1_"+i, ImageFileAttribute.FileType.JPEG);
+            //ImageWriter.getInstance().saveMatrixToImage(inputf1, "YangEdges", "image_f1_"+i, ImageFileAttribute.FileType.JPEG);
 
             Imgproc.filter2D(this.inputMatList[i], inputf2, this.inputMatList[i].depth(), this.f2Kernel);
-            ImageWriter.getInstance().saveMatrixToImage(inputf2, "YangEdges", "image_f2_"+i, ImageFileAttribute.FileType.JPEG);
+            //ImageWriter.getInstance().saveMatrixToImage(inputf2, "YangEdges", "image_f2_"+i, ImageFileAttribute.FileType.JPEG);
 
             Imgproc.filter2D(this.inputMatList[i], inputf3, this.inputMatList[i].depth(), this.f3Kernel);
-            ImageWriter.getInstance().saveMatrixToImage(inputf3, "YangEdges", "image_f3_"+i, ImageFileAttribute.FileType.JPEG);
+            //ImageWriter.getInstance().saveMatrixToImage(inputf3, "YangEdges", "image_f3_"+i, ImageFileAttribute.FileType.JPEG);
 
             Imgproc.filter2D(this.inputMatList[i], inputf4, this.inputMatList[i].depth(), this.f4Kernel);
-            ImageWriter.getInstance().saveMatrixToImage(inputf4, "YangEdges", "image_f4_"+i, ImageFileAttribute.FileType.JPEG);
+            //ImageWriter.getInstance().saveMatrixToImage(inputf4, "YangEdges", "image_f4_"+i, ImageFileAttribute.FileType.JPEG);
 
-            inputf1.release();
-            inputf2.release();
-            inputf3.release();
-            inputf4.release();
+            combinedFilterList[0] = inputf1;
+            combinedFilterList[1] = inputf2;
+            combinedFilterList[2] = inputf3;
+            combinedFilterList[3] = inputf4;
+
+            MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedFilterList, "Fusing edge features", "Fusing edge features in image " +i);
+            fusionOperator.perform();
+            ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "YangEdges", "image_edge_"+i, ImageFileAttribute.FileType.JPEG);
+
+            //test. Highlight the edges
+            //Core.addWeighted(fusionOperator.getResult(), 1.0, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
+            Mat edgeMat = fusionOperator.getResult();
+           //Mat maskMat = ImageOperator.produceMask(edgeMat, 25);
+
+            Core.addWeighted(edgeMat, -0.35, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
+            ImageWriter.getInstance().saveMatrixToImage(this.inputMatList[i], "YangEdges", "image_sharpen_"+i, ImageFileAttribute.FileType.JPEG);
         }
+
         ProgressDialogHandler.getInstance().hideDialog();
     }
 }

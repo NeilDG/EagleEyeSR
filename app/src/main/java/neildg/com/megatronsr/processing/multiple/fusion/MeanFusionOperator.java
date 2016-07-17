@@ -25,8 +25,14 @@ public class MeanFusionOperator implements IOperator {
     private Mat[] combineMatList;
     private Mat outputMat;
 
-    public MeanFusionOperator(Mat[] combineMatList) {
+    private String title;
+    private String message;
+
+    public MeanFusionOperator(Mat[] combineMatList, String title, String message) {
         this.combineMatList = combineMatList;
+
+        this.title = title;
+        this.message = message;
     }
 
     @Override
@@ -36,24 +42,7 @@ public class MeanFusionOperator implements IOperator {
         int cols = this.combineMatList[0].cols();
         this.outputMat = Mat.zeros(rows, cols, CvType.CV_32FC1);
 
-        ProgressDialogHandler.getInstance().showDialog("Fusing", "Fusing images using mean");
-       /* for(int row = 0; row < rows; row++) {
-            for(int col = 0; col < cols; col++) {
-
-                float sum = 0.0f;
-                float mean = 0.0f;
-                for(int i = 0; i < this.combineMatList.length; i++) {
-                    double[] data = this.combineMatList[i].get(row,col);
-                    if(data != null) {
-                        sum += data[0];
-                    }
-
-                }
-
-                mean = sum / this.combineMatList.length * 1.0f;
-                this.outputMat.put(row,col,mean);
-            }
-        }*/
+        ProgressDialogHandler.getInstance().showDialog(this.title, this.message);
 
         //divide only by the number of known pixel values. do not consider zero pixels
         Mat sumMat = Mat.zeros(this.combineMatList[0].size(), CvType.CV_32FC1);
@@ -72,7 +61,6 @@ public class MeanFusionOperator implements IOperator {
         Core.divide(sumMat, divMat, this.outputMat);
         this.outputMat.convertTo(this.outputMat, CvType.CV_8UC1);
 
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "mean_fusion", ImageFileAttribute.FileType.JPEG);
         ProgressDialogHandler.getInstance().hideDialog();
 
     }
