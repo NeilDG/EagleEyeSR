@@ -42,6 +42,9 @@ public class FeatureMatchingOperator {
     private Mat referenceMat;
     private Mat[] comparingMatList;
 
+    /*
+     * Input is the list of images to compare. First image will be the reference image and succeeding images will be matched against it.
+     */
     public FeatureMatchingOperator(Mat referenceMat, Mat[] comparingMatList) {
         this.referenceMat = referenceMat;
         this.comparingMatList = comparingMatList;

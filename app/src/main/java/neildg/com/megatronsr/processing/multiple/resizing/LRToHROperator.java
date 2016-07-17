@@ -20,30 +20,27 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 public class LRToHROperator implements IOperator {
     private static String TAG = "LRToHROperator";
 
-    private Mat hrMat;
-    public LRToHROperator() {
-
+    private Mat lrMat;
+    public LRToHROperator(Mat lrMat) {
+        this.lrMat = lrMat;
     }
 
     public void perform() {
         ProgressDialogHandler.getInstance().showDialog("Debugging", "Creating HR image by interpolation");
-        int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
 
         //only interpolate the first reference image
-        Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
-        this.hrMat = Mat.ones(lrMat.rows() * ParameterConfig.getScalingFactor(), lrMat.cols() * ParameterConfig.getScalingFactor(), lrMat.type());
+        Mat hrMat = Mat.ones(this.lrMat.rows() * ParameterConfig.getScalingFactor(), this.lrMat.cols() * ParameterConfig.getScalingFactor(), this.lrMat.type());
 
-        Imgproc.resize(lrMat, this.hrMat, this.hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
-        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.INITIAL_HR_NEAREST, ImageFileAttribute.FileType.JPEG);
+        Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
+        ImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.INITIAL_HR_NEAREST, ImageFileAttribute.FileType.JPEG);
 
-        Imgproc.resize(lrMat, this.hrMat, this.hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.INITIAL_HR_CUBIC, ImageFileAttribute.FileType.JPEG);
+        Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        ImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.INITIAL_HR_CUBIC, ImageFileAttribute.FileType.JPEG);
 
-        Mat zeroFillMat = ImageOperator.performZeroFill(lrMat, ParameterConfig.getScalingFactor(), 0, 0);
+        Mat zeroFillMat = ImageOperator.performZeroFill(this.lrMat, ParameterConfig.getScalingFactor(), 0, 0);
         ImageWriter.getInstance().saveMatrixToImage(zeroFillMat, FilenameConstants.INITIAL_HR_ZERO_FILLED_STRING, ImageFileAttribute.FileType.JPEG);
 
-        this.hrMat.release();
-        lrMat.release();
+        hrMat.release();
 
         ProgressDialogHandler.getInstance().hideDialog();
     }

@@ -24,6 +24,17 @@ import neildg.com.megatronsr.model.single_gaussian.LoadedImagePatch;
 public class ImageOperator {
     private final static String TAG = "ImageOperator";
 
+
+    /*
+     * Adds random noise. Returns the same mat with the noise operator applied.
+     */
+    public static Mat induceNoise(Mat inputMat) {
+        Mat noiseMat = new Mat(inputMat.size(), inputMat.type());
+        Core.randn(noiseMat, 5, 20);
+
+        Core.add(noiseMat, inputMat, inputMat);
+        return inputMat;
+    }
     public static Mat produceMask(Mat inputMat) {
         Mat baseMaskMat = new Mat();
         inputMat.copyTo(baseMaskMat);
@@ -33,9 +44,18 @@ public class ImageOperator {
         }
 
         baseMaskMat.convertTo(baseMaskMat, CvType.CV_8UC1);
-        Imgproc.threshold(baseMaskMat, baseMaskMat, 1, 255, Imgproc.THRESH_BINARY);
+        Imgproc.threshold(baseMaskMat, baseMaskMat, 1, 1, Imgproc.THRESH_BINARY);
 
         return baseMaskMat;
+    }
+
+    /*
+     * Zero values are labelled as 1, 0 for nonzero values
+     */
+    public static Mat produceOppositeMask(Mat inputMat) {
+        Mat maskMat = produceMask(inputMat);
+        Core.bitwise_not(maskMat,maskMat);
+        return maskMat;
     }
 
     public static Mat blendImages(List<Mat> matList) {
