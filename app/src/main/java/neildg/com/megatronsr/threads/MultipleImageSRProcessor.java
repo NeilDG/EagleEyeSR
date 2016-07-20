@@ -9,6 +9,7 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
+import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
@@ -36,6 +37,10 @@ public class MultipleImageSRProcessor extends Thread {
     public void run() {
         ProgressDialogHandler.getInstance().showDialog("Downsampling images", "Downsampling images selected and saving them in file.");
 
+        //initialize storage classes
+        ProcessedImageRepo.initialize();
+        SharpnessMeasure.initialize();
+
         //downsample
         DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConfig.getScalingFactor(), BitmapURIRepository.getInstance().getNumImagesSelected());
         downsamplingOperator.perform();
@@ -55,18 +60,18 @@ public class MultipleImageSRProcessor extends Thread {
             inputMatList[i] = yuvMat[ColorSpaceOperator.Y_CHANNEL];
         }
 
-        //perform denoising
+        //extract features
+        YangFilter yangFilter = new YangFilter(inputMatList);
+        yangFilter.perform();
+
+        //trim the input list from the measured sharpness mean
+        inputMatList = SharpnessMeasure.getSharedInstance().trimMatList(inputMatList);
+
         DenoisingOperator denoisingOperator = new DenoisingOperator(inputMatList);
         denoisingOperator.perform();
 
-        //extract features
-        YangFilter yangFilter = new YangFilter(denoisingOperator.getResult());
-        yangFilter.perform();
-
         LRToHROperator lrToHROperator = new LRToHROperator(ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (0), ImageFileAttribute.FileType.JPEG));
         lrToHROperator.perform();
-
-        ProcessedImageRepo.initialize();
 
         //perform feature matching of LR images against the first image as reference mat.
         inputMatList = denoisingOperator.getResult();
@@ -90,20 +95,6 @@ public class MultipleImageSRProcessor extends Thread {
         }
         ProgressDialogHandler.getInstance().hideDialog();
 
-
-        /*OpticalFlowZeroFillOperator opticalFlowZeroFillOperator = new OpticalFlowZeroFillOperator(yMat, comparingMatList);
-        opticalFlowZeroFillOperator.perform();
-
-        ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
-        Mat initialMat = ImageOperator.performZeroFill(yMat, ParameterConfig.getScalingFactor(), 0 , 0);
-        Mat[] zeroFilledMatList = ProcessedImageRepo.getSharedInstance().getZeroFilledMatList();
-        Mat[] combinedMatList = new Mat[zeroFilledMatList.length + 1];
-        combinedMatList[0] = initialMat;
-        for(int i = 1; i < combinedMatList.length; i++) {
-            combinedMatList[i] = zeroFilledMatList[i - 1];
-        }
-        ProgressDialogHandler.getInstance().hideDialog();*/
-
         MeanFusionOperator meanFusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
         meanFusionOperator.perform();
 
@@ -116,6 +107,7 @@ public class MultipleImageSRProcessor extends Thread {
 
         //deallocate some classes
         ProcessedImageRepo.destroy();
+        SharpnessMeasure.destroy();
         ProgressDialogHandler.getInstance().hideDialog();
     }
 

@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
@@ -76,15 +77,21 @@ public class YangFilter implements IOperator {
             fusionOperator.perform();
             ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "YangEdges", "image_edge_"+i, ImageFileAttribute.FileType.JPEG);
 
+            combinedFilterList[0].release(); combinedFilterList[1].release(); combinedFilterList[2].release(); combinedFilterList[3].release();
+
+            Mat edgeMat = fusionOperator.getResult();
+            SharpnessMeasure.getSharedInstance().measureSharpness(edgeMat);
+
             //test. Highlight the edges
             //Core.addWeighted(fusionOperator.getResult(), 1.0, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
-            Mat edgeMat = fusionOperator.getResult();
-           //Mat maskMat = ImageOperator.produceMask(edgeMat, 25);
+            //Mat edgeMat = fusionOperator.getResult();
+            //Mat maskMat = ImageOperator.produceMask(edgeMat, 25);
 
-            Core.addWeighted(edgeMat, -0.35, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
-            ImageWriter.getInstance().saveMatrixToImage(this.inputMatList[i], "YangEdges", "image_sharpen_"+i, ImageFileAttribute.FileType.JPEG);
+            //Core.addWeighted(edgeMat, -0.35, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
+            //ImageWriter.getInstance().saveMatrixToImage(this.inputMatList[i], "YangEdges", "image_sharpen_"+i, ImageFileAttribute.FileType.JPEG);
         }
 
+        SharpnessMeasure.getSharedInstance().debugPrint();
         ProgressDialogHandler.getInstance().hideDialog();
     }
 }
