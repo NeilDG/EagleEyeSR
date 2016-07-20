@@ -50,6 +50,7 @@ public class YangFilter implements IOperator {
     @Override
     public void perform() {
 
+        Mat[] edgeMatList = new Mat[this.inputMatList.length];
         for(int i = 0; i < this.inputMatList.length; i++) {
             Mat inputf1 = new Mat(); Mat inputf2 = new Mat(); Mat inputf3 = new Mat(); Mat inputf4 = new Mat();
             Mat[] combinedFilterList = new Mat[4];
@@ -78,9 +79,7 @@ public class YangFilter implements IOperator {
             ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "YangEdges", "image_edge_"+i, ImageFileAttribute.FileType.JPEG);
 
             combinedFilterList[0].release(); combinedFilterList[1].release(); combinedFilterList[2].release(); combinedFilterList[3].release();
-
-            Mat edgeMat = fusionOperator.getResult();
-            SharpnessMeasure.getSharedInstance().measureSharpness(edgeMat);
+            edgeMatList[i] = fusionOperator.getResult();
 
             //test. Highlight the edges
             //Core.addWeighted(fusionOperator.getResult(), 1.0, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
@@ -91,7 +90,7 @@ public class YangFilter implements IOperator {
             //ImageWriter.getInstance().saveMatrixToImage(this.inputMatList[i], "YangEdges", "image_sharpen_"+i, ImageFileAttribute.FileType.JPEG);
         }
 
-        SharpnessMeasure.getSharedInstance().debugPrint();
+        SharpnessMeasure.getSharedInstance().measureSharpness(edgeMatList);
         ProgressDialogHandler.getInstance().hideDialog();
     }
 }

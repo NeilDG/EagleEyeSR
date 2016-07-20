@@ -98,6 +98,10 @@ public class MultipleImageSRProcessor extends Thread {
         MeanFusionOperator meanFusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
         meanFusionOperator.perform();
 
+        bestMat = ImageOperator.performInterpolation(bestMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        Mat bestMatMask = ImageOperator.produceMask(bestMat);
+        bestMat.copyTo(meanFusionOperator.getResult(), bestMatMask); //put the best mat to the result. testing.
+
         for(int i = 1; i < combinedMatList.length; i++) {
             combinedMatList[i].release();
         }

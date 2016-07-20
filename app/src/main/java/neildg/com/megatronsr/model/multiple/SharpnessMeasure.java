@@ -27,17 +27,91 @@ public class SharpnessMeasure {
     }
 
     public static void destroy() {
-        sharedInstance.sharpnessList.clear();
         sharedInstance = null;
     }
 
-    private List<Double> sharpnessList = new ArrayList<>();
+    //private List<Double> sharpnessList = new ArrayList<>();
+    private SharpnessResult latestResult;
 
     private SharpnessMeasure() {
 
     }
 
-    public void measureSharpness(Mat edgeMat) {
+    public SharpnessResult measureSharpness(Mat[] edgeMatList) {
+        SharpnessResult sharpnessResult = new SharpnessResult();
+        sharpnessResult.sharpnessValues = new double[edgeMatList.length];
+
+        double sum = 0;
+        for(int i = 0; i < edgeMatList.length; i++) {
+            sharpnessResult.sharpnessValues[i] = this.measure(edgeMatList[i]);
+            sum += sharpnessResult.sharpnessValues[i];
+        }
+
+        //get mean
+        sharpnessResult.mean = sum / edgeMatList.length;
+
+        //trimmed values that do not meet the mean
+        List<Double> trimMatList = new ArrayList<>();
+        //// TODO: 7/20/2016 :put index values in the sharpness result 
+        for(int i = 0; i <  edgeMatList.length; i++) {
+            if(sharpnessResult.sharpnessValues[i] >= sharpnessResult.mean) {
+                trimMatList.add(sharpnessResult.sharpnessValues[i]);
+            }
+        }
+
+        sharpnessResult.trimmedValues = new double[trimMatList.size()];
+        for(int i = 0; i < sharpnessResult.trimmedValues.length; i++) {
+            sharpnessResult.trimmedValues[i] = trimMatList.get(i);
+        }
+
+        //get best
+        double bestSharpness = 0;
+        for(int i = 0; i < sharpnessResult.sharpnessValues.length; i++) {
+            if(sharpnessResult.sharpnessValues[i] >= bestSharpness) {
+                sharpnessResult.bestIndex = i;
+            }
+        }
+
+        bestSharpness = 0;
+        for(int i = 0; i < sharpnessResult.trimmedValues.length; i++) {
+            if(sharpnessResult.trimmedValues[i] >= bestSharpness) {
+                sharpnessResult.bestIndexTrimmed = i;
+            }
+        }
+
+        this.latestResult = sharpnessResult;
+        return this.latestResult;
+    }
+
+    public SharpnessResult getLatestResult() {
+        return this.latestResult;
+    }
+
+    public double measure(Mat edgeMat) {
+        int withValues = Core.countNonZero(edgeMat);
+        int dimension = edgeMat.cols() * edgeMat.rows();
+
+        double dSharpness = withValues * 1.0 / dimension;
+
+        return dSharpness;
+    }
+
+    /*
+     * Trims the mat list based from the sharpness result
+     */
+    public Mat[] trimMatList(Mat[] inputMatList, SharpnessResult sharpnessResult) {
+
+        List<Mat> trimMatList = new ArrayList<>();
+        for(int i = 0; i <  inputMatList.length; i++) {
+            if(this.getSharpnessValueAt(i) >= sharpnessResult.mean) {
+                trimMatList.add(inputMatList[i]);
+            }
+        }
+
+        return trimMatList.toArray(new Mat[trimMatList.size()]);
+    }
+
+    /*public void measureSharpness(Mat edgeMat) {
         int withValues = Core.countNonZero(edgeMat);
         int dimension = edgeMat.cols() * edgeMat.rows();
 
@@ -59,9 +133,7 @@ public class SharpnessMeasure {
         return listArray;
     }
 
-    /*
-     * Trims the input mat list using the mean value of the computed sharpness measure.
-     */
+
     public Mat[] trimMatList(Mat[] inputMatList) {
         double mean = this.getMeanSharpness();
 
@@ -75,6 +147,19 @@ public class SharpnessMeasure {
         return trimMatList.toArray(new Mat[trimMatList.size()]);
     }
 
+    public Mat getBest(Mat[] inputMatList) {
+
+        int currentHighest = 0;
+        double highestSharpness = 0.0;
+        for(int i = 0; i < this.sharpnessList.size(); i++) {
+            if(this.getSharpnessValueAt(i) >= highestSharpness) {
+                highestSharpness = this.getSharpnessValueAt(i);
+                currentHighest = i;
+            }
+        }
+
+        return inputMatList[currentHighest];
+    }
     public double getMeanSharpness() {
         double sum = 0;
         for(int i = 0; i < this.sharpnessList.size(); i++) {
@@ -95,5 +180,36 @@ public class SharpnessMeasure {
         }
 
         Log.d(TAG, "Mean sharpness: " +(sum / this.sharpnessList.size()));
+    }*/
+
+    public class SharpnessResult {
+        private double[] sharpnessValues;
+        private double[] trimmedValues; //those who do not meet the mean.
+        private int[] trimmedIndexes;
+
+        private double mean;
+
+        private int bestIndex;
+        private int bestIndexTrimmed;
+
+        public double[] getSharpnessValues() {
+            return this.sharpnessValues;
+        }
+
+        public double getMean() {
+            return this.mean;
+        }
+
+        public int getBestIndex() {
+            return this.bestIndex;
+        }
+
+        public int getBestIndexTrimmed() {
+            return this.bestIndexTrimmed;
+        }
+
+        public int[] getTrimmedIndexes() {
+            return this.trimmedIndexes;
+        }
     }
 }
