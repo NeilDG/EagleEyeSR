@@ -1,7 +1,12 @@
 package neildg.com.megatronsr.threads;
 
+import android.util.Log;
+
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.ml.KNearest;
+import org.opencv.ml.Ml;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
@@ -28,6 +33,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
  * Created by NeilDG on 3/5/2016.
  */
 public class MultipleImageSRProcessor extends Thread {
+    private final static String TAG = "MultipleImageSR";
 
     public MultipleImageSRProcessor() {
 
@@ -65,7 +71,8 @@ public class MultipleImageSRProcessor extends Thread {
         yangFilter.perform();
 
         //trim the input list from the measured sharpness mean
-        inputMatList = SharpnessMeasure.getSharedInstance().trimMatList(inputMatList);
+        SharpnessMeasure.SharpnessResult sharpnessResult = SharpnessMeasure.getSharedInstance().getLatestResult();
+        inputMatList = SharpnessMeasure.getSharedInstance().trimMatList(inputMatList, sharpnessResult);
 
         DenoisingOperator denoisingOperator = new DenoisingOperator(inputMatList);
         denoisingOperator.perform();
@@ -98,10 +105,13 @@ public class MultipleImageSRProcessor extends Thread {
         MeanFusionOperator meanFusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
         meanFusionOperator.perform();
 
-        bestMat = ImageOperator.performInterpolation(bestMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        Mat bestMatMask = ImageOperator.produceMask(bestMat);
-        bestMat.copyTo(meanFusionOperator.getResult(), bestMatMask); //put the best mat to the result. testing.
+        //TESTING: replace some values of best mat in fusion result
+        Mat bestMat = combinedMatList[sharpnessResult.getBestIndexTrimmed()];
+        bestMat.convertTo(bestMat, CvType.CV_8UC1);
+        Mat bestMaskMat = ImageOperator.produceMask(bestMat);
+        bestMat.copyTo(meanFusionOperator.getResult(), bestMaskMat);
 
+       //release unused warp images
         for(int i = 1; i < combinedMatList.length; i++) {
             combinedMatList[i].release();
         }

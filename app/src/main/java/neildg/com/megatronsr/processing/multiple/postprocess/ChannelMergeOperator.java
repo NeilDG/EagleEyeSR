@@ -1,9 +1,12 @@
 package neildg.com.megatronsr.processing.multiple.postprocess;
 
+import android.util.Log;
+
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.utils.Converters;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -54,6 +57,11 @@ public class ChannelMergeOperator implements IOperator{
         int scaling = ParameterConfig.getScalingFactor();
         this.yuvMat[U_CHANNEL] = ImageOperator.performInterpolation(this.yuvMat[U_CHANNEL], scaling, Imgproc.INTER_CUBIC);
         this.yuvMat[V_CHANNEL] = ImageOperator.performInterpolation(this.yuvMat[V_CHANNEL], scaling, Imgproc.INTER_CUBIC);
+
+
+        //Log.d(TAG, "Mean fusion result size: "+this.yuvMat[Y_CHANNEL].size().toString()+ " Depth: " +this.yuvMat[Y_CHANNEL].depth());
+        //Log.d(TAG, "U channel result size: "+this.yuvMat[U_CHANNEL].size().toString()+ " Depth: " +this.yuvMat[ColorSpaceOperator.U_CHANNEL].depth());
+        //Log.d(TAG, "V channel result size: "+this.yuvMat[V_CHANNEL].size().toString()+ " Depth: " +this.yuvMat[ColorSpaceOperator.V_CHANNEL].depth());
 
         //merge the three channels
         Mat mergedMat = new Mat();

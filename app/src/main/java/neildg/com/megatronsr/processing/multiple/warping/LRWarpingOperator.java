@@ -114,9 +114,17 @@ public class LRWarpingOperator {
 
         Log.d(TAG, "Homography info: ROWS: " + homography.rows() + " COLS: " + homography.cols());
 
-        Mat warpedMat = new Mat();
-        Imgproc.warpPerspective(candidateMat, warpedMat, homography, warpedMat.size(), Imgproc.INTER_NEAREST, Core.BORDER_TRANSPARENT, Scalar.all(0));
+        if(homography.rows() == 3 && homography.cols() == 3) {
+            Mat warpedMat = new Mat();
+            Imgproc.warpPerspective(candidateMat, warpedMat, homography, warpedMat.size(), Imgproc.INTER_NEAREST, Core.BORDER_TRANSPARENT, Scalar.all(0));
+            return warpedMat;
+        }
+        else {
+            //do nothing. not enough features for warping
+            Mat warpedMat = new Mat();
+            candidateMat.copyTo(warpedMat);
+            return warpedMat;
+        }
 
-        return warpedMat;
     }
 }

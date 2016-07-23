@@ -52,11 +52,19 @@ public class SharpnessMeasure {
 
         //trimmed values that do not meet the mean
         List<Double> trimMatList = new ArrayList<>();
-        //// TODO: 7/20/2016 :put index values in the sharpness result 
+        List<Integer> indexList = new ArrayList<>();
+
         for(int i = 0; i <  edgeMatList.length; i++) {
             if(sharpnessResult.sharpnessValues[i] >= sharpnessResult.mean) {
                 trimMatList.add(sharpnessResult.sharpnessValues[i]);
+                indexList.add(i);
             }
+        }
+
+        //store index values
+        sharpnessResult.trimmedIndexes = new int[indexList.size()];
+        for(int i = 0; i < sharpnessResult.trimmedIndexes.length; i++) {
+            sharpnessResult.trimmedIndexes[i] = indexList.get(i);
         }
 
         sharpnessResult.trimmedValues = new double[trimMatList.size()];
@@ -69,6 +77,7 @@ public class SharpnessMeasure {
         for(int i = 0; i < sharpnessResult.sharpnessValues.length; i++) {
             if(sharpnessResult.sharpnessValues[i] >= bestSharpness) {
                 sharpnessResult.bestIndex = i;
+                bestSharpness = sharpnessResult.sharpnessValues[i];
             }
         }
 
@@ -76,6 +85,7 @@ public class SharpnessMeasure {
         for(int i = 0; i < sharpnessResult.trimmedValues.length; i++) {
             if(sharpnessResult.trimmedValues[i] >= bestSharpness) {
                 sharpnessResult.bestIndexTrimmed = i;
+                bestSharpness = sharpnessResult.trimmedValues[i];
             }
         }
 
@@ -102,10 +112,8 @@ public class SharpnessMeasure {
     public Mat[] trimMatList(Mat[] inputMatList, SharpnessResult sharpnessResult) {
 
         List<Mat> trimMatList = new ArrayList<>();
-        for(int i = 0; i <  inputMatList.length; i++) {
-            if(this.getSharpnessValueAt(i) >= sharpnessResult.mean) {
-                trimMatList.add(inputMatList[i]);
-            }
+        for(int i = 0; i < sharpnessResult.trimmedIndexes.length; i++) {
+            trimMatList.add(inputMatList[sharpnessResult.trimmedIndexes[i]]);
         }
 
         return trimMatList.toArray(new Mat[trimMatList.size()]);
