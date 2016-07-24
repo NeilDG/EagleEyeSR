@@ -44,6 +44,13 @@ public class MeanFusionOperator implements IOperator {
 
         ProgressDialogHandler.getInstance().showDialog(this.title, this.message);
 
+        //add values to the warped images' borders
+        for(int i = 1; i < this.combineMatList.length; i++) {
+            Mat inverseMask = ImageOperator.produceOppositeMask(this.combineMatList[i]);
+            this.combineMatList[0].copyTo(this.combineMatList[i], inverseMask);
+            ImageWriter.getInstance().saveMatrixToImage(this.combineMatList[i], "filled_warp_"+i, ImageFileAttribute.FileType.JPEG);
+        }
+
         //divide only by the number of known pixel values. do not consider zero pixels
         Mat sumMat = Mat.zeros(this.combineMatList[0].size(), CvType.CV_32FC1);
         Mat divMat = Mat.zeros(this.combineMatList[0].size(), CvType.CV_32FC1);

@@ -126,12 +126,12 @@ public class MultipleImageSRProcessor extends Thread {
             ImageWriter.getInstance().saveMatrixToImage(combinedMatList[i], "ZeroFill", "warped_resize_"+i, ImageFileAttribute.FileType.JPEG);
         }*/
 
-        //MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
-        //fusionOperator.perform();
-
-        Mat edgeMat = ImageReader.getInstance().imReadOpenCV("YangEdges/image_edge_0", ImageFileAttribute.FileType.JPEG);
-        EdgeFusionOperator fusionOperator = new EdgeFusionOperator(combinedMatList, edgeMat);
+        MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();
+
+        //Mat edgeMat = ImageReader.getInstance().imReadOpenCV("YangEdges/image_edge_0", ImageFileAttribute.FileType.JPEG);
+        //EdgeFusionOperator fusionOperator = new EdgeFusionOperator(combinedMatList, edgeMat);
+        //fusionOperator.perform();
 
        //release unused warp images
         for(int i = 1; i < combinedMatList.length; i++) {
