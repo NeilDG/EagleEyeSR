@@ -22,6 +22,7 @@ import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.EdgeFusionOperator;
+import neildg.com.megatronsr.processing.multiple.fusion.HDRFusionOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.postprocess.ChannelMergeOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
@@ -64,15 +65,15 @@ public class MultipleImageSRProcessor extends Thread {
 
         //load images and use Y channel as input for succeeding operators
         Mat[] inputMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected()];
-        Mat[] yuvRefMat = ColorSpaceOperator.convertRGBToYUV(ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (0), ImageFileAttribute.FileType.JPEG));
+        Mat[] yMatList = new Mat[inputMatList.length];
         for(int i = 0; i < inputMatList.length; i++) {
             Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
-            Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(lrMat);
-            inputMatList[i] = yuvMat[ColorSpaceOperator.Y_CHANNEL];
+            inputMatList[i] = lrMat;
+            yMatList[i] = ColorSpaceOperator.convertRGBToYUV(lrMat)[ColorSpaceOperator.Y_CHANNEL];
         }
 
         //extract features
-        YangFilter yangFilter = new YangFilter(inputMatList);
+        YangFilter yangFilter = new YangFilter(yMatList);
         yangFilter.perform();
 
         //trim the input list from the measured sharpness mean
@@ -92,9 +93,6 @@ public class MultipleImageSRProcessor extends Thread {
             succeedingMatList[i - 1] = inputMatList[i];
         }
 
-        //OpticalFlowZeroFillOperator opticalFlowZeroFillOperator = new OpticalFlowZeroFillOperator(inputMatList[0], succeedingMatList);
-        //opticalFlowZeroFillOperator.perform();
-
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(inputMatList[0], succeedingMatList);
         matchingOperator.perform();
 
@@ -102,44 +100,10 @@ public class MultipleImageSRProcessor extends Thread {
         warpingOperator.perform();
 
         ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
-        Mat initialMat = ImageOperator.performInterpolation(inputMatList[0], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         Mat[] warpedMatList = ProcessedImageRepo.getSharedInstance().getWarpedMatList();
-        Mat[] combinedMatList = new Mat[warpedMatList.length + 1];
-        combinedMatList[0] = initialMat;
-        for(int i = 1; i < combinedMatList.length; i++) {
-            combinedMatList[i] = ImageOperator.performInterpolation(warpedMatList[i - 1], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        }
-        ProgressDialogHandler.getInstance().hideDialog();
 
-        /*ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
-        Mat initialMat = ImageOperator.performInterpolation(inputMatList[0], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        Mat[] warpedMatList = ProcessedImageRepo.getSharedInstance().getWarpedMatList();
-        Mat[] combinedMatList = new Mat[warpedMatList.length + 1];
-        DisplacementValue[] displacementValues = opticalFlowZeroFillOperator.getDisplacementValues();
-
-        combinedMatList[0] = initialMat;
-        for(int i = 1; i < combinedMatList.length; i++) {
-           //resize warp list by zero-fill and displacement
-            combinedMatList[i] = ImageOperator.performZeroFill(warpedMatList[i - 1], ParameterConfig.getScalingFactor(),
-                    displacementValues[i - 1].getXPoints(), displacementValues[i - 1].getYPoints());
-
-            ImageWriter.getInstance().saveMatrixToImage(combinedMatList[i], "ZeroFill", "warped_resize_"+i, ImageFileAttribute.FileType.JPEG);
-        }*/
-
-        //MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
-        //fusionOperator.perform();
-
-        Mat edgeMat = ImageReader.getInstance().imReadOpenCV("YangEdges/image_edge_0", ImageFileAttribute.FileType.JPEG);
-        EdgeFusionOperator fusionOperator = new EdgeFusionOperator(combinedMatList, edgeMat);
+        HDRFusionOperator fusionOperator = new HDRFusionOperator(inputMatList[0], warpedMatList);
         fusionOperator.perform();
-
-       //release unused warp images
-        for(int i = 1; i < combinedMatList.length; i++) {
-            combinedMatList[i].release();
-        }
-
-        ChannelMergeOperator mergeOperator = new ChannelMergeOperator(fusionOperator.getResult(), yuvRefMat[ColorSpaceOperator.U_CHANNEL], yuvRefMat[ColorSpaceOperator.V_CHANNEL]);
-        mergeOperator.perform();
 
         //deallocate some classes
         ProcessedImageRepo.destroy();
