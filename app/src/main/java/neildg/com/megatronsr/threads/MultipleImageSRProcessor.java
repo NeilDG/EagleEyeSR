@@ -21,6 +21,7 @@ import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
+import neildg.com.megatronsr.processing.multiple.fusion.EdgeFusionOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.postprocess.ChannelMergeOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
@@ -91,8 +92,8 @@ public class MultipleImageSRProcessor extends Thread {
             succeedingMatList[i - 1] = inputMatList[i];
         }
 
-        OpticalFlowZeroFillOperator opticalFlowZeroFillOperator = new OpticalFlowZeroFillOperator(inputMatList[0], succeedingMatList);
-        opticalFlowZeroFillOperator.perform();
+        //OpticalFlowZeroFillOperator opticalFlowZeroFillOperator = new OpticalFlowZeroFillOperator(inputMatList[0], succeedingMatList);
+        //opticalFlowZeroFillOperator.perform();
 
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(inputMatList[0], succeedingMatList);
         matchingOperator.perform();
@@ -100,7 +101,7 @@ public class MultipleImageSRProcessor extends Thread {
         LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), succeedingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         warpingOperator.perform();
 
-        /*ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
+        ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
         Mat initialMat = ImageOperator.performInterpolation(inputMatList[0], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         Mat[] warpedMatList = ProcessedImageRepo.getSharedInstance().getWarpedMatList();
         Mat[] combinedMatList = new Mat[warpedMatList.length + 1];
@@ -108,9 +109,9 @@ public class MultipleImageSRProcessor extends Thread {
         for(int i = 1; i < combinedMatList.length; i++) {
             combinedMatList[i] = ImageOperator.performInterpolation(warpedMatList[i - 1], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         }
-        ProgressDialogHandler.getInstance().hideDialog();*/
+        ProgressDialogHandler.getInstance().hideDialog();
 
-        ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
+        /*ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
         Mat initialMat = ImageOperator.performInterpolation(inputMatList[0], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         Mat[] warpedMatList = ProcessedImageRepo.getSharedInstance().getWarpedMatList();
         Mat[] combinedMatList = new Mat[warpedMatList.length + 1];
@@ -123,17 +124,21 @@ public class MultipleImageSRProcessor extends Thread {
                     displacementValues[i - 1].getXPoints(), displacementValues[i - 1].getYPoints());
 
             ImageWriter.getInstance().saveMatrixToImage(combinedMatList[i], "ZeroFill", "warped_resize_"+i, ImageFileAttribute.FileType.JPEG);
-        }
+        }*/
 
-        MeanFusionOperator meanFusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
-        meanFusionOperator.perform();
+        //MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
+        //fusionOperator.perform();
+
+        Mat edgeMat = ImageReader.getInstance().imReadOpenCV("YangEdges/image_edge_0", ImageFileAttribute.FileType.JPEG);
+        EdgeFusionOperator fusionOperator = new EdgeFusionOperator(combinedMatList, edgeMat);
+        fusionOperator.perform();
 
        //release unused warp images
         for(int i = 1; i < combinedMatList.length; i++) {
             combinedMatList[i].release();
         }
 
-        ChannelMergeOperator mergeOperator = new ChannelMergeOperator(meanFusionOperator.getResult(), yuvRefMat[ColorSpaceOperator.U_CHANNEL], yuvRefMat[ColorSpaceOperator.V_CHANNEL]);
+        ChannelMergeOperator mergeOperator = new ChannelMergeOperator(fusionOperator.getResult(), yuvRefMat[ColorSpaceOperator.U_CHANNEL], yuvRefMat[ColorSpaceOperator.V_CHANNEL]);
         mergeOperator.perform();
 
         //deallocate some classes
