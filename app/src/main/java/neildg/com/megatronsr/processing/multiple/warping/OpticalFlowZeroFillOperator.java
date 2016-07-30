@@ -18,6 +18,7 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.model.multiple.DisplacementValue;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
@@ -33,6 +34,7 @@ public class OpticalFlowZeroFillOperator implements IOperator {
 
     private Mat originMat;
     private Mat[] matSequences;
+    private DisplacementValue[] displacementValues;
 
     private Semaphore signalFlag = new Semaphore(0);
 
@@ -43,6 +45,7 @@ public class OpticalFlowZeroFillOperator implements IOperator {
     public OpticalFlowZeroFillOperator(Mat originMat, Mat[] matSequences) {
        this.originMat = originMat;
        this.matSequences = matSequences;
+        this.displacementValues = new DisplacementValue[this.matSequences.length];
     }
 
     @Override
@@ -62,8 +65,10 @@ public class OpticalFlowZeroFillOperator implements IOperator {
 
             //zero filled displaced mat are stored in process image repo
             for(int i = 0; i < flowWorkerList.size(); i++) {
-                Mat mat = flowWorkerList.get(i).getZeroFilledMat();
-                ProcessedImageRepo.getSharedInstance().storeZeroFilledMat(mat);
+                //Mat mat = flowWorkerList.get(i).getZeroFilledMat();
+                //ProcessedImageRepo.getSharedInstance().storeZeroFilledMat(mat);
+
+                this.displacementValues[i] = flowWorkerList.get(i).getDisplacementValue();
             }
 
             flowWorkerList.clear();
@@ -74,6 +79,9 @@ public class OpticalFlowZeroFillOperator implements IOperator {
         }
     }
 
+    public DisplacementValue[] getDisplacementValues() {
+        return this.displacementValues;
+    }
 
     private class OpticalFlowWorker extends Thread {
 
@@ -83,7 +91,8 @@ public class OpticalFlowZeroFillOperator implements IOperator {
 
         private Mat mat1; //grayscale of origin mat
         private Mat mat2;  //grayscale of comparing mat
-        private Mat zeroFilledMat;
+        //private Mat zeroFilledMat;
+        private DisplacementValue displacementValue;
 
         public OpticalFlowWorker(Mat originMat, Mat comparingMat, int index, Semaphore signalFlag) {
             this.comparingMat = comparingMat;
@@ -114,21 +123,20 @@ public class OpticalFlowZeroFillOperator implements IOperator {
             }
             //perform zero-filling based from motion translation
             int scaling = ParameterConfig.getScalingFactor();
-            this.zeroFilledMat = ImageOperator.performZeroFill(this.comparingMat, scaling, xPoints, yPoints);
-            ImageWriter.getInstance().saveMatrixToImage(this.zeroFilledMat, "ZeroFill", "zero_fill_"+this.index, ImageFileAttribute.FileType.JPEG);
+            this.displacementValue = new DisplacementValue(xPoints, yPoints);
+            //this.zeroFilledMat = ImageOperator.performZeroFill(this.comparingMat, scaling, xPoints, yPoints);
+            //ImageWriter.getInstance().saveMatrixToImage(this.zeroFilledMat, "ZeroFill", "zero_fill_"+this.index, ImageFileAttribute.FileType.JPEG);
 
             //clear memory allocations
-            this.comparingMat.release();
             this.mat1.release();
             this.mat2.release();
 
             this.signalFlag.release(); //release flag of sem
         }
 
-        public Mat getZeroFilledMat() {
+        /*public Mat getZeroFilledMat() {
             return this.zeroFilledMat;
-        }
+        }*/
+        public DisplacementValue getDisplacementValue() {return this.displacementValue;}
     }
-
-
 }
