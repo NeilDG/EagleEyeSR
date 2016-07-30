@@ -105,7 +105,6 @@ public class MultipleImageSRProcessor extends Thread {
         //perform affine warping
         AffineWarpingOperator warpingOperator = new AffineWarpingOperator(inputMatList[0], succeedingMatList);
         warpingOperator.perform();
-
         succeedingMatList = warpingOperator.getWarpedMatList();
 
         //perform perspective warping

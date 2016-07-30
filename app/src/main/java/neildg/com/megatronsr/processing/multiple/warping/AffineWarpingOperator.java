@@ -42,7 +42,7 @@ public class AffineWarpingOperator implements IOperator {
 
             //perform affine warp if valid affine mat is found
             if(affineMat.rows() == 2 && affineMat.cols() == 3) {
-                Imgproc.warpAffine(this.inputMatList[i], this.warpedMatList[i], affineMat, this.inputMatList[i].size(), Imgproc.INTER_LINEAR, Core.BORDER_REPLICATE, Scalar.all(0));
+                Imgproc.warpAffine(this.inputMatList[i], this.warpedMatList[i], affineMat, this.inputMatList[i].size(), Imgproc.INTER_NEAREST, Core.BORDER_REPLICATE, Scalar.all(0));
             }
             else {
                 //copy if no affine mat is found
