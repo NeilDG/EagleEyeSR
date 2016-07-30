@@ -41,11 +41,15 @@ public class LRWarpingOperator {
     private MatOfKeyPoint[] keyPointList;
     private Mat[] imagesToWarpList;
 
+    private Mat[] warpedMatList;
+
     public LRWarpingOperator(MatOfKeyPoint refKeypoint, Mat[] imagesToWarpList, MatOfDMatch[] goodMatchList, MatOfKeyPoint[] keyPointList) {
         this.goodMatchList = goodMatchList;
         this.keyPointList = keyPointList;
         this.refKeypoint = refKeypoint;
         this.imagesToWarpList = imagesToWarpList;
+
+        this.warpedMatList = new Mat[this.imagesToWarpList.length];
     }
 
     public void perform() {
@@ -55,7 +59,7 @@ public class LRWarpingOperator {
             ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + (i+1) + " to reference image.");
 
             Mat warpedMat = this.warpImage(this.goodMatchList[i], this.keyPointList[i], this.imagesToWarpList[i]);
-            ProcessedImageRepo.getSharedInstance().storeWarpedMat(warpedMat);
+            this.warpedMatList[i] = warpedMat;
 
             ImageWriter.getInstance().saveMatrixToImage(warpedMat, "warp_" +i, ImageFileAttribute.FileType.JPEG);
 
@@ -79,6 +83,10 @@ public class LRWarpingOperator {
             keyPoint.release();
         }
         this.keyPointList = null;
+    }
+
+    public Mat[] getWarpedMatList() {
+        return this.warpedMatList;
     }
 
     private Mat warpImage(MatOfDMatch goodMatch, MatOfKeyPoint candidateKeypoint, Mat candidateMat) {
@@ -110,13 +118,19 @@ public class LRWarpingOperator {
         Log.d(TAG, "Homography pre info: matOfPoint1 ROWS: " + matOfPoint1.rows() + " matOfPoint1 COLS: " + matOfPoint1.cols());
         Log.d(TAG, "Homography pre info: matOfPoint2 ROWS: " + matOfPoint2.rows() + " matOfPoint2 COLS: " + matOfPoint2.cols());
 
-        Mat homography = Calib3d.findHomography(matOfPoint2, matOfPoint1, Calib3d.RANSAC, 1);
+        Mat homography;
+        if(matOfPoint1.rows() > 0 && matOfPoint1.cols() > 0 && matOfPoint2.rows() > 0 && matOfPoint2.cols() >0) {
+            homography = Calib3d.findHomography(matOfPoint2, matOfPoint1, Calib3d.RANSAC, 1);
+        }
+        else {
+            homography = new Mat(); //just empty
+        }
 
         Log.d(TAG, "Homography info: ROWS: " + homography.rows() + " COLS: " + homography.cols());
 
         if(homography.rows() == 3 && homography.cols() == 3) {
             Mat warpedMat = new Mat();
-            Imgproc.warpPerspective(candidateMat, warpedMat, homography, warpedMat.size(), Imgproc.INTER_NEAREST, Core.BORDER_TRANSPARENT, Scalar.all(0));
+            Imgproc.warpPerspective(candidateMat, warpedMat, homography, warpedMat.size(), Imgproc.INTER_LINEAR, Core.BORDER_REPLICATE, Scalar.all(0));
             return warpedMat;
         }
         else {

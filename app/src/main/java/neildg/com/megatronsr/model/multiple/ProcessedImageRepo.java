@@ -41,7 +41,7 @@ public class ProcessedImageRepo {
         sharedInstance = null;
     }
 
-    public void storeZeroFilledMat(Mat zeroFilledMat) {
+   /* public void storeZeroFilledMat(Mat zeroFilledMat) {
         this.zeroFilledMatList.add(zeroFilledMat);
     }
 
@@ -68,5 +68,5 @@ public class ProcessedImageRepo {
         }
 
         return this.referenceMatYUV;
-    }
+    }*/
 }

@@ -59,7 +59,7 @@ public class ImageWarpingTest implements ITest {
         LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), comparingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         warpingOperator.perform();
 
-        Mat[] warpedMatList= ProcessedImageRepo.getSharedInstance().getWarpedMatList();
+        Mat[] warpedMatList= warpingOperator.getWarpedMatList();
         Mat testOutputMat = new Mat();
         for(int i = 0; i < warpedMatList.length; i++) {
             Mat warpedMat = warpedMatList[i];

@@ -27,6 +27,7 @@ import neildg.com.megatronsr.processing.multiple.postprocess.ChannelMergeOperato
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DegradationOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
+import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.LRToHROperator;
@@ -95,15 +96,28 @@ public class MultipleImageSRProcessor extends Thread {
         //OpticalFlowZeroFillOperator opticalFlowZeroFillOperator = new OpticalFlowZeroFillOperator(inputMatList[0], succeedingMatList);
         //opticalFlowZeroFillOperator.perform();
 
-        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(inputMatList[0], succeedingMatList);
+        /*FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(inputMatList[0], succeedingMatList);
         matchingOperator.perform();
 
         LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), succeedingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
+        warpingOperator.perform();*/
+
+        //perform affine warping
+        AffineWarpingOperator warpingOperator = new AffineWarpingOperator(inputMatList[0], succeedingMatList);
         warpingOperator.perform();
+
+        succeedingMatList = warpingOperator.getWarpedMatList();
+
+        //perform perspective warping
+        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(inputMatList[0], succeedingMatList);
+        matchingOperator.perform();
+
+        LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), succeedingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
+        perspectiveWarpOperator.perform();
 
         ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
         Mat initialMat = ImageOperator.performInterpolation(inputMatList[0], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        Mat[] warpedMatList = ProcessedImageRepo.getSharedInstance().getWarpedMatList();
+        Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
         Mat[] combinedMatList = new Mat[warpedMatList.length + 1];
         combinedMatList[0] = initialMat;
         for(int i = 1; i < combinedMatList.length; i++) {
