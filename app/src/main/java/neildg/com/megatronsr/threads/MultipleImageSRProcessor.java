@@ -27,6 +27,7 @@ import neildg.com.megatronsr.processing.multiple.postprocess.ChannelMergeOperato
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DegradationOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
+import neildg.com.megatronsr.processing.multiple.selection.TestImagesSelector;
 import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
@@ -76,8 +77,18 @@ public class MultipleImageSRProcessor extends Thread {
         YangFilter yangFilter = new YangFilter(inputMatList);
         yangFilter.perform();
 
-        //trim the input list from the measured sharpness mean
+        SharpnessMeasure.getSharedInstance().measureSharpness(yangFilter.getEdgeMatList());
         SharpnessMeasure.SharpnessResult sharpnessResult = SharpnessMeasure.getSharedInstance().getLatestResult();
+
+        //find appropriate ground-truth
+        TestImagesSelector testImagesSelector = new TestImagesSelector(inputMatList, yangFilter.getEdgeMatList(), sharpnessResult);
+        testImagesSelector.perform();
+        inputMatList = testImagesSelector.getProposedList();
+
+        //remeasure sharpness result without the image ground-truth
+        sharpnessResult = SharpnessMeasure.getSharedInstance().measureSharpness(testImagesSelector.getProposedEdgeList());
+
+        //trim the input list from the measured sharpness mean
         inputMatList = SharpnessMeasure.getSharedInstance().trimMatList(inputMatList, sharpnessResult);
 
         DenoisingOperator denoisingOperator = new DenoisingOperator(inputMatList);
@@ -95,12 +106,6 @@ public class MultipleImageSRProcessor extends Thread {
 
         //OpticalFlowZeroFillOperator opticalFlowZeroFillOperator = new OpticalFlowZeroFillOperator(inputMatList[0], succeedingMatList);
         //opticalFlowZeroFillOperator.perform();
-
-        /*FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(inputMatList[0], succeedingMatList);
-        matchingOperator.perform();
-
-        LRWarpingOperator warpingOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), succeedingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
-        warpingOperator.perform();*/
 
         //perform affine warping
         AffineWarpingOperator warpingOperator = new AffineWarpingOperator(inputMatList[0], succeedingMatList);

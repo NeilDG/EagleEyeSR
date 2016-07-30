@@ -30,6 +30,8 @@ public class YangFilter implements IOperator {
     private Mat f3Kernel;
     private Mat f4Kernel;
 
+    private Mat[] edgeMatList;
+
     public YangFilter(Mat[] inputMatList) {
         this.inputMatList = inputMatList;
 
@@ -50,7 +52,7 @@ public class YangFilter implements IOperator {
     @Override
     public void perform() {
 
-        Mat[] edgeMatList = new Mat[this.inputMatList.length];
+       this.edgeMatList = new Mat[this.inputMatList.length];
         for(int i = 0; i < this.inputMatList.length; i++) {
             Mat inputf1 = new Mat(); Mat inputf2 = new Mat(); Mat inputf3 = new Mat(); Mat inputf4 = new Mat();
             Mat[] combinedFilterList = new Mat[4];
@@ -82,15 +84,17 @@ public class YangFilter implements IOperator {
             edgeMatList[i] = fusionOperator.getResult();
 
             //test. Highlight the edges
-            //Core.addWeighted(fusionOperator.getResult(), 1.0, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
-            //Mat edgeMat = fusionOperator.getResult();
-            //Mat maskMat = ImageOperator.produceMask(edgeMat, 25);
+            /*Core.addWeighted(fusionOperator.getResult(), 1.0, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
+            Mat edgeMat = fusionOperator.getResult();
+            Mat maskMat = ImageOperator.produceMask(edgeMat, 25);
 
-            //Core.addWeighted(edgeMat, -0.35, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
-            //ImageWriter.getInstance().saveMatrixToImage(this.inputMatList[i], "YangEdges", "image_sharpen_"+i, ImageFileAttribute.FileType.JPEG);
+            Core.addWeighted(edgeMat, -0.35, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
+            ImageWriter.getInstance().saveMatrixToImage(this.inputMatList[i], "YangEdges", "image_sharpen_"+i, ImageFileAttribute.FileType.JPEG);*/
         }
-
-        SharpnessMeasure.getSharedInstance().measureSharpness(edgeMatList);
         ProgressDialogHandler.getInstance().hideDialog();
+    }
+
+    public Mat[] getEdgeMatList() {
+        return this.edgeMatList;
     }
 }

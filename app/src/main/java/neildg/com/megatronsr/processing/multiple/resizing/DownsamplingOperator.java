@@ -38,9 +38,9 @@ public class DownsamplingOperator implements IOperator {
         }*/
 
 
-        Bitmap bitmap = bitmapURIRepository.getOriginalBitmap(0);
+       /*Bitmap bitmap = bitmapURIRepository.getOriginalBitmap(0);
         imageWriter.saveBitmapImage(bitmap, FilenameConstants.GROUND_TRUTH_PREFIX_STRING+0, ImageFileAttribute.FileType.JPEG);
-        bitmap.recycle();
+        bitmap.recycle();*/
 
         //TODO: Test. Denoise ground-truth image.
         /*Mat groundTruthMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);

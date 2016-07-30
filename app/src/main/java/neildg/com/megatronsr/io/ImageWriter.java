@@ -122,6 +122,17 @@ public class ImageWriter {
 
 		//Log.d(TAG, "Saved " + imageFile.getAbsolutePath());
 	}
+
+	public synchronized void deleteImage(String fileName, ImageFileAttribute.FileType fileType) {
+		File imageFile = new File(this.proposedPath, fileName + ImageFileAttribute.getFileExtension(fileType));
+		imageFile.delete();
+	}
+
+	public synchronized void deleteImage(String fileName, String directory, ImageFileAttribute.FileType fileType) {
+		File dirFile = new File(this.proposedPath + "/" + directory);
+		File imageFile = new File(dirFile.getPath(), fileName + ImageFileAttribute.getFileExtension(fileType));
+		imageFile.delete();
+	}
 	
 	public String getFilePath() {
 		return this.proposedPath;
