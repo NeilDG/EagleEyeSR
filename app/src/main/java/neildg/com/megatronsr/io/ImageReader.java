@@ -83,4 +83,9 @@ public class ImageReader {
 		Log.d(TAG, "Filepath for imread: " + completeFilePath);
 		return Imgcodecs.imread(completeFilePath);
 	}
+
+	public boolean doesImageExists(String fileName, ImageFileAttribute.FileType fileType) {
+		File file = new File(ImageWriter.getInstance().getFilePath() + "/" +fileName + ImageFileAttribute.getFileExtension(fileType));
+		return file.exists();
+	}
 }

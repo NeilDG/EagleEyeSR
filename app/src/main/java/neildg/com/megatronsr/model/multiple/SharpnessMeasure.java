@@ -62,12 +62,12 @@ public class SharpnessMeasure {
         }
 
         //store index values
-        /*sharpnessResult.trimmedIndexes = new int[indexList.size()];
+        sharpnessResult.trimmedIndexes = new int[indexList.size()];
         for(int i = 0; i < sharpnessResult.trimmedIndexes.length; i++) {
             sharpnessResult.trimmedIndexes[i] = indexList.get(i);
         }
 
-        sharpnessResult.trimmedValues = new double[trimMatList.size()];
+        /*sharpnessResult.trimmedValues = new double[trimMatList.size()];
         for(int i = 0; i < sharpnessResult.trimmedValues.length; i++) {
             sharpnessResult.trimmedValues[i] = trimMatList.get(i);
         }*/
@@ -131,7 +131,7 @@ public class SharpnessMeasure {
     public class SharpnessResult {
         private double[] sharpnessValues;
         //private double[] trimmedValues; //those who do not meet the mean.
-        //private int[] trimmedIndexes;
+        private int[] trimmedIndexes;
 
         private double mean;
 
@@ -152,10 +152,10 @@ public class SharpnessMeasure {
 
         /*public int getBestIndexTrimmed() {
             return this.bestIndexTrimmed;
-        }
+        }*/
 
         public int[] getTrimmedIndexes() {
             return this.trimmedIndexes;
-        }*/
+        }
     }
 }

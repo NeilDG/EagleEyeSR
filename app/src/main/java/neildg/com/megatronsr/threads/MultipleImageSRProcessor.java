@@ -94,7 +94,15 @@ public class MultipleImageSRProcessor extends Thread {
         DenoisingOperator denoisingOperator = new DenoisingOperator(inputMatList);
         denoisingOperator.perform();
 
-        LRToHROperator lrToHROperator = new LRToHROperator(ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (0), ImageFileAttribute.FileType.JPEG));
+        int index = 0;
+        for(int i = 0; i < BitmapURIRepository.getInstance().getNumImagesSelected(); i++) {
+            index = i;
+            if(ImageReader.getInstance().doesImageExists(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG)) {
+                break;
+            }
+        }
+        Log.d(TAG, "First index: " +index);
+        LRToHROperator lrToHROperator = new LRToHROperator(ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + index, ImageFileAttribute.FileType.JPEG));
         lrToHROperator.perform();
 
         //perform feature matching of LR images against the first image as reference mat.
