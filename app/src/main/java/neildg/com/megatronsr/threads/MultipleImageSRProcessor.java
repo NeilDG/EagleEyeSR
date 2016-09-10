@@ -112,9 +112,6 @@ public class MultipleImageSRProcessor extends Thread {
             succeedingMatList[i - 1] = inputMatList[i];
         }
 
-        //OpticalFlowZeroFillOperator opticalFlowZeroFillOperator = new OpticalFlowZeroFillOperator(inputMatList[0], succeedingMatList);
-        //opticalFlowZeroFillOperator.perform();
-
         //perform affine warping
         AffineWarpingOperator warpingOperator = new AffineWarpingOperator(inputMatList[0], succeedingMatList);
         warpingOperator.perform();
@@ -154,10 +151,6 @@ public class MultipleImageSRProcessor extends Thread {
 
         MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();
-
-        //Mat edgeMat = ImageReader.getInstance().imReadOpenCV("YangEdges/image_edge_0", ImageFileAttribute.FileType.JPEG);
-        //EdgeFusionOperator fusionOperator = new EdgeFusionOperator(combinedMatList, edgeMat);
-        //fusionOperator.perform();
 
        //release unused warp images
         for(int i = 1; i < combinedMatList.length; i++) {

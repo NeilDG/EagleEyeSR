@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity_layout);
 
+        this.getSupportActionBar().hide();
+
         ApplicationCore.initialize(this);
         ProgressDialogHandler.initialize(this);
         ImageWriter.initialize(this);
@@ -215,8 +217,16 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void moveToProcessingActivity() {
-        Intent processingIntent = new Intent(MainActivity.this, ProcessingActivity.class);
-        this.startActivity(processingIntent);
+
+        if(BuildConfig.DEBUG == true) {
+            Intent processingIntent = new Intent(MainActivity.this, ProcessingActivityDebug.class);
+            this.startActivity(processingIntent);
+        }
+        else {
+            Intent processingIntent = new Intent(MainActivity.this, ProcessingActivityRelease.class);
+            this.startActivity(processingIntent);
+        }
+
     }
 
 }

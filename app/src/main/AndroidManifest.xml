@@ -28,15 +28,17 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:screenOrientation="sensorLandscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ProcessingActivity"></activity>
+        <activity
+            android:name=".ProcessingActivityDebug"
+            android:label="Process Images" />
+        <activity android:name=".ProcessingActivityRelease"
+            android:label="Process Images"></activity>
     </application>
 
 </manifest>
