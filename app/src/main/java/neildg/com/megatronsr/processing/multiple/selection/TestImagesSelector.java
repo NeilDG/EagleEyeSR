@@ -61,7 +61,7 @@ public class TestImagesSelector implements IOperator {
                 Log.d(TAG, "Added image " +i);
             }
             else {
-                ImageWriter.getInstance().deleteImage(FilenameConstants.DOWNSAMPLE_PREFIX_STRING+i, ImageFileAttribute.FileType.JPEG);
+                ImageWriter.getInstance().deleteImage(FilenameConstants.INPUT_PREFIX_STRING +i, ImageFileAttribute.FileType.JPEG);
             }
         }
         this.outputMatList = filteredMatList.toArray(new Mat[filteredMatList.size()]);

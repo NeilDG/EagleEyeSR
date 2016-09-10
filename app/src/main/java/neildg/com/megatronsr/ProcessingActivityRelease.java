@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
+import neildg.com.megatronsr.threads.ReleaseSRProcessor;
 import neildg.com.megatronsr.threads.SingleImageSRProcessor;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -49,11 +50,22 @@ public class ProcessingActivityRelease extends AppCompatActivity {
                 ProcessingActivityRelease.this.executeSRProcessor();
             }
         });
+
+        //temporarily disable results button
+        Button nearestBtn = (Button) this.findViewById(R.id.nearest_btn);
+        nearestBtn.setEnabled(false);
+
+        Button bicubicBtn = (Button) this.findViewById(R.id.bicubic_btn);
+        bicubicBtn.setEnabled(false);
+
+        srButton.setEnabled(false);
     }
+
 
     private void executeSRProcessor() {
         if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE) {
-
+            ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor();
+            releaseSRProcessor.start();
         }
         else {
             new SingleImageSRProcessor().start();

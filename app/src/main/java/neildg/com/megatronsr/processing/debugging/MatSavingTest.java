@@ -32,7 +32,7 @@ public class MatSavingTest implements ITest {
 
         int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
         for (int i = 0; i < numImages; i++) {
-            Mat imageMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
+            Mat imageMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
             MatWriter.writeMat(imageMat, FilenameConstants.DEBUG_DIR, FilenameConstants.MAT_VALUE_PREFIX + i);
         }
 

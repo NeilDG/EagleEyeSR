@@ -39,7 +39,7 @@ public class OpticalFlowTest implements ITest {
         DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConfig.getScalingFactor(), BitmapURIRepository.getInstance().getNumImagesSelected());
         downsamplingOperator.perform();
 
-        Mat imageMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
+        Mat imageMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
         Mat xPoints = new Mat(imageMat.size(), CvType.CV_32FC1);
         Mat yPoints = new Mat(imageMat.size(), CvType.CV_32FC1);
         //perform simple remapping to the right
