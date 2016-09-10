@@ -2,12 +2,8 @@ package neildg.com.megatronsr.processing.multiple.resizing;
 
 import android.graphics.Bitmap;
 
-import org.opencv.core.Mat;
-import org.opencv.photo.Photo;
-
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.processing.IOperator;
@@ -49,7 +45,7 @@ public class DownsamplingOperator implements IOperator {
 
         for(int i = 0; i < numImagesSelected; i++) {
             Bitmap downsampledBitmap = bitmapURIRepository.getDownsampledBitmap(i, this.downsampleFactor);
-            imageWriter.saveBitmapImage(downsampledBitmap, FilenameConstants.DOWNSAMPLE_PREFIX_STRING+i, ImageFileAttribute.FileType.JPEG);
+            imageWriter.saveBitmapImage(downsampledBitmap, FilenameConstants.INPUT_PREFIX_STRING +i, ImageFileAttribute.FileType.JPEG);
             downsampledBitmap.recycle();
         }
     }

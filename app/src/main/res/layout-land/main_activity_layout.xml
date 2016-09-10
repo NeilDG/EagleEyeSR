@@ -95,7 +95,9 @@
                     android:layout_height="wrap_content"
                     android:text="Single Image"
                     android:id="@+id/single_sr_btn"
-                    android:checked="false" />
+                    android:checked="false"
+                    android:enabled="false"
+                    android:clickable="false" />
 
                 <RadioButton
                     android:layout_width="wrap_content"

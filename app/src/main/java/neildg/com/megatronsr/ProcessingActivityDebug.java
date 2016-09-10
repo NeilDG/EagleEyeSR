@@ -21,14 +21,21 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 /*
     Processing activity for SR. Just a simple debugging activity
  */
-public class ProcessingActivity extends AppCompatActivity {
+public class ProcessingActivityDebug extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_processing);
+        setContentView(R.layout.activity_processing_debug);
 
         this.initializeButtons();
+
+        if(BuildConfig.DEBUG == true) {
+            this.findViewById(R.id.debug_parent_view).setVisibility(View.VISIBLE);
+        }
+        else {
+            this.findViewById(R.id.debug_parent_view).setVisibility(View.INVISIBLE);
+        }
 
         ProgressDialogHandler.initialize(this);
     }
@@ -52,7 +59,7 @@ public class ProcessingActivity extends AppCompatActivity {
         srButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               ProcessingActivity.this.executeSRProcessor();
+               ProcessingActivityDebug.this.executeSRProcessor();
             }
         });
 
@@ -61,7 +68,7 @@ public class ProcessingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MatSavingTest matSavingTest = new MatSavingTest();
-                ProcessingActivity.this.executeDebugAction(matSavingTest);
+                ProcessingActivityDebug.this.executeDebugAction(matSavingTest);
             }
         });
 
@@ -70,7 +77,7 @@ public class ProcessingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ZeroFillingTest zeroFillingTest = new ZeroFillingTest();
-                ProcessingActivity.this.executeDebugAction(zeroFillingTest);
+                ProcessingActivityDebug.this.executeDebugAction(zeroFillingTest);
             }
         });
 
@@ -79,7 +86,7 @@ public class ProcessingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ImageWarpingTest warpingTest = new ImageWarpingTest();
-                ProcessingActivity.this.executeDebugAction(warpingTest);
+                ProcessingActivityDebug.this.executeDebugAction(warpingTest);
             }
         });
 
@@ -88,7 +95,7 @@ public class ProcessingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 OpticalFlowTest opticalFlowTest = new OpticalFlowTest();
-                ProcessingActivity.this.executeDebugAction(opticalFlowTest);
+                ProcessingActivityDebug.this.executeDebugAction(opticalFlowTest);
             }
         });
     }

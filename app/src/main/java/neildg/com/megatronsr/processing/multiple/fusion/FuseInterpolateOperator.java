@@ -44,7 +44,7 @@ public class FuseInterpolateOperator implements IOperator {
     private void loadImages() {
         ProgressDialogHandler.getInstance().showDialog("Setting up fusion", "Setting up");
         this.groundTruthMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
-        this.fusedMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
+        this.fusedMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
         Mat initialHRMat= ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_CUBIC + 0, ImageFileAttribute.FileType.JPEG);
         Mat nearestMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_NEAREST, ImageFileAttribute.FileType.JPEG);

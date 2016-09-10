@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".ProcessingActivity"
+    tools:context="neildg.com.megatronsr.ProcessingActivityRelease"
     android:orientation="vertical">
 
     <LinearLayout
@@ -41,57 +41,47 @@
         android:id="@+id/perform_sr_btn"
         android:layout_marginTop="20dp" />
 
-    <TableLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp">
+        android:layout_height="144dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Debugging Tools"
-            android:id="@+id/textView7"
-            android:layout_gravity="center_horizontal" />
+            android:text="Image Results"
+            android:id="@+id/textView6"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp" />
 
-        <TableRow
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Nearest-Neighbor"
+                android:id="@+id/nearest_btn"
+                android:layout_weight="0.5" />
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Bicubic"
+                android:id="@+id/bicubic_btn"
+                android:layout_weight="0.5" />
+        </LinearLayout>
+
+        <Button
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:text="Super-Resolution"
+            android:id="@+id/button3" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Save Mat"
-                android:id="@+id/save_mat_btn"
-                android:layout_weight="1" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Calculate Optical Flow"
-                android:id="@+id/optical_flow_btn"
-                android:layout_weight="1" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Perform Zero Fill"
-                android:id="@+id/zero_fill_btn"
-                android:layout_weight="1" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Warp Images"
-                android:id="@+id/warp_btn"
-                android:layout_weight="1" />
-        </TableRow>
-
-    </TableLayout>
+    </LinearLayout>
 
 </LinearLayout>

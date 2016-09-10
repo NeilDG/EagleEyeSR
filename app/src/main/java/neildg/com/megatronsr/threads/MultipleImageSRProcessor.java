@@ -1,38 +1,29 @@
 package neildg.com.megatronsr.threads;
 
-import android.media.Image;
 import android.util.Log;
 
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.ml.KNearest;
-import org.opencv.ml.Ml;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.model.multiple.DisplacementValue;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
-import neildg.com.megatronsr.processing.multiple.fusion.EdgeFusionOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.postprocess.ChannelMergeOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
-import neildg.com.megatronsr.processing.multiple.resizing.DegradationOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.megatronsr.processing.multiple.selection.TestImagesSelector;
 import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.LRToHROperator;
-import neildg.com.megatronsr.processing.multiple.warping.OpticalFlowZeroFillOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -66,9 +57,9 @@ public class MultipleImageSRProcessor extends Thread {
 
         //load images and use Y channel as input for succeeding operators
         Mat[] inputMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected()];
-        Mat[] yuvRefMat = ColorSpaceOperator.convertRGBToYUV(ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (0), ImageFileAttribute.FileType.JPEG));
+        Mat[] yuvRefMat = ColorSpaceOperator.convertRGBToYUV(ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (0), ImageFileAttribute.FileType.JPEG));
         for(int i = 0; i < inputMatList.length; i++) {
-            Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
+            Mat lrMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
             Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(lrMat);
             inputMatList[i] = yuvMat[ColorSpaceOperator.Y_CHANNEL];
         }
@@ -97,12 +88,12 @@ public class MultipleImageSRProcessor extends Thread {
         int index = 0;
         for(int i = 0; i < BitmapURIRepository.getInstance().getNumImagesSelected(); i++) {
             index = i;
-            if(ImageReader.getInstance().doesImageExists(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG)) {
+            if(ImageReader.getInstance().doesImageExists(FilenameConstants.INPUT_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG)) {
                 break;
             }
         }
         Log.d(TAG, "First index: " +index);
-        LRToHROperator lrToHROperator = new LRToHROperator(ImageReader.getInstance().imReadOpenCV(FilenameConstants.DOWNSAMPLE_PREFIX_STRING + index, ImageFileAttribute.FileType.JPEG));
+        LRToHROperator lrToHROperator = new LRToHROperator(ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + index, ImageFileAttribute.FileType.JPEG));
         lrToHROperator.perform();
 
         //perform feature matching of LR images against the first image as reference mat.
@@ -111,9 +102,6 @@ public class MultipleImageSRProcessor extends Thread {
         for(int i = 1; i < inputMatList.length; i++) {
             succeedingMatList[i - 1] = inputMatList[i];
         }
-
-        //OpticalFlowZeroFillOperator opticalFlowZeroFillOperator = new OpticalFlowZeroFillOperator(inputMatList[0], succeedingMatList);
-        //opticalFlowZeroFillOperator.perform();
 
         //perform affine warping
         AffineWarpingOperator warpingOperator = new AffineWarpingOperator(inputMatList[0], succeedingMatList);
@@ -154,10 +142,6 @@ public class MultipleImageSRProcessor extends Thread {
 
         MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();
-
-        //Mat edgeMat = ImageReader.getInstance().imReadOpenCV("YangEdges/image_edge_0", ImageFileAttribute.FileType.JPEG);
-        //EdgeFusionOperator fusionOperator = new EdgeFusionOperator(combinedMatList, edgeMat);
-        //fusionOperator.perform();
 
        //release unused warp images
         for(int i = 1; i < combinedMatList.length; i++) {
