@@ -43,6 +43,7 @@ public class ReleaseSRProcessor extends Thread{
         outputMat.release();
 
         inputMat.release();
+        System.gc();
 
         ProgressDialogHandler.getInstance().hideDialog();
 
@@ -53,5 +54,7 @@ public class ReleaseSRProcessor extends Thread{
         SharpnessMeasure.initialize();
 
         ProgressDialogHandler.getInstance().hideDialog();
+
+        System.gc();
     }
 }
