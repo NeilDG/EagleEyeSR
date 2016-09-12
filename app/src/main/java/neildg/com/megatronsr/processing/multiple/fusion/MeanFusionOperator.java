@@ -9,6 +9,9 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
@@ -40,7 +43,7 @@ public class MeanFusionOperator implements IOperator {
 
         int rows = this.combineMatList[0].rows();
         int cols = this.combineMatList[0].cols();
-        this.outputMat = Mat.zeros(rows, cols, CvType.CV_32FC1);
+        this.outputMat = Mat.zeros(rows, cols, CvType.CV_32FC(this.combineMatList[0].channels()));
 
         ProgressDialogHandler.getInstance().showDialog(this.title, this.message);
 
@@ -51,21 +54,29 @@ public class MeanFusionOperator implements IOperator {
         }*/
 
         //divide only by the number of known pixel values. do not consider zero pixels
-        Mat sumMat = Mat.zeros(this.combineMatList[0].size(), CvType.CV_32FC1);
+        Mat sumMat = Mat.zeros(this.combineMatList[0].size(), CvType.CV_32FC(this.combineMatList[0].channels()));
         Mat divMat = Mat.zeros(this.combineMatList[0].size(), CvType.CV_32FC1);
         for(int i = 0; i < this.combineMatList.length; i++) {
-            this.combineMatList[i].convertTo(this.combineMatList[i], CvType.CV_32FC1);
+            this.combineMatList[i].convertTo(this.combineMatList[i], CvType.CV_32FC(this.combineMatList[0].channels()));
             Mat maskMat = ImageOperator.produceMask(this.combineMatList[i]);
 
-            Log.d(TAG, "CombineMat size: " +this.combineMatList[i].size().toString() +" sum Mat size: " +sumMat.size().toString());
+            Log.d(TAG, "CombineMat size: " +this.combineMatList[i].size().toString() +" sumMat size: " +sumMat.size().toString());
             Core.add(this.combineMatList[i], sumMat, sumMat, maskMat);
 
             maskMat.convertTo(maskMat, CvType.CV_32FC1);
             Core.add(maskMat, divMat, divMat);
         }
 
-        Core.divide(sumMat, divMat, this.outputMat);
-        this.outputMat.convertTo(this.outputMat, CvType.CV_8UC1);
+        List<Mat> splittedSumMat = new ArrayList<>();
+        Core.split(sumMat, splittedSumMat);
+
+        for(int i = 0; i < splittedSumMat.size(); i++) {
+            Core.divide(splittedSumMat.get(i), divMat, splittedSumMat.get(i));
+        }
+
+        Core.merge(splittedSumMat, this.outputMat);
+        //Core.divide(sumMat, divMat, this.outputMat);
+        this.outputMat.convertTo(this.outputMat, CvType.CV_8UC(this.combineMatList[0].channels()));
 
         ProgressDialogHandler.getInstance().hideDialog();
 

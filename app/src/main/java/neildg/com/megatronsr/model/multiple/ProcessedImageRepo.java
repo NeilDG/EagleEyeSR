@@ -40,33 +40,4 @@ public class ProcessedImageRepo {
         sharedInstance.zeroFilledMatList.clear();
         sharedInstance = null;
     }
-
-   /* public void storeZeroFilledMat(Mat zeroFilledMat) {
-        this.zeroFilledMatList.add(zeroFilledMat);
-    }
-
-    public Mat[] getZeroFilledMatList() {
-        return  this.zeroFilledMatList.toArray(new Mat[this.zeroFilledMatList.size()]);
-    }
-
-    public void storeWarpedMat(Mat warpedMat) {
-        this.warpedMatList.add(warpedMat);
-    }
-
-    public Mat[] getWarpedMatList() {
-        return this.warpedMatList.toArray(new Mat[this.warpedMatList.size()]);
-    }
-
-    public void storeYUVReferenceMat(Mat[] referenceMatYUV) {
-        this.referenceMatYUV = referenceMatYUV;
-    }
-
-    public Mat[] getReferenceMatYUV() {
-        if(this.referenceMatYUV == null) {
-            Log.e(TAG, "YUV reference mat is null!");
-            return null;
-        }
-
-        return this.referenceMatYUV;
-    }*/
 }
