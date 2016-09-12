@@ -174,6 +174,20 @@ public class ImageOperator {
         return hrMat;
     }
 
+    public static Mat performInterpolationInPlace(Mat fromMat, int scaling, int interpolationType) {
+        Mat hrMat = new Mat();
+        Imgproc.resize(fromMat, hrMat, new Size(0,0), scaling, scaling, interpolationType);
+
+        return hrMat;
+    }
+
+    public static Mat downsample(Mat fromMat, float decimation) {
+        Mat downsampleMat = new Mat();
+        Imgproc.resize(fromMat, downsampleMat, new Size(), decimation, decimation, Imgproc.INTER_AREA);
+
+        return downsampleMat;
+    }
+
     public static void replacePatchOnROI(Mat sourceMat, int boundary, LoadedImagePatch sourcePatch, LoadedImagePatch replacementPatch) {
 
         if(sourcePatch.getColStart() >= 0 && sourcePatch.getColEnd() < sourceMat.cols() && sourcePatch.getRowStart() >= 0 && sourcePatch.getRowEnd() < sourceMat.rows()) {

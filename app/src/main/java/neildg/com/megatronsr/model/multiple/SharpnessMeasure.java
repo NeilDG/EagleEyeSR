@@ -116,16 +116,32 @@ public class SharpnessMeasure {
     public Mat[] trimMatList(Mat[] inputMatList, SharpnessResult sharpnessResult) {
 
         List<Mat> trimMatList = new ArrayList<>();
-        /*for(int i = 0; i < sharpnessResult.trimmedIndexes.length; i++) {
-            trimMatList.add(inputMatList[sharpnessResult.trimmedIndexes[i]]);
-        }*/
         for(int i = 0; i < inputMatList.length; i++) {
             if(sharpnessResult.sharpnessValues[i] >= sharpnessResult.mean) {
                 trimMatList.add(inputMatList[i]);
             }
+            else {
+                inputMatList[i].release();
+                inputMatList[i] = null;
+            }
         }
 
         return trimMatList.toArray(new Mat[trimMatList.size()]);
+    }
+
+    /*
+     * Trims the mat list based from the sharpness result but only returns image indices for optimization
+     */
+    public Integer[] trimMatList(int inputLength, SharpnessResult sharpnessResult) {
+
+        List<Integer> trimMatList = new ArrayList<>();
+        for(int i = 0; i < inputLength; i++) {
+            if(sharpnessResult.sharpnessValues[i] >= sharpnessResult.mean) {
+                trimMatList.add(i);
+            }
+        }
+
+        return trimMatList.toArray(new Integer[trimMatList.size()]);
     }
 
     public class SharpnessResult {

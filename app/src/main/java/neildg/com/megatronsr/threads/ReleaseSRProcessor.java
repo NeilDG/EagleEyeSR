@@ -1,5 +1,7 @@
 package neildg.com.megatronsr.threads;
 
+import android.util.Log;
+
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
@@ -11,8 +13,16 @@ import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
+import neildg.com.megatronsr.processing.filters.YangFilter;
+import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
+import neildg.com.megatronsr.processing.imagetools.MatMemory;
+import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.TransferToDirOperator;
+import neildg.com.megatronsr.processing.multiple.selection.TestImagesSelector;
+import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
+import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
+import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -28,17 +38,119 @@ public class ReleaseSRProcessor extends Thread{
 
     @Override
     public void run() {
-        ProgressDialogHandler.getInstance().showDialog("Interpolating images", "Upsampling image using nearest-neighbor, bilinear and bicubic");
+
+        ProgressDialogHandler.getInstance().showUserDialog("", "Processing image");
+
         TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
         transferToDirOperator.perform();
 
+        //this.interpolateFirstImage();
+
+        //initialize storage classes
+        ProcessedImageRepo.initialize();
+        SharpnessMeasure.initialize();
+
+        //load images and use Y channel as input for succeeding operators
+        Mat[] energyInputMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected()];
+        Mat inputMat = null;
+
+        for(int i = 0; i < energyInputMatList.length; i++) {
+            inputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
+            inputMat = ImageOperator.downsample(ImageOperator.downsample(inputMat, 0.5f), 0.5f); //downsample two-fold
+
+            ImageWriter.getInstance().saveMatrixToImage(inputMat, "downsample_"+i, ImageFileAttribute.FileType.JPEG);
+
+            Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(inputMat);
+            energyInputMatList[i] = yuvMat[ColorSpaceOperator.Y_CHANNEL];
+
+            inputMat = new Mat();
+            inputMat.release();
+        }
+
+        //extract features
+        YangFilter yangFilter = new YangFilter(energyInputMatList);
+        yangFilter.perform();
+
+        //release energy input mat list
+        MatMemory.releaseAll(energyInputMatList, false);
+
+        //remeasure sharpness result without the image ground-truth
+        SharpnessMeasure.SharpnessResult sharpnessResult = SharpnessMeasure.getSharedInstance().measureSharpness(yangFilter.getEdgeMatList());
+
+        //trim the input list from the measured sharpness mean
+        Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(BitmapURIRepository.getInstance().getNumImagesSelected(), sharpnessResult);
+        Mat[] rgbInputMatList = new Mat[inputIndices.length];
+
+        //load RGB inputs
+        for(int i = 0; i < inputIndices.length; i++) {
+            rgbInputMatList[i] = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG);
+        }
+
+        Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length);
+
+        //perform feature matching of LR images against the first image as reference mat.
+        Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
+        for(int i = 1; i < rgbInputMatList.length; i++) {
+            succeedingMatList[i - 1] = rgbInputMatList[i];
+        }
+
+        //perform affine warping
+        /*AffineWarpingOperator warpingOperator = new AffineWarpingOperator(rgbInputMatList[0], succeedingMatList);
+        warpingOperator.perform();
+
+        succeedingMatList = warpingOperator.getWarpedMatList();*/
+
+        //perform perspective warping
+        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(rgbInputMatList[0], succeedingMatList);
+        matchingOperator.perform();
+
+        LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), succeedingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
+        perspectiveWarpOperator.perform();
+
+        //release images
+        MatMemory.releaseAll(matchingOperator.getdMatchesList(), false);
+        MatMemory.releaseAll(matchingOperator.getLrKeypointsList(), false);
+        MatMemory.releaseAll(succeedingMatList, true);
+
+        //interpolate first HR image
+        Mat initialHRMat = ImageOperator.performInterpolationInPlace(rgbInputMatList[0], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
+        Mat[] combinedMatList = new Mat[warpedMatList.length + 1];
+        combinedMatList[0] = initialHRMat;
+
+        for(int i = 1; i < combinedMatList.length; i++) {
+            combinedMatList[i] = ImageOperator.performInterpolationInPlace(warpedMatList[i - 1], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        }
+
+        //release images
+        MatMemory.releaseAll(warpedMatList, false);
+
+        MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
+        fusionOperator.perform();
+        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
+
+        //release images
+        MatMemory.releaseAll(combinedMatList, false);
+
+        //deallocate some classes
+        ProcessedImageRepo.destroy();
+        SharpnessMeasure.destroy();
+
+        ProgressDialogHandler.getInstance().hideDialog();
+
+        System.gc();
+    }
+
+    private void interpolateFirstImage() {
+        ProgressDialogHandler.getInstance().showUserDialog("Interpolating images", "Upsampling image using nearest-neighbor, bilinear and bicubic");
+
         Mat inputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
-        Mat outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
+        Mat outputMat = ImageOperator.performInterpolationInPlace(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
         ImageWriter.getInstance().saveMatrixToImage(outputMat, "nearest", ImageFileAttribute.FileType.JPEG);
         outputMat.release();
 
-        outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        outputMat = ImageOperator.performInterpolationInPlace(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         ImageWriter.getInstance().saveMatrixToImage(outputMat, "bicubic", ImageFileAttribute.FileType.JPEG);
         outputMat.release();
 
@@ -46,15 +158,5 @@ public class ReleaseSRProcessor extends Thread{
         System.gc();
 
         ProgressDialogHandler.getInstance().hideDialog();
-
-        ProgressDialogHandler.getInstance().showDialog("", "Processing image");
-
-        //initialize storage classes
-        ProcessedImageRepo.initialize();
-        SharpnessMeasure.initialize();
-
-        ProgressDialogHandler.getInstance().hideDialog();
-
-        System.gc();
     }
 }

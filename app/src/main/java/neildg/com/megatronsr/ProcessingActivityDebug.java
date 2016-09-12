@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import neildg.com.megatronsr.constants.BuildMode;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.processing.ITest;
@@ -30,7 +31,7 @@ public class ProcessingActivityDebug extends AppCompatActivity {
 
         this.initializeButtons();
 
-        if(BuildConfig.DEBUG == true) {
+        if(BuildMode.DEVELOPMENT_BUILD) {
             this.findViewById(R.id.debug_parent_view).setVisibility(View.VISIBLE);
         }
         else {

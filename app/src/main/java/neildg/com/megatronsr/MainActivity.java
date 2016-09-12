@@ -19,6 +19,7 @@ import org.opencv.android.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import neildg.com.megatronsr.constants.BuildMode;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
@@ -218,7 +219,7 @@ public class MainActivity extends AppCompatActivity{
 
     private void moveToProcessingActivity() {
 
-        if(BuildConfig.DEBUG == true) {
+        if(BuildMode.DEVELOPMENT_BUILD == true) {
             Intent processingIntent = new Intent(MainActivity.this, ProcessingActivityDebug.class);
             this.startActivity(processingIntent);
         }
