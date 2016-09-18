@@ -28,6 +28,7 @@ import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
+import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -128,15 +129,24 @@ public class LRWarpingOperator {
 
         Log.d(TAG, "Homography info: ROWS: " + homography.rows() + " COLS: " + homography.cols());
 
+        matOfPoint1.release();
+        matOfPoint2.release();
+        pointList1.clear();
+        pointList2.clear();
+
         if(homography.rows() == 3 && homography.cols() == 3) {
             Mat warpedMat = new Mat();
             Imgproc.warpPerspective(candidateMat, warpedMat, homography, warpedMat.size(), Imgproc.INTER_LINEAR, Core.BORDER_REPLICATE, Scalar.all(0));
+
+            homography.release();
             return warpedMat;
         }
         else {
             //do nothing. not enough features for warping
             Mat warpedMat = new Mat();
             candidateMat.copyTo(warpedMat);
+
+            homography.release();
             return warpedMat;
         }
 

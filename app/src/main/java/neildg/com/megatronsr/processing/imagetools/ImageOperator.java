@@ -37,16 +37,20 @@ public class ImageOperator {
     }
     public static Mat produceMask(Mat inputMat) {
         Mat baseMaskMat = new Mat();
-        inputMat.copyTo(baseMaskMat);
-
-        if(inputMat.channels() == 3 || inputMat.channels() == 4) {
-            Imgproc.cvtColor(baseMaskMat, baseMaskMat, Imgproc.COLOR_BGR2GRAY);
-        }
-
-        baseMaskMat.convertTo(baseMaskMat, CvType.CV_8UC1);
-        Imgproc.threshold(baseMaskMat, baseMaskMat, 1, 1, Imgproc.THRESH_BINARY);
+        produceMask(inputMat, baseMaskMat);
 
         return baseMaskMat;
+    }
+
+    public static void produceMask(Mat inputMat, Mat dstMask) {
+        inputMat.copyTo(dstMask);
+
+        if(inputMat.channels() == 3 || inputMat.channels() == 4) {
+            Imgproc.cvtColor(dstMask, dstMask, Imgproc.COLOR_BGR2GRAY);
+        }
+
+        dstMask.convertTo(dstMask, CvType.CV_8UC1);
+        Imgproc.threshold(dstMask, dstMask, 1, 1, Imgproc.THRESH_BINARY);
     }
 
     public static Mat produceMask(Mat inputMat, int threshold) {
@@ -167,11 +171,29 @@ public class ImageOperator {
      * Performs interpolation using an existing interpolation algo by OPENCV
      */
     public static Mat performInterpolation(Mat fromMat, int scaling, int interpolationType) {
+
+        int newRows = fromMat.rows() * scaling;
+        int newCols = fromMat.cols() * scaling;
+
+        Log.d(TAG, "Orig size: " +fromMat.rows() + " X " +fromMat.cols()+ " New size: " +newRows+ " X " +newCols);
         Mat hrMat = Mat.zeros(fromMat.rows() * scaling, fromMat.cols() * scaling, fromMat.type());
 
         Imgproc.resize(fromMat, hrMat, hrMat.size(), scaling, scaling, interpolationType);
 
         return hrMat;
+    }
+
+    public static Mat performInterpolationInPlace(Mat fromMat, Mat hrMat, int scaling, int interpolationType) {
+        Imgproc.resize(fromMat, hrMat, new Size(0,0), scaling, scaling, interpolationType);
+
+        return hrMat;
+    }
+
+    public static Mat downsample(Mat fromMat, float decimation) {
+        Mat downsampleMat = new Mat();
+        Imgproc.resize(fromMat, downsampleMat, new Size(), decimation, decimation, Imgproc.INTER_AREA);
+
+        return downsampleMat;
     }
 
     public static void replacePatchOnROI(Mat sourceMat, int boundary, LoadedImagePatch sourcePatch, LoadedImagePatch replacementPatch) {

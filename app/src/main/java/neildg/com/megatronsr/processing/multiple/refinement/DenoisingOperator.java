@@ -28,7 +28,7 @@ public class DenoisingOperator implements IOperator{
             ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising image " +i);
 
             Mat denoisedMat = new Mat();
-            Photo.fastNlMeansDenoising(this.matList[i], denoisedMat, 3, 7, 21);
+            Photo.fastNlMeansDenoisingColored(this.matList[i], denoisedMat, 3, 7, 7, 21);
             this.outputMatList[i] = denoisedMat;
             ImageWriter.getInstance().saveMatrixToImage(this.matList[i], "noise_" +i, ImageFileAttribute.FileType.JPEG);
             ImageWriter.getInstance().saveMatrixToImage(denoisedMat, "denoise_" +i, ImageFileAttribute.FileType.JPEG);

@@ -7,6 +7,9 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.util.Log;
 
+import neildg.com.megatronsr.BuildConfig;
+import neildg.com.megatronsr.constants.BuildMode;
+
 /**
  * Takes care of showing the progress dialog to the user
  * @author NeilDG
@@ -44,8 +47,25 @@ public class ProgressDialogHandler {
 	}
 	
 	public void showDialog(final String title, final String message) {
+		if(BuildMode.DEVELOPMENT_BUILD) {
+			this.activity.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					sharedInstance.hideDialog();
+					sharedInstance.progressDialog = ProgressDialog.show(sharedInstance.activity, title, message);
+					sharedInstance.progressDialog.setCancelable(false);
+				}
+			});
+		}
+	}
+
+	/*
+	 * Use this function for release-type user dialogs
+	 */
+	public void showUserDialog(final String title, final String message) {
 		this.activity.runOnUiThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				sharedInstance.hideDialog();
@@ -53,12 +73,22 @@ public class ProgressDialogHandler {
 				sharedInstance.progressDialog.setCancelable(false);
 			}
 		});
-		
+	}
+
+	/*
+	 * For release-build user dialogs
+	 */
+	public void hideUserDialog() {
+		if (this.progressDialog != null) {
+			this.progressDialog.dismiss();
+		}
 	}
 	
 	public void hideDialog() {
-		if(this.progressDialog != null) {
-			this.progressDialog.dismiss();
+		if(BuildMode.DEVELOPMENT_BUILD) {
+			if (this.progressDialog != null) {
+				this.progressDialog.dismiss();
+			}
 		}
 	}
 }

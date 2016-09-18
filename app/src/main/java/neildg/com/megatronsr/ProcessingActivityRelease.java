@@ -58,7 +58,8 @@ public class ProcessingActivityRelease extends AppCompatActivity {
         Button bicubicBtn = (Button) this.findViewById(R.id.bicubic_btn);
         bicubicBtn.setEnabled(false);
 
-        srButton.setEnabled(false);
+        Button srViewBtn = (Button) this.findViewById(R.id.sr_view_btn);
+        srViewBtn.setEnabled(false);
     }
 
 

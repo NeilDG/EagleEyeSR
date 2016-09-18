@@ -19,6 +19,7 @@ import org.opencv.android.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import neildg.com.megatronsr.constants.BuildMode;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
@@ -107,7 +108,12 @@ public class MainActivity extends AppCompatActivity{
         scaleRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == R.id.scale_2_btn) {
+
+                if(checkedId == R.id.scale_1_btn) {
+                    Toast.makeText(MainActivity.this, "Scale 1", Toast.LENGTH_SHORT).show();
+                    ParameterConfig.setScalingFactor(1);
+                }
+                else if(checkedId == R.id.scale_2_btn) {
                     Toast.makeText(MainActivity.this, "Scale 2", Toast.LENGTH_SHORT).show();
                     ParameterConfig.setScalingFactor(2);
                 }
@@ -218,7 +224,7 @@ public class MainActivity extends AppCompatActivity{
 
     private void moveToProcessingActivity() {
 
-        if(BuildConfig.DEBUG == true) {
+        if(BuildMode.DEVELOPMENT_BUILD == true) {
             Intent processingIntent = new Intent(MainActivity.this, ProcessingActivityDebug.class);
             this.startActivity(processingIntent);
         }

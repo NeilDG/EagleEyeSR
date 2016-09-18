@@ -36,9 +36,11 @@
         </activity>
         <activity
             android:name=".ProcessingActivityDebug"
-            android:label="Process Images" />
+            android:label="Process Images"
+            android:screenOrientation="sensorLandscape"/>
         <activity android:name=".ProcessingActivityRelease"
-            android:label="Process Images"></activity>
+            android:label="Process Images"
+            android:screenOrientation="sensorLandscape"></activity>
     </application>
 
 </manifest>
