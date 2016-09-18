@@ -13,7 +13,7 @@ public class MatMemory {
         }
 
         if(forceGC) {
-            System.gc();
+            Runtime.getRuntime().gc();
         }
     }
 }

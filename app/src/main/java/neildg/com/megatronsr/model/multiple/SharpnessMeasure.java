@@ -49,6 +49,8 @@ public class SharpnessMeasure {
 
         //get mean
         sharpnessResult.mean = sum / edgeMatList.length;
+        //qqqq testing. add strictness parameter
+        //sharpnessResult.mean += (sharpnessResult.mean * 0.005);
 
         //trimmed values that do not meet the mean
         List<Double> trimMatList = new ArrayList<>();

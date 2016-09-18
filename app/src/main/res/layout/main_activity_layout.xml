@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    xmlns:sl="http://schemas.android.com/tools">
 <LinearLayout
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:fitsSystemWindows="true"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="neildg.com.megatronsr.MainActivity">
@@ -19,7 +19,7 @@
         android:layout_gravity="center_horizontal" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/sr_intro"
         android:id="@+id/textView2"
@@ -28,7 +28,7 @@
         android:layout_marginRight="10dp" />
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -36,7 +36,7 @@
 
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <RadioGroup
@@ -52,6 +52,13 @@
                     android:id="@+id/textView3"
                     android:textSize="20dp"
                     android:layout_marginTop="5dp" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1x"
+                    android:id="@+id/scale_1_btn"
+                    android:checked="true" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
@@ -85,7 +92,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Technique"
+                    android:text="Technique:"
                     android:id="@+id/textView5"
                     android:textSize="20dp"
                     android:layout_marginTop="5dp" />

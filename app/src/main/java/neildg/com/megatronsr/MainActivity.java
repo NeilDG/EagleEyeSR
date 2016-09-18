@@ -108,7 +108,12 @@ public class MainActivity extends AppCompatActivity{
         scaleRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == R.id.scale_2_btn) {
+
+                if(checkedId == R.id.scale_1_btn) {
+                    Toast.makeText(MainActivity.this, "Scale 1", Toast.LENGTH_SHORT).show();
+                    ParameterConfig.setScalingFactor(1);
+                }
+                else if(checkedId == R.id.scale_2_btn) {
                     Toast.makeText(MainActivity.this, "Scale 2", Toast.LENGTH_SHORT).show();
                     ParameterConfig.setScalingFactor(2);
                 }

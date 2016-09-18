@@ -28,6 +28,7 @@ import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
+import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -130,6 +131,8 @@ public class LRWarpingOperator {
 
         matOfPoint1.release();
         matOfPoint2.release();
+        pointList1.clear();
+        pointList2.clear();
 
         if(homography.rows() == 3 && homography.cols() == 3) {
             Mat warpedMat = new Mat();

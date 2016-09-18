@@ -90,8 +90,8 @@ public class MultipleImageSRProcessor extends Thread {
         rgbInputMatList = SharpnessMeasure.getSharedInstance().trimMatList(rgbInputMatList, sharpnessResult);
 
         //perform denoising on original input list
-        DenoisingOperator denoisingOperator = new DenoisingOperator(rgbInputMatList);
-        denoisingOperator.perform();
+        //DenoisingOperator denoisingOperator = new DenoisingOperator(rgbInputMatList);
+        //denoisingOperator.perform();
 
         int index = 0;
         for(int i = 0; i < BitmapURIRepository.getInstance().getNumImagesSelected(); i++) {
@@ -106,7 +106,7 @@ public class MultipleImageSRProcessor extends Thread {
         lrToHROperator.perform();
 
         //perform feature matching of LR images against the first image as reference mat.
-        rgbInputMatList = denoisingOperator.getResult();
+        //rgbInputMatList = denoisingOperator.getResult();
         Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
         for(int i = 1; i < rgbInputMatList.length; i++) {
             succeedingMatList[i - 1] = rgbInputMatList[i];

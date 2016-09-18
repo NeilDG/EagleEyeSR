@@ -19,6 +19,7 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -75,20 +76,22 @@ public class FeatureMatchingOperator {
 
         ProgressDialogHandler.getInstance().hideDialog();
 
+        Mat matchesShower = new Mat();
+
         for(int i = 0; i < comparingMatList.length; i++) {
             Mat comparingMat = this.comparingMatList[i];
 
             ProgressDialogHandler.getInstance().showDialog("Matching features for image " +i, "Matching features in image " +i+ " to reference image.");
             this.matchFeaturesToReference(this.lrDescriptorList[i],i);
 
-            Mat matchesShower = new Mat();
             Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
             ImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
 
             ProgressDialogHandler.getInstance().hideDialog();
-
-            matchesShower.release();
         }
+
+        MatMemory.releaseAll(this.lrDescriptorList, false);
+        matchesShower.release();
     }
 
     private void detectFeaturesInReference() {
