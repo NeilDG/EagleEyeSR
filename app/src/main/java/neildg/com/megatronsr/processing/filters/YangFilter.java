@@ -1,6 +1,7 @@
 package neildg.com.megatronsr.processing.filters;
 
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -8,6 +9,7 @@ import org.opencv.utils.Converters;
 
 import java.util.Arrays;
 
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
@@ -76,7 +78,7 @@ public class YangFilter implements IOperator {
             combinedFilterList[2] = inputf3;
             combinedFilterList[3] = inputf4;
 
-            MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedFilterList, "Fusing edge features", "Fusing edge features in image " +i);
+            MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedFilterList,  "Fusing edge features", "Fusing edge features in image " +i);
             fusionOperator.perform();
             ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "YangEdges", "image_edge_"+i, ImageFileAttribute.FileType.JPEG);
 

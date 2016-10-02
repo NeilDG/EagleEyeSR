@@ -12,6 +12,7 @@ import org.opencv.photo.Photo;
 import java.util.ArrayList;
 import java.util.List;
 
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
@@ -41,30 +42,31 @@ public class MeanFusionOperator implements IOperator {
 
     @Override
     public void perform() {
+        ProgressDialogHandler.getInstance().showDialog(this.title, this.message);
 
         int rows = this.combineMatList[0].rows();
         int cols = this.combineMatList[0].cols();
-
-        this.outputMat = Mat.zeros(rows, cols, CvType.CV_32FC(this.combineMatList[0].channels()));
+        int scale = ParameterConfig.getScalingFactor();
 
         //divide only by the number of known pixel values. do not consider zero pixels
-        Mat sumMat = Mat.zeros(this.combineMatList[0].size(), CvType.CV_32FC(this.combineMatList[0].channels()));
-        Mat divMat = Mat.zeros(this.combineMatList[0].size(), CvType.CV_32FC1);
-
-        ProgressDialogHandler.getInstance().showDialog(this.title, this.message);
-
+        Mat sumMat = Mat.zeros(rows * scale, cols * scale, CvType.CV_32FC(this.combineMatList[0].channels()));
+        Mat divMat = Mat.zeros(rows * scale, cols * scale, CvType.CV_32FC1);
         Mat maskMat = new Mat();
-        for(int i = 0; i < this.combineMatList.length; i++) {
-            this.combineMatList[i].convertTo(this.combineMatList[i], CvType.CV_32FC(this.combineMatList[i].channels()));
-            ImageOperator.produceMask(this.combineMatList[i], maskMat);
 
-            Log.d(TAG, "CombineMat size: " +this.combineMatList[i].size().toString() +" sumMat size: " +sumMat.size().toString());
-            Core.add(this.combineMatList[i], sumMat, sumMat, maskMat, CvType.CV_32FC(this.combineMatList[i].channels()));
+        for(int i = 0; i < this.combineMatList.length; i++) {
+            Mat hrMat = ImageOperator.performInterpolation(this.combineMatList[i], scale, Imgproc.INTER_CUBIC);
+            this.combineMatList[i].release();
+
+            hrMat.convertTo(hrMat, CvType.CV_32FC(hrMat.channels()));
+            ImageOperator.produceMask(hrMat, maskMat);
+
+            Log.d(TAG, "CombineMat size: " +hrMat.size().toString() +" sumMat size: " +sumMat.size().toString());
+            Core.add(hrMat, sumMat, sumMat, maskMat, CvType.CV_32FC(hrMat.channels()));
 
             maskMat.convertTo(maskMat, CvType.CV_32FC1);
             Core.add(maskMat, divMat, divMat);
 
-            this.combineMatList[i].release();
+            hrMat.release();
         }
 
         maskMat.release();
@@ -78,6 +80,7 @@ public class MeanFusionOperator implements IOperator {
         divMat.release();
         sumMat.release();
 
+        this.outputMat = Mat.zeros(rows, cols, CvType.CV_32FC(this.combineMatList[0].channels()));
         Core.merge(splittedSumMat, this.outputMat);
         splittedSumMat.clear();
         //Core.divide(sumMat, divMat, this.outputMat);

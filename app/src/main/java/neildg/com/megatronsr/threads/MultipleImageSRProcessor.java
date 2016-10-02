@@ -3,6 +3,7 @@ package neildg.com.megatronsr.threads;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
@@ -125,14 +126,14 @@ public class MultipleImageSRProcessor extends Thread {
         LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), succeedingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         perspectiveWarpOperator.perform();
 
-        ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
+        /*ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
         Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
         Mat[] combinedMatList = new Mat[warpedMatList.length + 1];
         combinedMatList[0] = ImageOperator.performInterpolation(rgbInputMatList[0], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         for(int i = 1; i < combinedMatList.length; i++) {
             combinedMatList[i] = ImageOperator.performInterpolation(warpedMatList[i - 1], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         }
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideDialog();*/
 
         /*ProgressDialogHandler.getInstance().showDialog("Resizing", "Resizing input images");
         Mat initialMat = ImageOperator.performInterpolation(energyInputMatList[0], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
@@ -149,12 +150,14 @@ public class MultipleImageSRProcessor extends Thread {
             ImageWriter.getInstance().saveMatrixToImage(combinedMatList[i], "ZeroFill", "warped_resize_"+i, ImageFileAttribute.FileType.JPEG);
         }*/
 
-        MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
+        Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
+
+        MeanFusionOperator fusionOperator = new MeanFusionOperator(warpedMatList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();
         ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
 
         //release unused warp images
-        MatMemory.releaseAll(combinedMatList, false);
+        MatMemory.releaseAll(warpedMatList, false);
 
         //ChannelMergeOperator mergeOperator = new ChannelMergeOperator(fusionOperator.getResult(), yuvRefMat[ColorSpaceOperator.U_CHANNEL], yuvRefMat[ColorSpaceOperator.V_CHANNEL]);
         //mergeOperator.perform();

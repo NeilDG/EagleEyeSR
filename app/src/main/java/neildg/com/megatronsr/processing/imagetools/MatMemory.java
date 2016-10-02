@@ -14,6 +14,7 @@ public class MatMemory {
 
         if(forceGC) {
             Runtime.getRuntime().gc();
+            System.runFinalization();
         }
     }
 }

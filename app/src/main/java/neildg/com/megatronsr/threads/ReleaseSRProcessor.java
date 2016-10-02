@@ -3,6 +3,7 @@ package neildg.com.megatronsr.threads;
 import android.app.ActivityManager;
 import android.util.Log;
 
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
@@ -42,12 +43,11 @@ public class ReleaseSRProcessor extends Thread{
 
         ProgressDialogHandler.getInstance().showUserDialog("", "Processing image");
 
-
         TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
         transferToDirOperator.perform();
         transferToDirOperator = null;
 
-        //this.interpolateFirstImage();
+        this.interpolateFirstImage();
 
         //initialize storage classes
         ProcessedImageRepo.initialize();
@@ -114,29 +114,30 @@ public class ReleaseSRProcessor extends Thread{
         matchingOperator.getRefKeypoint().release();
         MatMemory.releaseAll(matchingOperator.getdMatchesList(), false);
         MatMemory.releaseAll(matchingOperator.getLrKeypointsList(), false);
-        MatMemory.releaseAll(succeedingMatList, true);
+        MatMemory.releaseAll(succeedingMatList, false);
 
 
         //interpolate first HR image
-        Mat initialHRMat = ImageOperator.performInterpolation(rgbInputMatList[0], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        /*Mat initialHRMat = ImageOperator.performInterpolation(rgbInputMatList[0], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
         Mat[] combinedMatList = new Mat[warpedMatList.length + 1];
         combinedMatList[0] = initialHRMat;
 
         for(int i = 1; i < combinedMatList.length; i++) {
             combinedMatList[i] = ImageOperator.performInterpolation(warpedMatList[i - 1], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        }
+        }*/
 
         //release images
-        MatMemory.releaseAll(rgbInputMatList, false);
-        MatMemory.releaseAll(warpedMatList, true);
+        MatMemory.releaseAll(rgbInputMatList, true);
+        //MatMemory.releaseAll(warpedMatList, true);
 
-        MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedMatList, "Fusing", "Fusing images using mean");
+        Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
+        MeanFusionOperator fusionOperator = new MeanFusionOperator(warpedMatList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();
         ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
 
         //release images
-        MatMemory.releaseAll(combinedMatList, true);
+        MatMemory.releaseAll(warpedMatList, true);
 
         //deallocate some classes
         ProcessedImageRepo.destroy();
@@ -148,7 +149,7 @@ public class ReleaseSRProcessor extends Thread{
     }
 
     private void interpolateFirstImage() {
-        ProgressDialogHandler.getInstance().showUserDialog("Interpolating images", "Upsampling image using nearest-neighbor, bilinear and bicubic");
+        //ProgressDialogHandler.getInstance().showUserDialog("Interpolating images", "Upsampling image using nearest-neighbor, bilinear and bicubic");
 
         Mat inputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
@@ -163,6 +164,6 @@ public class ReleaseSRProcessor extends Thread{
         inputMat.release();
         System.gc();
 
-        ProgressDialogHandler.getInstance().hideDialog();
+        //ProgressDialogHandler.getInstance().hideUserDialog();
     }
 }
