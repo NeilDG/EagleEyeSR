@@ -1,11 +1,8 @@
 package neildg.com.megatronsr.threads;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
@@ -13,15 +10,11 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
-import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
-import neildg.com.megatronsr.processing.multiple.postprocess.ChannelMergeOperator;
-import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.megatronsr.processing.multiple.selection.TestImagesSelector;
 import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
@@ -46,7 +39,7 @@ public class MultipleImageSRProcessor extends Thread {
         ProgressDialogHandler.getInstance().showDialog("Downsampling images", "Downsampling images selected and saving them in file.");
 
         //initialize storage classes
-        ProcessedImageRepo.initialize();
+        //ProcessedImageRepo.initialize();
         SharpnessMeasure.initialize();
 
         //downsample
@@ -163,7 +156,7 @@ public class MultipleImageSRProcessor extends Thread {
         //mergeOperator.perform();
 
         //deallocate some classes
-        ProcessedImageRepo.destroy();
+        //ProcessedImageRepo.destroy();
         SharpnessMeasure.destroy();
         ProgressDialogHandler.getInstance().hideDialog();
     }

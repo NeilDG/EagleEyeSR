@@ -1,9 +1,7 @@
 package neildg.com.megatronsr.threads;
 
-import android.app.ActivityManager;
 import android.util.Log;
 
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
@@ -13,15 +11,13 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
-import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
+import neildg.com.megatronsr.processing.listeners.IProcessListener;
 import neildg.com.megatronsr.processing.multiple.resizing.TransferToDirOperator;
-import neildg.com.megatronsr.processing.multiple.selection.TestImagesSelector;
 import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
@@ -34,8 +30,9 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 public class ReleaseSRProcessor extends Thread{
     private final static String TAG = "ReleaseSRProcessor";
 
-    public ReleaseSRProcessor() {
-
+    private IProcessListener processListener;
+    public ReleaseSRProcessor(IProcessListener processListener) {
+        this.processListener = processListener;
     }
 
     @Override
@@ -50,7 +47,7 @@ public class ReleaseSRProcessor extends Thread{
         this.interpolateFirstImage();
 
         //initialize storage classes
-        ProcessedImageRepo.initialize();
+        //ProcessedImageRepo.initialize();
         SharpnessMeasure.initialize();
 
         //load images and use Y channel as input for succeeding operators
@@ -132,20 +129,22 @@ public class ReleaseSRProcessor extends Thread{
         //MatMemory.releaseAll(warpedMatList, true);
 
         Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
-        MeanFusionOperator fusionOperator = new MeanFusionOperator(warpedMatList, "Fusing", "Fusing images using mean");
+        /*MeanFusionOperator fusionOperator = new MeanFusionOperator(warpedMatList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();
-        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
+        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);*/
 
         //release images
         MatMemory.releaseAll(warpedMatList, true);
 
         //deallocate some classes
-        ProcessedImageRepo.destroy();
+        //ProcessedImageRepo.destroy();
         SharpnessMeasure.destroy();
 
         ProgressDialogHandler.getInstance().hideUserDialog();
 
         System.gc();
+
+        this.processListener.onProcessCompleted();
     }
 
     private void interpolateFirstImage() {

@@ -7,28 +7,20 @@ import org.opencv.core.Core;
 import org.opencv.core.DMatch;
 import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfDMatch;
-import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.photo.Photo;
-import org.opencv.video.Video;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-import neildg.com.megatronsr.constants.FilenameConstants;
-import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
-import neildg.com.megatronsr.processing.imagetools.MatMemory;
+import neildg.com.megatronsr.model.AttributeHolder;
+import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -68,12 +60,12 @@ public class LRWarpingOperator {
             ProgressDialogHandler.getInstance().hideDialog();
         }
 
-        this.imagesToWarpList = null;
-
-        this.finalizeResult();
+       this.finalizeResult();
     }
 
     private void finalizeResult() {
+        AttributeHolder.getSharedInstance().putValue(AttributeNames.IMAGE_LENGTH_KEY, this.imagesToWarpList.length);
+
         this.refKeypoint.release(); this.refKeypoint = null;
         for(MatOfDMatch dMatch: this.goodMatchList) {
             dMatch.release();
@@ -84,6 +76,7 @@ public class LRWarpingOperator {
             keyPoint.release();
         }
         this.keyPointList = null;
+        this.imagesToWarpList = null;
     }
 
     public Mat[] getWarpedMatList() {

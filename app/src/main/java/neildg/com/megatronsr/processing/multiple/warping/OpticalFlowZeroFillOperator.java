@@ -1,28 +1,18 @@
 package neildg.com.megatronsr.processing.multiple.warping;
 
-import android.util.Log;
-
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
-import org.opencv.utils.Converters;
 import org.opencv.video.Video;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
-import neildg.com.megatronsr.io.BitmapURIRepository;
-import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.model.multiple.DisplacementValue;
-import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
-import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**

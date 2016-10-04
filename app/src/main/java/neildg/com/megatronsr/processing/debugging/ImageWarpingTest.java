@@ -13,7 +13,6 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.model.multiple.ProcessedImageRepo;
 import neildg.com.megatronsr.processing.ITest;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
@@ -31,7 +30,7 @@ public class ImageWarpingTest implements ITest {
     public void performTest() {
         ProgressDialogHandler.getInstance().showDialog("Debug mode", "Performing image warping test. Please wait...");
 
-        ProcessedImageRepo.initialize();
+        //ProcessedImageRepo.initialize();
 
         DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConfig.getScalingFactor(), BitmapURIRepository.getInstance().getNumImagesSelected());
         downsamplingOperator.perform();
@@ -78,7 +77,7 @@ public class ImageWarpingTest implements ITest {
 
         ImageWriter.getInstance().saveMatrixToImage(testOutputMat, "test", ImageFileAttribute.FileType.JPEG);
 
-        ProcessedImageRepo.destroy();
+        //ProcessedImageRepo.destroy();
         ProgressDialogHandler.getInstance().hideDialog();
     }
 }

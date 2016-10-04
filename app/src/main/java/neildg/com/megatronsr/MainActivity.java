@@ -76,6 +76,14 @@ public class MainActivity extends AppCompatActivity{
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0, this, mLoaderCallback);
     }
 
+    @Override
+    protected void onDestroy() {
+        ProgressDialogHandler.destroy();
+        ImageWriter.destroy();
+        ImageReader.destroy();
+        super.onDestroy();
+    }
+
     private void verifyCamera() {
         PackageManager packageManager = ApplicationCore.getInstance().getAppContext().getPackageManager();
         if(packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) == false){

@@ -51,6 +51,7 @@ public class ImageWriter {
 	
 	public static void destroy() {
 		//also destroy image reader
+		sharedInstance = null;
 		ImageReader.destroy();
 	}
 

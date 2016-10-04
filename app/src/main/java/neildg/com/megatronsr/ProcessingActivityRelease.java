@@ -1,5 +1,6 @@
 package neildg.com.megatronsr;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
+import neildg.com.megatronsr.processing.listeners.IProcessListener;
 import neildg.com.megatronsr.threads.ReleaseSRProcessor;
 import neildg.com.megatronsr.threads.SingleImageSRProcessor;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -16,7 +18,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
  * Activity to use for release mode
  * By: NeilDG
  */
-public class ProcessingActivityRelease extends AppCompatActivity {
+public class ProcessingActivityRelease extends AppCompatActivity implements IProcessListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +67,17 @@ public class ProcessingActivityRelease extends AppCompatActivity {
 
     private void executeSRProcessor() {
         if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE) {
-            ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor();
+            ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor(this);
             releaseSRProcessor.start();
         }
         else {
             new SingleImageSRProcessor().start();
         }
+    }
+
+    @Override
+    public void onProcessCompleted() {
+        Intent processingIntent = new Intent(ProcessingActivityRelease.this, MeanFusionActivity.class);
+        this.startActivity(processingIntent);
     }
 }
