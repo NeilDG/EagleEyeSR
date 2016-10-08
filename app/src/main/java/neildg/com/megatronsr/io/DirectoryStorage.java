@@ -43,7 +43,7 @@ public class DirectoryStorage {
         }
 
         //create path
-        this.proposedPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + ALBUM_NAME_PREFIX + this.startingAlbum;
+        this.refreshProposedPath();
     }
 
     public void createDirectory() {
@@ -54,6 +54,10 @@ public class DirectoryStorage {
         filePath.mkdirs();
 
         Log.d(TAG, "Image storage is set to: " + proposedPath);
+    }
+
+    public void refreshProposedPath() {
+        this.proposedPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + ALBUM_NAME_PREFIX + this.startingAlbum;
     }
 
     public String getProposedPath() {

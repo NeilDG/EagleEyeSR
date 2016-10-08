@@ -23,7 +23,13 @@ class AsyncServiceHelper
         AsyncServiceHelper helper = new AsyncServiceHelper(Version, AppContext, Callback);
         Intent intent = new Intent("org.opencv.engine.BIND");
         intent.setPackage("org.opencv.engine");
-        if (AppContext.bindService(intent, helper.mServiceConnection, Context.BIND_AUTO_CREATE))
+
+        if(AppContext.stopService(intent)) {
+            AppContext.startService(intent);
+            Log.d(TAG, "Service " +intent.getPackage()+ " successfully stopped and restarted.");
+        }
+
+        if (AppContext.bindService(intent, helper.mServiceConnection, Context.BIND_ABOVE_CLIENT))
         {
             return true;
         }
@@ -50,6 +56,7 @@ class AsyncServiceHelper
     protected Context mAppContext;
     protected static boolean mServiceInstallationProgress = false;
     protected static boolean mLibraryInstallationProgress = false;
+    //protected static boolean serviceBinded = false;
 
     protected static boolean InstallServiceQuiet(Context context)
     {

@@ -34,8 +34,6 @@ public class ImageWriter {
 	
 	private ImageWriter(Context context) {
 		this.context = context;
-		DirectoryStorage.getSharedInstance().createDirectory();
-
 		this.proposedPath = DirectoryStorage.getSharedInstance().getProposedPath();
 	}
 	

@@ -17,6 +17,7 @@ import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
+import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.TransferToDirOperator;
 import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
@@ -126,18 +127,16 @@ public class ReleaseSRProcessor extends Thread{
 
         //release images
         MatMemory.releaseAll(rgbInputMatList, true);
-        //MatMemory.releaseAll(warpedMatList, true);
 
         Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
-        /*MeanFusionOperator fusionOperator = new MeanFusionOperator(warpedMatList, "Fusing", "Fusing images using mean");
+        MeanFusionOperator fusionOperator = new MeanFusionOperator(warpedMatList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();
-        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);*/
+        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
 
         //release images
         MatMemory.releaseAll(warpedMatList, true);
 
         //deallocate some classes
-        //ProcessedImageRepo.destroy();
         SharpnessMeasure.destroy();
 
         ProgressDialogHandler.getInstance().hideUserDialog();

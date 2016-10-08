@@ -39,7 +39,7 @@ public class ProgressDialogHandler {
 	}
 	
 	public static void destroy() {
-		if(sharedInstance.progressDialog != null) {
+		if(sharedInstance != null && sharedInstance.progressDialog != null) {
 			sharedInstance.progressDialog.dismiss();
 			sharedInstance.progressDialog = null;
 		}

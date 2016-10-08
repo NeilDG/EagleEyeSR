@@ -183,6 +183,7 @@ public class ImageOperator {
         return hrMat;
     }
 
+
     public static Mat performInterpolationInPlace(Mat fromMat, Mat hrMat, int scaling, int interpolationType) {
         Imgproc.resize(fromMat, hrMat, new Size(0,0), scaling, scaling, interpolationType);
 

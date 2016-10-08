@@ -15,14 +15,17 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import org.opencv.android.*;
+import org.w3c.dom.Attr;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.BuildMode;
 import neildg.com.megatronsr.constants.ParameterConfig;
+import neildg.com.megatronsr.io.DirectoryStorage;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.platformtools.utils.ApplicationCore;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -62,8 +65,11 @@ public class MainActivity extends AppCompatActivity{
 
         ApplicationCore.initialize(this);
         ProgressDialogHandler.initialize(this);
+        DirectoryStorage.getSharedInstance().createDirectory();
         ImageWriter.initialize(this);
         ImageReader.initialize(this);
+        ParameterConfig.initialize(this);
+        AttributeHolder.initialize(this);
 
         this.verifyCamera();
         this.initializeButtons();

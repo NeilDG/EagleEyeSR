@@ -11,6 +11,7 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
+import neildg.com.megatronsr.io.DirectoryStorage;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
@@ -61,17 +62,18 @@ public class MeanFusionActivity extends AppCompatActivity {
 
     private void onSuccessInitialize() {
         ProgressDialogHandler.initialize(this);
+        DirectoryStorage.getSharedInstance().refreshProposedPath();
         ImageWriter.initialize(this);
         ImageReader.initialize(this);
 
+        System.gc();
         this.performMeanFusion();
     }
+
     private void performMeanFusion() {
         ProgressDialogHandler.getInstance().showUserDialog("Processing", "Fusing images");
 
-        //int numImages = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
-        int numImages = 3; //test
-        ParameterConfig.setScalingFactor(2); //test
+        int numImages = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
         Mat[] warpedMatList = new Mat[numImages];
 
         for(int i = 0; i < numImages; i++) {
@@ -80,6 +82,7 @@ public class MeanFusionActivity extends AppCompatActivity {
 
         MeanFusionOperator fusionOperator = new MeanFusionOperator(warpedMatList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();
+        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
 
         ProgressDialogHandler.getInstance().hideUserDialog();
     }

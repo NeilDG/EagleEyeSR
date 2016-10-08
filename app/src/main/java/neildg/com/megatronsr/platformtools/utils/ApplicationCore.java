@@ -18,7 +18,7 @@ import android.util.Log;
  */
 public class ApplicationCore {
 
-	private final static String TAG = "MegatronSR_ApplicationSR";
+	private final static String TAG = "ApplicationCore";
 	
 	private static ApplicationCore sharedInstance = null;
 	

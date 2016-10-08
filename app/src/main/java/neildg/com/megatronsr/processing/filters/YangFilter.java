@@ -16,6 +16,7 @@ import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
+import neildg.com.megatronsr.processing.multiple.fusion.YangFilterFusionOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -78,8 +79,9 @@ public class YangFilter implements IOperator {
             combinedFilterList[2] = inputf3;
             combinedFilterList[3] = inputf4;
 
-            MeanFusionOperator fusionOperator = new MeanFusionOperator(combinedFilterList,  "Fusing edge features", "Fusing edge features in image " +i);
+            YangFilterFusionOperator fusionOperator = new YangFilterFusionOperator(combinedFilterList,  "Fusing edge features", "Fusing edge features in image " +i);
             fusionOperator.perform();
+
             ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "YangEdges", "image_edge_"+i, ImageFileAttribute.FileType.JPEG);
 
             combinedFilterList[0].release(); combinedFilterList[1].release(); combinedFilterList[2].release(); combinedFilterList[3].release();

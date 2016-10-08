@@ -77,7 +77,7 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
 
     @Override
     public void onProcessCompleted() {
-        Intent processingIntent = new Intent(ProcessingActivityRelease.this, MeanFusionActivity.class);
-        this.startActivity(processingIntent);
+        //Intent processingIntent = new Intent(ProcessingActivityRelease.this, MeanFusionActivity.class);
+        //this.startActivity(processingIntent);
     }
 }
