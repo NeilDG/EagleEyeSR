@@ -29,7 +29,7 @@ class AsyncServiceHelper
             Log.d(TAG, "Service " +intent.getPackage()+ " successfully stopped and restarted.");
         }
 
-        if (AppContext.bindService(intent, helper.mServiceConnection, Context.BIND_ABOVE_CLIENT))
+        if (AppContext.bindService(intent, helper.mServiceConnection, Context.BIND_AUTO_CREATE))
         {
             return true;
         }

@@ -145,9 +145,9 @@ public class MultipleImageSRProcessor extends Thread {
 
         Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
 
-        MeanFusionOperator fusionOperator = new MeanFusionOperator(warpedMatList, "Fusing", "Fusing images using mean");
+        /*MeanFusionOperator fusionOperator = new MeanFusionOperator(warpedMatList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();
-        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
+        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);*/
 
         //release unused warp images
         MatMemory.releaseAll(warpedMatList, false);

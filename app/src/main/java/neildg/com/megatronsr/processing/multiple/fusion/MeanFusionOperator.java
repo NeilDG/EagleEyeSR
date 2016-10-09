@@ -5,19 +5,16 @@ import android.util.Log;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.photo.Photo;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
-import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -27,14 +24,17 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 public class MeanFusionOperator implements IOperator {
     private final static String TAG = "MeanFusionOperator";
 
-    private Mat[] combineMatList;
+
+    //private Mat[] combineMatList;
+    private String[] imageMatPathList;
     private Mat outputMat;
 
     private String title;
     private String message;
 
-    public MeanFusionOperator(Mat[] combineMatList, String title, String message) {
-        this.combineMatList = combineMatList;
+
+    public MeanFusionOperator(String[] imageMatPathList, String title, String message) {
+        this.imageMatPathList = imageMatPathList;
 
         this.title = title;
         this.message = message;
@@ -44,20 +44,21 @@ public class MeanFusionOperator implements IOperator {
     public void perform() {
         ProgressDialogHandler.getInstance().showDialog(this.title, this.message);
 
-        int rows = this.combineMatList[0].rows();
-        int cols = this.combineMatList[0].cols();
-        int scale = ParameterConfig.getScalingFactor();
 
+        int scale = ParameterConfig.getScalingFactor();
         //divide only by the number of known pixel values. do not consider zero pixels
         //Mat sumMat = Mat.zeros(rows * scale, cols * scale, CvType.CV_32FC(this.combineMatList[0].channels()));
-        this.combineMatList[0].convertTo(this.combineMatList[0], CvType.CV_32FC(this.combineMatList[0].channels()));
-        Mat sumMat = ImageOperator.performInterpolation(this.combineMatList[0], scale, Imgproc.INTER_CUBIC);
-        Mat divMat = Mat.zeros(rows * scale, cols * scale, CvType.CV_32FC1);
+        Mat inputMat = ImageReader.getInstance().imReadColor(this.imageMatPathList[0], ImageFileAttribute.FileType.JPEG);
+        Mat sumMat = ImageOperator.performInterpolation(inputMat, scale, Imgproc.INTER_CUBIC);
+        inputMat.release();
+        //sumMat.convertTo(sumMat, CvType.CV_32FC(sumMat.channels()));
+        Mat divMat = Mat.zeros(sumMat.rows(), sumMat.cols(), CvType.CV_32FC1);
         Mat maskMat = new Mat();
 
-        for(int i = 1; i < this.combineMatList.length; i++) {
-            Mat hrMat = ImageOperator.performInterpolation(this.combineMatList[i], scale, Imgproc.INTER_CUBIC);
-            this.combineMatList[i].release();
+        for(int i = 1; i < this.imageMatPathList.length; i++) {
+            inputMat = ImageReader.getInstance().imReadColor(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
+            Mat hrMat = ImageOperator.performInterpolation(inputMat, scale, Imgproc.INTER_CUBIC);
+            inputMat.release();
 
             //hrMat.convertTo(hrMat, CvType.CV_32FC(hrMat.channels()));
             ImageOperator.produceMask(hrMat, maskMat);
@@ -80,12 +81,12 @@ public class MeanFusionOperator implements IOperator {
         divMat.release();
         sumMat.release();
 
-        this.outputMat = Mat.zeros(rows, cols, CvType.CV_32FC(this.combineMatList[0].channels()));
+        this.outputMat = Mat.zeros(sumMat.rows(), sumMat.cols(), CvType.CV_32FC(sumMat.channels()));
         Core.merge(splittedSumMat, this.outputMat);
         splittedSumMat.clear();
         //Core.divide(sumMat, divMat, this.outputMat);
 
-        this.outputMat.convertTo(this.outputMat, CvType.CV_8UC(this.combineMatList[0].channels()));
+        this.outputMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
         ProgressDialogHandler.getInstance().hideDialog();
     }
 

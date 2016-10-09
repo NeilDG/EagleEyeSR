@@ -71,7 +71,7 @@ public class MeanFusionActivity extends AppCompatActivity {
     }
 
     private void performMeanFusion() {
-        ProgressDialogHandler.getInstance().showUserDialog("Processing", "Fusing images");
+        /*ProgressDialogHandler.getInstance().showUserDialog("Processing", "Fusing images");
 
         int numImages = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
         Mat[] warpedMatList = new Mat[numImages];
@@ -84,7 +84,7 @@ public class MeanFusionActivity extends AppCompatActivity {
         fusionOperator.perform();
         ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
 
-        ProgressDialogHandler.getInstance().hideUserDialog();
+        ProgressDialogHandler.getInstance().hideUserDialog();*/
     }
 
 }

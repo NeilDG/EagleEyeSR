@@ -17,6 +17,7 @@ import java.util.List;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
+import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -79,6 +80,7 @@ public class YangFilterFusionOperator implements IOperator {
 
         this.outputMat = Mat.zeros(rows, cols, CvType.CV_32FC(this.combineMatList[0].channels()));
         Core.merge(splittedSumMat, this.outputMat);
+        MatMemory.releaseAll(splittedSumMat,false);
         splittedSumMat.clear();
         //Core.divide(sumMat, divMat, this.outputMat);
 

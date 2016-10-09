@@ -2,6 +2,7 @@ package neildg.com.megatronsr.threads;
 
 import android.util.Log;
 
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
@@ -11,6 +12,8 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.model.AttributeHolder;
+import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
@@ -40,6 +43,7 @@ public class ReleaseSRProcessor extends Thread{
     public void run() {
 
         ProgressDialogHandler.getInstance().showUserDialog("", "Processing image");
+
 
         TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
         transferToDirOperator.perform();
@@ -113,31 +117,14 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.releaseAll(matchingOperator.getdMatchesList(), false);
         MatMemory.releaseAll(matchingOperator.getLrKeypointsList(), false);
         MatMemory.releaseAll(succeedingMatList, false);
-
-
-        //interpolate first HR image
-        /*Mat initialHRMat = ImageOperator.performInterpolation(rgbInputMatList[0], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
-        Mat[] combinedMatList = new Mat[warpedMatList.length + 1];
-        combinedMatList[0] = initialHRMat;
-
-        for(int i = 1; i < combinedMatList.length; i++) {
-            combinedMatList[i] = ImageOperator.performInterpolation(warpedMatList[i - 1], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        }*/
-
-        //release images
-        MatMemory.releaseAll(rgbInputMatList, true);
+        MatMemory.releaseAll(rgbInputMatList, false);
 
         Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
-        MeanFusionOperator fusionOperator = new MeanFusionOperator(warpedMatList, "Fusing", "Fusing images using mean");
-        fusionOperator.perform();
-        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
-
-        //release images
         MatMemory.releaseAll(warpedMatList, true);
 
         //deallocate some classes
         SharpnessMeasure.destroy();
+        this.performMeanFusion();
 
         ProgressDialogHandler.getInstance().hideUserDialog();
 
@@ -163,5 +150,17 @@ public class ReleaseSRProcessor extends Thread{
         System.gc();
 
         //ProgressDialogHandler.getInstance().hideUserDialog();
+    }
+
+    private void performMeanFusion() {
+        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
+        String[] imagePathList = new String[numImages];
+        for(int i = 0; i < numImages; i++) {
+            imagePathList[i] = "warp_"+i;
+        }
+        MeanFusionOperator fusionOperator = new MeanFusionOperator(imagePathList, "Fusing", "Fusing images using mean");
+        fusionOperator.perform();
+        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
+
     }
 }

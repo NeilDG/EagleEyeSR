@@ -84,6 +84,13 @@ public class ImageReader {
 		return Imgcodecs.imread(completeFilePath);
 	}
 
+	public Mat imReadColor(String fileName, ImageFileAttribute.FileType fileType) {
+		String completeFilePath = ImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
+
+		Log.d(TAG, "Filepath for imread: " + completeFilePath);
+		return Imgcodecs.imread(completeFilePath, Imgcodecs.CV_LOAD_IMAGE_COLOR);
+	}
+
 	public boolean doesImageExists(String fileName, ImageFileAttribute.FileType fileType) {
 		File file = new File(ImageWriter.getInstance().getFilePath() + "/" +fileName + ImageFileAttribute.getFileExtension(fileType));
 		return file.exists();

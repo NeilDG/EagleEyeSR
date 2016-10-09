@@ -40,25 +40,48 @@ public class AttributeHolder {
 
     }
 
-    public void putValue(String key, Object value) {
+    public void putValue(String key, int value) {
         /*if(this.valueTable.containsKey(key)) {
             Log.e(TAG, key + " already exists in table!");
         }
         else {
             this.valueTable.put(key, value);
         }*/
-        this.editorPrefs.putString(key, value.toString());
+        this.editorPrefs.putInt(key, value);
+        this.editorPrefs.commit();
+        Log.d(TAG, "Value added: " +this.getValue(key, -1));
     }
 
-    public Object getValue(String key, Object defaultValue) {
+    public void putValue(String key, float value) {
         /*if(this.valueTable.containsKey(key)) {
+            Log.e(TAG, key + " already exists in table!");
+        }
+        else {
+            this.valueTable.put(key, value);
+        }*/
+        this.editorPrefs.putFloat(key, value);
+        this.editorPrefs.commit();
+        Log.d(TAG, "Value added: " +this.getValueFloat(key, -1.0f));
+    }
+
+    /*public Object getValue(String key, Object defaultValue) {
+        if(this.valueTable.containsKey(key)) {
             return this.valueTable.get(key);
         }
         else {
             return defaultValue;
-        }*/
+        }
         return this.sharedPrefs.getString(key, "");
+    }*/
+
+    public int getValue(String key, int defaultValue) {
+        return this.sharedPrefs.getInt(key, defaultValue);
     }
+
+    public float getValueFloat(String key, float defaultValue) {
+       return this.sharedPrefs.getFloat(key, defaultValue);
+    }
+
 
     public void reset() {
        // this.valueTable.clear();
