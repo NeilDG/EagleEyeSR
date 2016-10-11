@@ -5,6 +5,7 @@ import android.util.Log;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.photo.Photo;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
