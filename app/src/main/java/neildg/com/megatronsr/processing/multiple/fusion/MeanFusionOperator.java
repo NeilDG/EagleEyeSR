@@ -68,6 +68,7 @@ public class MeanFusionOperator implements IOperator {
             hrMat.release();
             maskMat.convertTo(maskMat, CvType.CV_32FC1);
             Core.add(maskMat, divMat, divMat);
+            maskMat.release();
         }
 
         maskMat.release();

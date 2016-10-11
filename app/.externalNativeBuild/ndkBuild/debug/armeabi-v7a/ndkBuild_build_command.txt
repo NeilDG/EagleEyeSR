@@ -1,0 +1,15 @@
+Executable : C:\AndroidSDK\sdk\android-ndk-r12b\ndk-build.cmd
+arguments : 
+NDK_PROJECT_PATH=null
+APP_BUILD_SCRIPT=C:\Users\NeilDG\Documents\MSCSGithubProjects\OpenCV-3.1.0-android-sdk\OpenCV-android-sdk\sdk\native\jni\OpenCV.mk
+APP_ABI=armeabi-v7a
+NDK_ALL_ABIS=armeabi-v7a
+NDEBUG=1
+APP_PLATFORM=android-17
+NDK_OUT=C:\Users\NeilDG\Documents\MSCSGithubProjects\MegatronSR\app\.externalNativeBuild\ndkBuild\debug\obj
+NDK_LIBS_OUT=C:\Users\NeilDG\Documents\MSCSGithubProjects\MegatronSR\app\build\intermediates\ndkBuild\debug\lib
+APP_SHORT_COMMANDS=false
+LOCAL_SHORT_COMMANDS=false
+-n
+jvmArgs : 
+
