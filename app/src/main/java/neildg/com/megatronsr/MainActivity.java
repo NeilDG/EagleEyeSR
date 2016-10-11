@@ -40,13 +40,19 @@ public class MainActivity extends AppCompatActivity{
     private String imageEncoded;
     private List<String> imagesEncodedList;
 
+    static {
+        System.loadLibrary("hello");
+    }
+
+    private native String hello();
+
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS:
                 {
-                    Log.i(TAG, "OpenCV loaded successfully");
+                    Log.i(TAG, "OpenCV loaded successfully " +MainActivity.this.hello());
                 } break;
                 default:
                 {
