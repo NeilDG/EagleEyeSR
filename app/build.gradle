@@ -9,11 +9,11 @@ android {
             storePassword '123456'
         }
     }
-    compileSdkVersion 22
+    compileSdkVersion 24
     buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "neildg.com.megatronsr"
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -55,9 +55,8 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:support-v4:22.2.1'
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:design:22.2.1'
-    compile 'com.ssomai:android.scalablelayout:2.1.0'
     compile project(':openCVLibrary310_new')
+    compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:design:24.0.0'
 }
