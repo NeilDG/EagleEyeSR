@@ -71,7 +71,7 @@ public class MeanFusionOperator implements IOperator {
             maskMat.release();
         }
 
-        maskMat.release();
+        System.gc();
         List<Mat> splittedSumMat = new ArrayList<>();
         Core.split(sumMat, splittedSumMat);
 

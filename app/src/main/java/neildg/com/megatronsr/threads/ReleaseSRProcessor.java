@@ -107,7 +107,7 @@ public class ReleaseSRProcessor extends Thread{
         succeedingMatList = warpingOperator.getWarpedMatList();
 
         //perform perspective warping
-        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(rgbInputMatList[0], succeedingMatList);
+        /*FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(rgbInputMatList[0], succeedingMatList);
         matchingOperator.perform();
 
         LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), succeedingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
@@ -121,7 +121,10 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.releaseAll(rgbInputMatList, false);
 
         Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
-        MatMemory.releaseAll(warpedMatList, true);
+        MatMemory.releaseAll(warpedMatList, true);*/
+
+        MatMemory.releaseAll(rgbInputMatList, false);
+        MatMemory.releaseAll(succeedingMatList, false);
 
         //deallocate some classes
         SharpnessMeasure.destroy();
@@ -157,7 +160,7 @@ public class ReleaseSRProcessor extends Thread{
         int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
         String[] imagePathList = new String[numImages];
         for(int i = 0; i < numImages; i++) {
-            imagePathList[i] = "warp_"+i;
+            imagePathList[i] = "affine_warp_"+i;
         }
         MeanFusionOperator fusionOperator = new MeanFusionOperator(imagePathList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();

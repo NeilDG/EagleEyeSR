@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity{
                         Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
+            Toast.makeText(this, "Something went wrong. Error: " +e.getLocalizedMessage(), Toast.LENGTH_LONG)
                     .show();
         }
 
