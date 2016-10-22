@@ -168,6 +168,20 @@ public class ImageOperator {
     }
 
     /*
+     * Converts the given mat into a type. Returns the converted mat
+     */
+    public static Mat convertType(Mat fromMat, int dtype, boolean releaseOldMat) {
+        Mat convertMat = new Mat();
+        fromMat.convertTo(convertMat, dtype);
+
+        if(releaseOldMat) {
+            fromMat.release();
+        }
+
+        return convertMat;
+    }
+
+    /*
      * Performs interpolation using an existing interpolation algo by OPENCV
      */
     public static Mat performInterpolation(Mat fromMat, int scaling, int interpolationType) {
