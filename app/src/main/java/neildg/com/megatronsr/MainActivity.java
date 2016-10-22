@@ -114,7 +114,13 @@ public class MainActivity extends AppCompatActivity{
     }
     private void initializeButtons() {
         Button captureImageBtn = (Button) this.findViewById(R.id.capture_btn);
-        captureImageBtn.setEnabled(false); //TODO:disable capture image btn
+        captureImageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent cameraIntent = new Intent(MainActivity.this, CameraActivity.class);
+                startActivity(cameraIntent);
+            }
+        });
 
         Button pickImagesBtn = (Button) this.findViewById(R.id.select_image_btn);
         pickImagesBtn.setOnClickListener(new View.OnClickListener() {
