@@ -52,14 +52,12 @@ import neildg.com.megatronsr.camera2.ICameraModuleListener;
 import neildg.com.megatronsr.camera2.ICameraTextureViewListener;
 import neildg.com.megatronsr.camera2.ResolutionPicker;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.ui.ResolutionPickerDialog;
 
 public class CameraActivity extends AppCompatActivity implements ICameraTextureViewListener, ICameraModuleListener {
     private final static String TAG = "CameraActivity";
     private final static int REQUEST_CAMERA_PERMISSION = 200;
 
-
-    private Size[] availableSizes;
-    private Size imageDimension;
     private String cameraId;
 
     private CameraModule cameraModule;
@@ -71,6 +69,8 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     protected CameraCaptureSession cameraCaptureSessions;
     protected CaptureRequest captureRequest;
     protected CaptureRequest.Builder captureRequestBuilder;
+
+    private ResolutionPickerDialog resolutionPickerDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +92,14 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                 CameraActivity.this.takePicture();
             }
         });
+
+        Button modeBtn = (Button) this.findViewById(R.id.btn_mode);
+        modeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               resolutionPickerDialog.show();
+            }
+        });
     }
 
     @Override
@@ -99,24 +107,25 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         this.openCamera();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void openCamera() {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         Log.e(TAG, "is camera open");
         try {
             this.cameraId = manager.getCameraIdList()[0];
             ResolutionPicker.updateCameraSetings(this, this.cameraId);
+            this.resolutionPickerDialog = new ResolutionPickerDialog(this);
+            this.resolutionPickerDialog.setup(ResolutionPicker.getSharedInstance().getAvailableCameraSizes());
 
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(this.cameraId);
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             assert map != null;
-            this.availableSizes = map.getOutputSizes(SurfaceTexture.class);
+            Size[] availableSizes = map.getOutputSizes(SurfaceTexture.class);
 
-            for(int i = 0; i < this.availableSizes.length; i++) {
-                Log.d(TAG, "Available sizes: " +this.availableSizes[i].getWidth() + " X " +this.availableSizes[i].getHeight());
+            for(int i = 0; i < availableSizes.length; i++) {
+                Log.d(TAG, "Available sizes: " +availableSizes[i].getWidth() + " X " +availableSizes[i].getHeight());
             }
-            //this.imageDimension = this.availableSizes[this.availableSizes.length - 1];
-            this.cameraTextureView.updateToOptimalSize(this.availableSizes);
+
+            this.cameraTextureView.updateToOptimalSize(availableSizes);
 
             // Add permission for camera and let user grant the permission
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
