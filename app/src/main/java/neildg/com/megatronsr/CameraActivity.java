@@ -50,6 +50,7 @@ import neildg.com.megatronsr.camera2.CameraModule;
 import neildg.com.megatronsr.camera2.CameraTextureView;
 import neildg.com.megatronsr.camera2.ICameraModuleListener;
 import neildg.com.megatronsr.camera2.ICameraTextureViewListener;
+import neildg.com.megatronsr.camera2.ResolutionPicker;
 import neildg.com.megatronsr.io.ImageWriter;
 
 public class CameraActivity extends AppCompatActivity implements ICameraTextureViewListener, ICameraModuleListener {
@@ -104,15 +105,17 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         Log.e(TAG, "is camera open");
         try {
             this.cameraId = manager.getCameraIdList()[0];
+            ResolutionPicker.updateCameraSetings(this, this.cameraId);
+
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(this.cameraId);
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             assert map != null;
-            this.availableSizes = map.getOutputSizes(ImageFormat.JPEG);
+            this.availableSizes = map.getOutputSizes(SurfaceTexture.class);
 
             for(int i = 0; i < this.availableSizes.length; i++) {
                 Log.d(TAG, "Available sizes: " +this.availableSizes[i].getWidth() + " X " +this.availableSizes[i].getHeight());
             }
-            this.imageDimension = this.availableSizes[this.availableSizes.length - 1];
+            //this.imageDimension = this.availableSizes[this.availableSizes.length - 1];
             this.cameraTextureView.updateToOptimalSize(this.availableSizes);
 
             // Add permission for camera and let user grant the permission
@@ -224,14 +227,9 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         }
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
-            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraDevice.getId());
-            Size[] jpegSizes = null;
-            jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
-            for(int i = 0; i < jpegSizes.length; i++) {
-                Log.d(TAG, "JPEG sizes: " +jpegSizes[i].getWidth() + " X " +jpegSizes[i].getHeight());
-            }
 
-            ImageReader reader = ImageReader.newInstance(jpegSizes[jpegSizes.length - 1].getWidth(), jpegSizes[jpegSizes.length - 1].getHeight(), ImageFormat.JPEG, 1);
+            Size imageSize = ResolutionPicker.getSharedInstance().getLastAvailableSize();
+            ImageReader reader = ImageReader.newInstance(imageSize.getWidth(), imageSize.getHeight(), ImageFormat.JPEG, 1);
             List<Surface> outputSurfaces = new ArrayList<Surface>(2);
             outputSurfaces.add(reader.getSurface());
             outputSurfaces.add(new Surface(textureView.getSurfaceTexture()));
@@ -239,11 +237,8 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
             // Orientation
-            //int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            //captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, CameraTextureView.ORIENTATIONS.get(rotation));
-            int orientation = getResources().getConfiguration().orientation;
-            int displayOrientation = CameraTextureView.getJpegOrientation(characteristics, orientation);
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, displayOrientation);
+            int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, CameraTextureView.ORIENTATIONS.get(rotation));
 
             final File file = new File(ImageWriter.getInstance().getFilePath()+"/pic.jpg");
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
