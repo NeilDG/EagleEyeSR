@@ -48,7 +48,7 @@
             android:process=":mean_fusion_process" />
         <activity android:name=".CameraActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

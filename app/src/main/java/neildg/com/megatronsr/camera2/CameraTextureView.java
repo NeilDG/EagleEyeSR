@@ -73,7 +73,7 @@ public class CameraTextureView implements TextureView.SurfaceTextureListener {
     }
 
     public void updateToOptimalSize(Size[] sizes) {
-        Size optimalSize = getOptimalPreviewSize(sizes, this.textureView.getHeight(), this.textureView.getWidth());
+        Size optimalSize = getOptimalPreviewSize(sizes, this.textureView.getWidth(), this.textureView.getHeight());
         //Size optimalSize = new Size(1000, 1000);
         this.updateAspectRatio(optimalSize);
     }
