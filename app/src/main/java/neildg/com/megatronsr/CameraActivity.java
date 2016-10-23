@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
+import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
@@ -106,8 +107,13 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(this.cameraId);
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             assert map != null;
-            this.availableSizes = map.getOutputSizes(SurfaceTexture.class);
-            this.imageDimension = this.availableSizes[0]; //get first preferred size;
+            this.availableSizes = map.getOutputSizes(ImageFormat.JPEG);
+
+            for(int i = 0; i < this.availableSizes.length; i++) {
+                Log.d(TAG, "Available sizes: " +this.availableSizes[i].getWidth() + " X " +this.availableSizes[i].getHeight());
+            }
+            this.imageDimension = this.availableSizes[this.availableSizes.length - 1];
+            this.cameraTextureView.updateToOptimalSize(this.availableSizes);
 
             // Add permission for camera and let user grant the permission
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -166,11 +172,10 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
 
     protected void createCameraPreview() {
         try {
-
-            SurfaceTexture texture = this.cameraTextureView.getTextureView().getSurfaceTexture();
-            this.cameraTextureView.updateToOptimalSize(this.availableSizes);
+            TextureView textureView = this.cameraTextureView.getTextureView();
+            SurfaceTexture texture = textureView.getSurfaceTexture();
             assert texture != null;
-            texture.setDefaultBufferSize(imageDimension.getWidth(), imageDimension.getHeight());
+            //texture.setDefaultBufferSize(textureView.getWidth(), textureView.getHeight());
             Surface surface = new Surface(texture);
             final CameraDevice cameraDevice = this.cameraModule.getCameraDevice();
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
@@ -221,20 +226,12 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         try {
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraDevice.getId());
             Size[] jpegSizes = null;
-            if (characteristics != null) {
-                jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
-            }
-            int width = 640;
-            int height = 480;
-            if (jpegSizes != null && 0 < jpegSizes.length) {
-                width = jpegSizes[0].getWidth();
-                height = jpegSizes[0].getHeight();
-            }
-            else {
-                Log.e(TAG, "Missing JPEG sizes!! Resorting to 640x480!");
+            jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
+            for(int i = 0; i < jpegSizes.length; i++) {
+                Log.d(TAG, "JPEG sizes: " +jpegSizes[i].getWidth() + " X " +jpegSizes[i].getHeight());
             }
 
-            ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
+            ImageReader reader = ImageReader.newInstance(jpegSizes[jpegSizes.length - 1].getWidth(), jpegSizes[jpegSizes.length - 1].getHeight(), ImageFormat.JPEG, 1);
             List<Surface> outputSurfaces = new ArrayList<Surface>(2);
             outputSurfaces.add(reader.getSurface());
             outputSurfaces.add(new Surface(textureView.getSurfaceTexture()));
@@ -242,8 +239,12 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
             // Orientation
-            int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, CameraTextureView.ORIENTATIONS.get(rotation));
+            //int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            //captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, CameraTextureView.ORIENTATIONS.get(rotation));
+            int orientation = getResources().getConfiguration().orientation;
+            int displayOrientation = CameraTextureView.getJpegOrientation(characteristics, orientation);
+            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, displayOrientation);
+
             final File file = new File(ImageWriter.getInstance().getFilePath()+"/pic.jpg");
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override

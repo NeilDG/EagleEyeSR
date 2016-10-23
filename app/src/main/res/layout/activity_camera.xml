@@ -32,8 +32,7 @@
             android:id="@+id/btn_switch_camera"
             android:background="@android:color/transparent"
             android:scaleType="centerInside"
-            android:layout_weight="0.25"
-            android:rotation="90" />
+            android:layout_weight="0.25" />
 
         <ImageButton
             android:layout_width="64dp"
@@ -44,8 +43,7 @@
             android:id="@+id/btn_capture_image"
             android:background="@android:color/transparent"
             android:scaleType="centerInside"
-            android:layout_weight="0.25"
-            android:rotation="90" />
+            android:layout_weight="0.25" />
 
         <ImageButton
             android:layout_width="64dp"
@@ -56,8 +54,7 @@
             android:id="@+id/btn_image_preview"
             android:background="@android:color/transparent"
             android:scaleType="centerInside"
-            android:layout_weight="0.25"
-            android:rotation="90" />
+            android:layout_weight="0.25" />
 
     </LinearLayout>
 
@@ -67,20 +64,6 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
 
-        <Button
-            android:text="MODE"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btn_mode"
-            android:background="@drawable/abc_list_selector_background_transition_holo_dark"
-            android:elevation="0dp"
-            android:textStyle="normal|bold"
-            android:layout_marginTop="41dp"
-            android:textSize="15sp"
-            android:rotation="90"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
-
         <ToggleButton
             android:background="@drawable/flash_toggle"
             android:id="@+id/toggle_flash"
@@ -89,10 +72,23 @@
             android:layout_height="0.3in"
             android:layout_weight="0.5"
             android:layout_marginEnd="20dp"
+            android:layout_alignBaseline="@+id/btn_mode"
             android:layout_alignBottom="@+id/btn_mode"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="17dp"
-            android:rotation="90" />
+            android:layout_alignParentEnd="true" />
+
+        <Button
+            android:text="MODE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_mode"
+            android:background="@drawable/abc_list_selector_background_transition_holo_dark"
+            android:elevation="0dp"
+            android:textStyle="normal|bold"
+            android:layout_marginTop="20dp"
+            android:textSize="15sp"
+            android:layout_marginStart="20dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
     </RelativeLayout>
 
 </RelativeLayout>

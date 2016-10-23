@@ -13,6 +13,9 @@ import android.view.TextureView;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -73,8 +76,8 @@ public class CameraTextureView implements TextureView.SurfaceTextureListener {
     }
 
     public void updateToOptimalSize(Size[] sizes) {
+        //Size optimalSize = chooseOptimalSize(sizes, this.textureView.getWidth(), this.textureView.getHeight(), new Size(4,3));
         Size optimalSize = getOptimalPreviewSize(sizes, this.textureView.getWidth(), this.textureView.getHeight());
-        //Size optimalSize = new Size(1000, 1000);
         this.updateAspectRatio(optimalSize);
     }
 
@@ -108,6 +111,44 @@ public class CameraTextureView implements TextureView.SurfaceTextureListener {
             }
         }
         return optimalSize;
+    }
+
+
+    private static Size chooseOptimalSize(Size[] choices, int width, int height, Size aspectRatio) {
+        // Collect the supported resolutions that are at least as big as the preview Surface
+        List<Size> bigEnough = new ArrayList<>();
+        int w = aspectRatio.getWidth();
+        int h = aspectRatio.getHeight();
+        for (Size option : choices) {
+            if (option.getHeight() == option.getWidth() * h / w &&
+                    option.getWidth() >= width && option.getHeight() >= height) {
+                bigEnough.add(option);
+            }
+        }
+
+        // Pick the smallest of those, assuming we found any
+        if (bigEnough.size() > 0) {
+            Size size = Collections.min(bigEnough, new CompareSizesByArea());
+            return Collections.min(bigEnough, new CompareSizesByArea());
+        } else {
+            Log.e(TAG, "Couldn't find any suitable preview size");
+
+            return choices[0];
+        }
+    }
+
+    /**
+     * Compares two {@code Size}s based on their areas.
+     */
+    static class CompareSizesByArea implements Comparator<Size> {
+
+        @Override
+        public int compare(Size lhs, Size rhs) {
+            // We cast here to ensure the multiplications won't overflow
+            return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
+                    (long) rhs.getWidth() * rhs.getHeight());
+        }
+
     }
 
     public static int getJpegOrientation(CameraCharacteristics c, int deviceOrientation) {
