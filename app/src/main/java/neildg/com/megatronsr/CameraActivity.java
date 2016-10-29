@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Camera;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
@@ -115,7 +116,6 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             ResolutionPicker.updateCameraSetings(this, this.cameraId);
             this.resolutionPickerDialog = new ResolutionPickerDialog(this);
             this.resolutionPickerDialog.setup(ResolutionPicker.getSharedInstance().getAvailableCameraSizes());
-
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(this.cameraId);
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             assert map != null;
@@ -124,8 +124,8 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             for(int i = 0; i < availableSizes.length; i++) {
                 Log.d(TAG, "Available sizes: " +availableSizes[i].getWidth() + " X " +availableSizes[i].getHeight());
             }
-
             this.cameraTextureView.updateToOptimalSize(availableSizes);
+            //this.cameraTextureView.updateToOptimalSize(ResolutionPicker.getSharedInstance().getAvailableCameraSizes());
 
             // Add permission for camera and let user grant the permission
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -221,7 +221,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
         try {
-            cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
+            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), new RepeatingRequestCallback(), mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -245,6 +245,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+
             // Orientation
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, CameraTextureView.ORIENTATIONS.get(rotation));
@@ -306,6 +307,18 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             }, mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
+        }
+    }
+
+    private class RepeatingRequestCallback extends CameraCaptureSession.CaptureCallback {
+
+        @Override
+        public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
+            super.onCaptureCompleted(session, request, result);
+
+            // Orientation
+            //int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            //Log.d(TAG, "Rotation: " +rotation);
         }
     }
 }

@@ -10,6 +10,7 @@ import android.util.SparseIntArray;
 import android.view.Gravity;
 import android.view.Surface;
 import android.view.TextureView;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -72,18 +73,22 @@ public class CameraTextureView implements TextureView.SurfaceTextureListener {
 
     public void updateAspectRatio(Size size) {
         Log.d(TAG, "Image dimensions proposed: " +size.getWidth() + " X " +size.getHeight());
-        this.textureView.setLayoutParams(new RelativeLayout.LayoutParams(size.getWidth(), size.getHeight()));
+        ViewGroup.LayoutParams currentParams = this.textureView.getLayoutParams();
+        currentParams.width = size.getWidth();
+        currentParams.height = size.getHeight();
+        this.textureView.setLayoutParams(currentParams);
+        this.textureView.requestLayout();
     }
 
     public void updateToOptimalSize(Size[] sizes) {
-        Size optimalSize = chooseOptimalSize(sizes, this.textureView.getWidth(), this.textureView.getHeight(), new Size(4,3));
-        //Size optimalSize = getOptimalPreviewSize(sizes, this.textureView.getWidth(), this.textureView.getHeight());
+        Size optimalSize = getOptimalPreviewSize(sizes, this.textureView.getWidth(), this.textureView.getHeight());
         this.updateAspectRatio(optimalSize);
+        //this.updateTextureViewSize(optimalSize.getWidth(), optimalSize.getHeight());
     }
 
     public static Size getOptimalPreviewSize(Size[] sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
-        double targetRatio=(double)h / w;
+        double targetRatio=(double)w / h;
 
         if (sizes == null) return null;
 
@@ -113,29 +118,36 @@ public class CameraTextureView implements TextureView.SurfaceTextureListener {
         return optimalSize;
     }
 
+    /*private void updateTextureViewSize(int viewWidth, int viewHeight) {
+        float scaleX = 1.0f;
+        float scaleY = 1.0f;
 
-    private static Size chooseOptimalSize(Size[] choices, int width, int height, Size aspectRatio) {
-        // Collect the supported resolutions that are at least as big as the preview Surface
-        List<Size> bigEnough = new ArrayList<>();
-        int w = aspectRatio.getWidth();
-        int h = aspectRatio.getHeight();
-        for (Size option : choices) {
-            if (option.getHeight() == option.getWidth() * h / w &&
-                    option.getWidth() >= width && option.getHeight() >= height) {
-                bigEnough.add(option);
-            }
+        float mVideoWidth = this.textureView.getWidth();
+        float mVideoHeight = this.textureView.getHeight();
+
+        if (mVideoWidth > viewWidth && mVideoHeight > viewHeight) {
+            scaleX = mVideoWidth / viewWidth;
+            scaleY = mVideoHeight / viewHeight;
+        } else if (mVideoWidth < viewWidth && mVideoHeight < viewHeight) {
+            scaleY = viewWidth / mVideoWidth;
+            scaleX = viewHeight / mVideoHeight;
+        } else if (viewWidth > mVideoWidth) {
+            scaleY = (viewWidth / mVideoWidth) / (viewHeight / mVideoHeight);
+        } else if (viewHeight > mVideoHeight) {
+            scaleX = (viewHeight / mVideoHeight) / (viewWidth / mVideoWidth);
         }
 
-        // Pick the smallest of those, assuming we found any
-        if (bigEnough.size() > 0) {
-            Size size = Collections.min(bigEnough, new CompareSizesByArea());
-            return Collections.min(bigEnough, new CompareSizesByArea());
-        } else {
-            Log.e(TAG, "Couldn't find any suitable preview size");
+        // Calculate pivot points, in our case crop from center
+        int pivotPointX = viewWidth / 2;
+        int pivotPointY = viewHeight / 2;
 
-            return choices[0];
-        }
-    }
+        Matrix matrix = new Matrix();
+        matrix.setScale(scaleX, scaleY, pivotPointX, pivotPointY);
+
+        Log.d(TAG, "Proposed scale X: " +scaleX+ " Y: " +scaleY);
+
+        this.textureView.setTransform(matrix);
+    }*/
 
     /**
      * Compares two {@code Size}s based on their areas.
