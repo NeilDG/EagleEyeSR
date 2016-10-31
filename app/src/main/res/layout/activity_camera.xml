@@ -9,14 +9,17 @@
     android:background="@android:color/black"
     tools:context="neildg.com.megatronsr.CameraActivity">
 
-    <TextureView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/camera_view"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="80dp"
-        android:layout_marginTop="80dp" />
+        android:layout_height="match_parent">
+
+        <TextureView
+            android:id="@+id/camera_view"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentStart="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
 
     <LinearLayout
         android:orientation="horizontal"

@@ -25,7 +25,7 @@ import java.util.List;
  */
 
 public class CameraTextureView implements TextureView.SurfaceTextureListener {
-    private final static String TAG = "CameraSurfaceView";
+    private final static String TAG = "CameraTextureView";
 
     public static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static {
@@ -58,7 +58,7 @@ public class CameraTextureView implements TextureView.SurfaceTextureListener {
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
         // Transform you image captured size according to the surface width and height
-        Log.d(TAG, "On texture size changed: " +width+ "X" +height);
+        Log.d(TAG, "On texture size changed: " +width+ " X " +height);
     }
 
     @Override
@@ -72,18 +72,35 @@ public class CameraTextureView implements TextureView.SurfaceTextureListener {
     }
 
     public void updateAspectRatio(Size size) {
-        Log.d(TAG, "Image dimensions proposed: " +size.getWidth() + " X " +size.getHeight());
+
         ViewGroup.LayoutParams currentParams = this.textureView.getLayoutParams();
-        currentParams.width = size.getWidth();
-        currentParams.height = size.getHeight();
+        float proposedWidth = (float) size.getWidth();
+        float proposedHeight = (float) size.getHeight();
+        float viewWidth = (float) this.textureView.getWidth();
+        float viewHeight = (float) this.textureView.getHeight();
+
+        currentParams.width = size.getHeight();
+        currentParams.height = size.getWidth();
         this.textureView.setLayoutParams(currentParams);
         this.textureView.requestLayout();
+
+        //set scaling
+        //float scaleX = viewWidth / proposedWidth;
+        //float scaleY = viewHeight / proposedHeight;
+
+        float scaleX = 1.0f; float scaleY = 1.0f;
+        Matrix matrix = new Matrix();
+        matrix.setScale(scaleX, scaleY);
+
+        this.textureView.setTransform(matrix);
+
+        Log.d(TAG, "Image dimensions proposed: " +currentParams.width + " X " +currentParams.height + " Scale X:" +scaleX+ " Scale Y:" +scaleY);
     }
 
     public void updateToOptimalSize(Size[] sizes) {
-        Size optimalSize = getOptimalPreviewSize(sizes, this.textureView.getWidth(), this.textureView.getHeight());
+        Log.d(TAG, "Texture view size: " +this.textureView.getWidth() + " X " +this.textureView.getHeight());
+        Size optimalSize = getOptimalPreviewSize(sizes, this.textureView.getHeight(), this.textureView.getWidth());
         this.updateAspectRatio(optimalSize);
-        //this.updateTextureViewSize(optimalSize.getWidth(), optimalSize.getHeight());
     }
 
     public static Size getOptimalPreviewSize(Size[] sizes, int w, int h) {
@@ -117,37 +134,6 @@ public class CameraTextureView implements TextureView.SurfaceTextureListener {
         }
         return optimalSize;
     }
-
-    /*private void updateTextureViewSize(int viewWidth, int viewHeight) {
-        float scaleX = 1.0f;
-        float scaleY = 1.0f;
-
-        float mVideoWidth = this.textureView.getWidth();
-        float mVideoHeight = this.textureView.getHeight();
-
-        if (mVideoWidth > viewWidth && mVideoHeight > viewHeight) {
-            scaleX = mVideoWidth / viewWidth;
-            scaleY = mVideoHeight / viewHeight;
-        } else if (mVideoWidth < viewWidth && mVideoHeight < viewHeight) {
-            scaleY = viewWidth / mVideoWidth;
-            scaleX = viewHeight / mVideoHeight;
-        } else if (viewWidth > mVideoWidth) {
-            scaleY = (viewWidth / mVideoWidth) / (viewHeight / mVideoHeight);
-        } else if (viewHeight > mVideoHeight) {
-            scaleX = (viewHeight / mVideoHeight) / (viewWidth / mVideoWidth);
-        }
-
-        // Calculate pivot points, in our case crop from center
-        int pivotPointX = viewWidth / 2;
-        int pivotPointY = viewHeight / 2;
-
-        Matrix matrix = new Matrix();
-        matrix.setScale(scaleX, scaleY, pivotPointX, pivotPointY);
-
-        Log.d(TAG, "Proposed scale X: " +scaleX+ " Y: " +scaleY);
-
-        this.textureView.setTransform(matrix);
-    }*/
 
     /**
      * Compares two {@code Size}s based on their areas.

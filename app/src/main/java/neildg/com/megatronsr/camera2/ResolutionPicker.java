@@ -54,7 +54,7 @@ public class ResolutionPicker {
     /*
      * Updates available camera sizes. Also creates a new singleton class.
      */
-    public static void updateCameraSetings(Context context, String cameraID) {
+    public static void updateCameraSettings(Context context, String cameraID) {
         try {
             CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraID);

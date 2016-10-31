@@ -1,12 +1,8 @@
 package neildg.com.megatronsr;
 
 import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.graphics.Camera;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -20,7 +16,6 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
@@ -30,7 +25,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
-import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
@@ -113,19 +107,10 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         Log.e(TAG, "is camera open");
         try {
             this.cameraId = manager.getCameraIdList()[0];
-            ResolutionPicker.updateCameraSetings(this, this.cameraId);
+            ResolutionPicker.updateCameraSettings(this, this.cameraId);
             this.resolutionPickerDialog = new ResolutionPickerDialog(this);
             this.resolutionPickerDialog.setup(ResolutionPicker.getSharedInstance().getAvailableCameraSizes());
-            CameraCharacteristics characteristics = manager.getCameraCharacteristics(this.cameraId);
-            StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-            assert map != null;
-            Size[] availableSizes = map.getOutputSizes(SurfaceTexture.class);
-
-            for(int i = 0; i < availableSizes.length; i++) {
-                Log.d(TAG, "Available sizes: " +availableSizes[i].getWidth() + " X " +availableSizes[i].getHeight());
-            }
-            this.cameraTextureView.updateToOptimalSize(availableSizes);
-            //this.cameraTextureView.updateToOptimalSize(ResolutionPicker.getSharedInstance().getAvailableCameraSizes());
+            this.cameraTextureView.updateToOptimalSize(ResolutionPicker.getSharedInstance().getAvailableCameraSizes());
 
             // Add permission for camera and let user grant the permission
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -187,7 +172,9 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             TextureView textureView = this.cameraTextureView.getTextureView();
             SurfaceTexture texture = textureView.getSurfaceTexture();
             assert texture != null;
-            //texture.setDefaultBufferSize(textureView.getWidth(), textureView.getHeight());
+            Size lastResolutionSize = ResolutionPicker.getSharedInstance().getLastAvailableSize();
+            Log.d(TAG, "Last resolution size: " +lastResolutionSize.toString());
+            texture.setDefaultBufferSize(lastResolutionSize.getWidth(), lastResolutionSize.getHeight());
             Surface surface = new Surface(texture);
             final CameraDevice cameraDevice = this.cameraModule.getCameraDevice();
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
@@ -238,6 +225,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         try {
 
             Size imageSize = ResolutionPicker.getSharedInstance().getLastAvailableSize();
+            Log.d(TAG, "Image size to save: " +imageSize.getWidth()+ " X "+imageSize.getHeight());
             ImageReader reader = ImageReader.newInstance(imageSize.getWidth(), imageSize.getHeight(), ImageFormat.JPEG, 1);
             List<Surface> outputSurfaces = new ArrayList<Surface>(2);
             outputSurfaces.add(reader.getSurface());
