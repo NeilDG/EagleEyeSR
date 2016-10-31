@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_camera"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    tools:context="neildg.com.megatronsr.CameraActivity">
+
+    <TextureView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/camera_view"
+        android:layout_alignParentTop="true"
+        android:rotation="90" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="20dp">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/gui_almalence_settings_changecamera_front"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/btn_switch_camera"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"
+                android:layout_weight="0.25" />
+
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="66dp"
+                android:src="@drawable/capture_image_behavior"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/btn_capture_image"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"
+                android:layout_weight="0.25" />
+
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="66dp"
+                android:src="@drawable/image_preview_placeholder"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/btn_image_preview"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"
+                android:layout_weight="0.25" />
+
+        </LinearLayout>
+
+        <ToggleButton
+            android:background="@drawable/flash_toggle"
+            android:id="@+id/toggle_flash"
+            android:checked="false"
+            android:layout_width="0.3in"
+            android:layout_height="0.3in"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="17dp"
+            android:layout_marginTop="18dp" />
+
+        <Button
+            android:text="MODE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_mode"
+            android:background="@drawable/abc_list_selector_background_transition_holo_dark"
+            android:elevation="0dp"
+            android:textStyle="normal|bold"
+            android:textSize="15sp"
+            android:layout_marginBottom="36dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignStart="@+id/toggle_flash" />
+    </RelativeLayout>
+
+</RelativeLayout>
