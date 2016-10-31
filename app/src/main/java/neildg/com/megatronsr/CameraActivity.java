@@ -5,6 +5,10 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -43,13 +47,14 @@ import java.util.List;
 
 import neildg.com.megatronsr.camera2.CameraModule;
 import neildg.com.megatronsr.camera2.CameraTextureView;
+import neildg.com.megatronsr.camera2.CameraUserSettings;
 import neildg.com.megatronsr.camera2.ICameraModuleListener;
 import neildg.com.megatronsr.camera2.ICameraTextureViewListener;
 import neildg.com.megatronsr.camera2.ResolutionPicker;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.ui.ResolutionPickerDialog;
 
-public class CameraActivity extends AppCompatActivity implements ICameraTextureViewListener, ICameraModuleListener {
+public class CameraActivity extends AppCompatActivity implements ICameraTextureViewListener, ICameraModuleListener, SensorEventListener {
     private final static String TAG = "CameraActivity";
     private final static int REQUEST_CAMERA_PERMISSION = 200;
 
@@ -67,16 +72,50 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
 
     private ResolutionPickerDialog resolutionPickerDialog;
 
+    private SensorManager sensorManager;
+    private int sensorRotation = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
+        CameraUserSettings.initialize();
         this.initializeCameraModule();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.cameraModule.getCameraDevice().close();
+
+        this.sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+        this.sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
+        this.sensorManager = null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e(TAG, "onResume");
+        startBackgroundThread();
+        if (this.cameraTextureView.getTextureView().isAvailable()) {
+            this.openCamera();
+        }
+
+        this.sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+        this.sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        CameraUserSettings.destroy();
     }
 
     private void initializeCameraModule() {
         this.cameraModule = new CameraModule(this);
+        CameraUserSettings.getInstance().setSelectedCamera(CameraUserSettings.CameraType.BACK);
         TextureView textureView =  (TextureView) this.findViewById(R.id.camera_view);
         this.cameraTextureView = new CameraTextureView(textureView, this);
 
@@ -95,6 +134,18 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                resolutionPickerDialog.show();
             }
         });
+
+        final ImageButton switchCamBtn = (ImageButton) this.findViewById(R.id.btn_switch_camera);
+        switchCamBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //switch camera
+                CameraUserSettings.getInstance().switchCamera();
+                CameraActivity.this.closeCamera();
+                CameraActivity.this.openCamera();
+                switchCamBtn.setImageResource(CameraUserSettings.getInstance().getCameraResource(CameraUserSettings.getInstance().getCameraType()));
+            }
+        });
     }
 
     @Override
@@ -106,7 +157,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         Log.e(TAG, "is camera open");
         try {
-            this.cameraId = manager.getCameraIdList()[0];
+            this.cameraId = manager.getCameraIdList()[CameraUserSettings.getInstance().getCameraId()];
             ResolutionPicker.updateCameraSettings(this, this.cameraId);
             this.resolutionPickerDialog = new ResolutionPickerDialog(this);
             this.resolutionPickerDialog.setup(ResolutionPicker.getSharedInstance().getAvailableCameraSizes());
@@ -122,6 +173,10 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             e.printStackTrace();
         }
         Log.e(TAG, "openCamera X");
+    }
+
+    private void closeCamera() {
+        this.cameraModule.closeCamera();
     }
 
     @Override
@@ -149,12 +204,6 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        this.cameraModule.getCameraDevice().close();
     }
 
     @Override
@@ -208,7 +257,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
         try {
-            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), new RepeatingRequestCallback(), mBackgroundHandler);
+            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -234,9 +283,15 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
-            // Orientation
-            int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, CameraTextureView.ORIENTATIONS.get(rotation));
+            if(CameraUserSettings.getInstance().getCameraType() == CameraUserSettings.CameraType.FRONT) {
+                captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, 270);
+            }
+            else {
+                captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, this.sensorRotation);
+                Size thumbnailSize = ResolutionPicker.getSharedInstance().getLastAvailableThumbnailSize();
+                Size preferredSize = new Size(thumbnailSize.getHeight(), thumbnailSize.getWidth());
+                captureBuilder.set(CaptureRequest.JPEG_THUMBNAIL_SIZE, preferredSize); //swap size
+            }
 
             final File file = new File(ImageWriter.getInstance().getFilePath()+"/pic.jpg");
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
@@ -256,6 +311,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                     } finally {
                         if (image != null) {
                             image.close();
+                            reader.close();
                         }
                     }
                 }
@@ -298,15 +354,33 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         }
     }
 
-    private class RepeatingRequestCallback extends CameraCaptureSession.CaptureCallback {
+    @Override
+    public void onSensorChanged(SensorEvent event) {
 
-        @Override
-        public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-            super.onCaptureCompleted(session, request, result);
+        float aX= event.values[0];
+        float aY= event.values[1];
+        //aZ= event.values[2];
+        double angle = Math.atan2(aX, aY)/(Math.PI/180);
 
-            // Orientation
-            //int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            //Log.d(TAG, "Rotation: " +rotation);
+        double absAngle = Math.abs(angle);
+        if(absAngle >= 0 && absAngle < 90) {
+            this.sensorRotation = 90;
         }
+        else if(absAngle >= 90 && absAngle < 180) {
+            this.sensorRotation = 0;
+        }
+        else if(absAngle >= 180 && absAngle < 270) {
+            this.sensorRotation = 180;
+        }
+        else {
+            this.sensorRotation = 270;
+        }
+
+        Log.d(TAG, "Angle: "+angle+ " Sensor rotation: " +this.sensorRotation);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }

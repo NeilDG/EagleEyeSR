@@ -21,6 +21,13 @@ public class CameraModule extends CameraDevice.StateCallback {
     public CameraDevice getCameraDevice() {
         return this.cameraDevice;
     }
+
+    public void closeCamera() {
+        if(this.cameraDevice != null) {
+            this.cameraDevice.close();
+        }
+    }
+
     @Override
     public void onOpened(CameraDevice camera) {
         this.cameraDevice = camera;

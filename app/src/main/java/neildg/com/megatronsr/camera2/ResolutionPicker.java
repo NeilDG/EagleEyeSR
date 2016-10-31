@@ -22,13 +22,15 @@ public class ResolutionPicker {
     }
 
     private Size[] availableCameraSizes;
+    private Size[] availableThumbnailSizes;
 
     private ResolutionPicker() {
 
     }
 
-    private void setAvailableCameraSizes(Size[] availableCameraSizes) {
+    private void setAvailableCameraSizes(Size[] availableCameraSizes, Size[] availableThumbnailSizes) {
         this.availableCameraSizes = availableCameraSizes;
+        this.availableThumbnailSizes = availableThumbnailSizes;
     }
 
     public Size[] getAvailableCameraSizes() {
@@ -51,6 +53,10 @@ public class ResolutionPicker {
         return this.availableCameraSizes[index];
     }
 
+    public Size getLastAvailableThumbnailSize() {
+        return this.availableThumbnailSizes[this.availableThumbnailSizes.length - 1];
+    }
+
     /*
      * Updates available camera sizes. Also creates a new singleton class.
      */
@@ -60,10 +66,11 @@ public class ResolutionPicker {
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraID);
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
+
             sharedInstance = null;
             sharedInstance = new ResolutionPicker();
 
-            sharedInstance.setAvailableCameraSizes(map.getOutputSizes(ImageFormat.JPEG));
+            sharedInstance.setAvailableCameraSizes(map.getOutputSizes(ImageFormat.JPEG), characteristics.get(CameraCharacteristics.JPEG_AVAILABLE_THUMBNAIL_SIZES));
         } catch(CameraAccessException e) {
             e.printStackTrace();
         }
