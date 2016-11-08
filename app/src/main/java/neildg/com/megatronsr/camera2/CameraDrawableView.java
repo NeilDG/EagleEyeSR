@@ -20,6 +20,7 @@ import neildg.com.megatronsr.subroutine.CoroutineCreator;
 import neildg.com.megatronsr.subroutine.ICoroutine;
 
 /**
+ * Overlay view for drawing textures on screen such as auto-focus region.
  * Created by NeilDG on 11/1/2016.
  */
 
