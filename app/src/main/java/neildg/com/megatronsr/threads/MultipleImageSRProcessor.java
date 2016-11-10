@@ -10,11 +10,14 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageReader;
 import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.model.AttributeHolder;
+import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
+import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.megatronsr.processing.multiple.selection.TestImagesSelector;
 import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
@@ -24,7 +27,7 @@ import neildg.com.megatronsr.processing.multiple.resizing.LRToHROperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
- * SRProcessor main entry point
+ * SRProcessor debugging main entry point. This processor has the downsampling operator included.
  * Created by NeilDG on 3/5/2016.
  */
 public class MultipleImageSRProcessor extends Thread {
@@ -84,8 +87,8 @@ public class MultipleImageSRProcessor extends Thread {
         rgbInputMatList = SharpnessMeasure.getSharedInstance().trimMatList(rgbInputMatList, sharpnessResult);
 
         //perform denoising on original input list
-        //DenoisingOperator denoisingOperator = new DenoisingOperator(rgbInputMatList);
-        //denoisingOperator.perform();
+        DenoisingOperator denoisingOperator = new DenoisingOperator(rgbInputMatList);
+        denoisingOperator.perform();
 
         int index = 0;
         for(int i = 0; i < BitmapURIRepository.getInstance().getNumImagesSelected(); i++) {
@@ -144,13 +147,15 @@ public class MultipleImageSRProcessor extends Thread {
         }*/
 
         Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
+        MatMemory.releaseAll(warpedMatList, false);
+        this.performMeanFusion();
 
         /*MeanFusionOperator fusionOperator = new MeanFusionOperator(warpedMatList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();
         ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);*/
 
         //release unused warp images
-        MatMemory.releaseAll(warpedMatList, false);
+        //MatMemory.releaseAll(warpedMatList, false);
 
         //ChannelMergeOperator mergeOperator = new ChannelMergeOperator(fusionOperator.getResult(), yuvRefMat[ColorSpaceOperator.U_CHANNEL], yuvRefMat[ColorSpaceOperator.V_CHANNEL]);
         //mergeOperator.perform();
@@ -159,6 +164,18 @@ public class MultipleImageSRProcessor extends Thread {
         //ProcessedImageRepo.destroy();
         SharpnessMeasure.destroy();
         ProgressDialogHandler.getInstance().hideDialog();
+    }
+
+    private void performMeanFusion() {
+        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
+        String[] imagePathList = new String[numImages];
+        for(int i = 0; i < numImages; i++) {
+            imagePathList[i] = "affine_warp_"+i;
+        }
+        MeanFusionOperator fusionOperator = new MeanFusionOperator(imagePathList, "Fusing", "Fusing images using mean");
+        fusionOperator.perform();
+        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
+
     }
 
 }

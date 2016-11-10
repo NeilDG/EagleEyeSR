@@ -51,16 +51,17 @@ public class MeanFusionOperator implements IOperator {
         Mat inputMat = ImageReader.getInstance().imReadColor(this.imageMatPathList[0], ImageFileAttribute.FileType.JPEG);
         Mat sumMat = ImageOperator.performInterpolation(inputMat, scale, Imgproc.INTER_CUBIC);
         inputMat.release();
-        //sumMat.convertTo(sumMat, CvType.CV_32FC(sumMat.channels()));
-        Mat divMat = Mat.zeros(sumMat.rows(), sumMat.cols(), CvType.CV_32FC1);
+        sumMat.convertTo(sumMat, CvType.CV_32FC(sumMat.channels()));
+        Mat divMat = Mat.ones(sumMat.rows(), sumMat.cols(), CvType.CV_32FC1);
         Mat maskMat = new Mat();
 
         for(int i = 1; i < this.imageMatPathList.length; i++) {
             inputMat = ImageReader.getInstance().imReadColor(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
+
             Mat hrMat = ImageOperator.performInterpolation(inputMat, scale, Imgproc.INTER_CUBIC);
             inputMat.release();
 
-            //hrMat.convertTo(hrMat, CvType.CV_32FC(hrMat.channels()));
+            hrMat.convertTo(hrMat, CvType.CV_32FC(hrMat.channels()));
             ImageOperator.produceMask(hrMat, maskMat);
 
             Log.d(TAG, "CombineMat size: " +hrMat.size().toString() +" sumMat size: " +sumMat.size().toString());
