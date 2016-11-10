@@ -1,5 +1,6 @@
 package neildg.com.megatronsr.camera2;
 
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -10,6 +11,7 @@ import android.util.SparseIntArray;
 import android.view.Gravity;
 import android.view.Surface;
 import android.view.TextureView;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -42,11 +44,11 @@ public class CameraTextureView implements TextureView.SurfaceTextureListener {
     private TextureView textureView;
     private ICameraTextureViewListener textureViewListener;
 
-    public CameraTextureView(TextureView textureView, ICameraTextureViewListener textureViewListener) {
+    public CameraTextureView(TextureView textureView, ICameraTextureViewListener textureViewListener, View.OnTouchListener viewTouchListener) {
         this.textureView = textureView;
         this.textureView.setSurfaceTextureListener(this);
+        this.textureView.setOnTouchListener(viewTouchListener);
         this.textureViewListener = textureViewListener;
-
     }
 
     public TextureView getTextureView() {

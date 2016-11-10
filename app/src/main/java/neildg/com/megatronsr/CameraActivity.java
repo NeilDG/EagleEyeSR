@@ -3,7 +3,9 @@ package neildg.com.megatronsr;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Camera;
 import android.graphics.ImageFormat;
+import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -16,18 +18,20 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
-import android.hardware.camera2.params.StreamConfigurationMap;
+import android.hardware.camera2.params.MeteringRectangle;
 import android.media.Image;
 import android.media.ImageReader;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -45,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import neildg.com.megatronsr.camera2.CameraDrawableView;
 import neildg.com.megatronsr.camera2.CameraModule;
 import neildg.com.megatronsr.camera2.CameraTextureView;
 import neildg.com.megatronsr.camera2.CameraUserSettings;
@@ -54,7 +59,7 @@ import neildg.com.megatronsr.camera2.ResolutionPicker;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.ui.ResolutionPickerDialog;
 
-public class CameraActivity extends AppCompatActivity implements ICameraTextureViewListener, ICameraModuleListener, SensorEventListener {
+public class CameraActivity extends AppCompatActivity implements ICameraTextureViewListener, ICameraModuleListener, SensorEventListener, View.OnTouchListener {
     private final static String TAG = "CameraActivity";
     private final static int REQUEST_CAMERA_PERMISSION = 200;
 
@@ -62,18 +67,20 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
 
     private CameraModule cameraModule;
     private CameraTextureView cameraTextureView;
+    private CameraDrawableView cameraDrawableView;
 
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
 
     protected CameraCaptureSession cameraCaptureSessions;
-    protected CaptureRequest captureRequest;
     protected CaptureRequest.Builder captureRequestBuilder;
 
     private ResolutionPickerDialog resolutionPickerDialog;
 
     private SensorManager sensorManager;
     private int sensorRotation = 0;
+
+    private FocusCallback focusCallback = new FocusCallback(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +124,8 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         this.cameraModule = new CameraModule(this);
         CameraUserSettings.getInstance().setSelectedCamera(CameraUserSettings.CameraType.BACK);
         TextureView textureView =  (TextureView) this.findViewById(R.id.camera_view);
-        this.cameraTextureView = new CameraTextureView(textureView, this);
+        this.cameraTextureView = new CameraTextureView(textureView, this, this);
+        this.cameraDrawableView = (CameraDrawableView) this.findViewById(R.id.camera_drawable_view);
 
         ImageButton takePictureBtn = (ImageButton) this.findViewById(R.id.btn_capture_image);
         takePictureBtn.setOnClickListener(new View.OnClickListener() {
@@ -232,7 +240,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
                     //The camera is already closed
-                    if (null == cameraDevice) {
+                    if (cameraDevice == null) {
                         return;
                     }
                     // When the session is ready, we start displaying the preview.
@@ -254,10 +262,11 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         if(null == cameraDevice) {
             Log.e(TAG, "updatePreview error, return");
         }
-        captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+        //captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+        this.captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_OFF);
 
         try {
-            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
+            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), this.focusCallback, mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -376,11 +385,87 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             this.sensorRotation = 270;
         }
 
-        Log.d(TAG, "Angle: "+angle+ " Sensor rotation: " +this.sensorRotation);
+        //Log.d(TAG, "Angle: "+angle+ " Sensor rotation: " +this.sensorRotation);
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        Log.d(TAG, "Touch event applied. X:" +event.getX()+ " Y: " +event.getY());
+        int x = Math.round(event.getX());
+        int y = Math.round(event.getY());
+        this.cameraDrawableView.drawFocusRegion(x, y, 1000);
+        this.performAutoFocusOnRegion(x, y);
+        return true;
+    }
+
+    private void performAutoFocusOnRegion(int x, int y) {
+        try {
+            CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            CameraCharacteristics characteristics = manager.getCameraCharacteristics(this.cameraId);
+            Log.d(TAG, "Max focus count:" + characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF)+ " Max auto-exposure count: " +characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AE));
+            MeteringRectangle[] regionRectList = new MeteringRectangle[1];
+            regionRectList[0] = new MeteringRectangle(new Point(x,y), new Size(150,150), MeteringRectangle.METERING_WEIGHT_MAX);
+            this.captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START); //trigger Auto-focus algorithm
+            this.captureRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS, regionRectList);
+            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), this.focusCallback, mBackgroundHandler);
+
+        } catch(CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void unlockAutoFocus() {
+        try {
+            CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            this.captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL); //cancel auto-focus
+            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), this.focusCallback, mBackgroundHandler);
+
+        } catch(CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class FocusCallback extends CameraCaptureSession.CaptureCallback {
+
+        private CameraActivity activity;
+
+        public FocusCallback(CameraActivity activity) {
+            this.activity = activity;
+        }
+        @Override
+        public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
+            super.onCaptureCompleted(session, request, result);
+            Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+            if(afState == CaptureRequest.CONTROL_AF_STATE_INACTIVE) {
+                Log.d(TAG, "CONTROL_AF_STATE_INACTIVE");
+            }
+            else if(afState == CaptureRequest.CONTROL_AF_STATE_INACTIVE) {
+                Log.d(TAG, "CONTROL_AF_STATE_INACTIVE");
+            }
+            else if(afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN) {
+                Log.d(TAG, "CONTROL_AF_STATE_PASSIVE_SCAN");
+            }
+            else if(afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_FOCUSED) {
+                Log.d(TAG, "CONTROL_AF_STATE_PASSIVE_FOCUSED");
+            }
+            else if(afState == CaptureRequest.CONTROL_AF_STATE_ACTIVE_SCAN) {
+                Log.d(TAG, "CONTROL_AF_STATE_ACTIVE_SCAN");
+            }
+            else if(afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED) {
+                Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
+                this.activity.unlockAutoFocus();
+            }
+            else if(afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+                Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
+            }
+            else if(afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_UNFOCUSED) {
+                Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
+            }
+        }
     }
 }
