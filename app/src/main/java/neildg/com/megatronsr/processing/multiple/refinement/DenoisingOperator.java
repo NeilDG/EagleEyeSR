@@ -1,11 +1,19 @@
 package neildg.com.megatronsr.processing.multiple.refinement;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfFloat;
 import org.opencv.photo.Photo;
+import org.opencv.utils.Converters;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.ImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
+import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -27,11 +35,26 @@ public class DenoisingOperator implements IOperator{
         for(int i = 0; i < this.matList.length; i++) {
             ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising image " +i);
 
+            //perform denoising on energy channel only
+            Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(this.matList[i]);
             Mat denoisedMat = new Mat();
-            Photo.fastNlMeansDenoisingColored(this.matList[i], denoisedMat, 3, 7, 7, 21);
+            MatOfFloat h = new MatOfFloat(3.0f);
+            Photo.fastNlMeansDenoising(yuvMat[ColorSpaceOperator.Y_CHANNEL], denoisedMat, h, 7, 21, Core.NORM_L1);
+
+            ImageWriter.getInstance().saveMatrixToImage(yuvMat[ColorSpaceOperator.Y_CHANNEL], "noise_" +i, ImageFileAttribute.FileType.JPEG);
+            ImageWriter.getInstance().saveMatrixToImage(denoisedMat, "denoise_" +i, ImageFileAttribute.FileType.JPEG);
+
+            //merge channel then convert back to RGB
+            yuvMat[ColorSpaceOperator.Y_CHANNEL].release();
+            yuvMat[ColorSpaceOperator.Y_CHANNEL] = denoisedMat;
+
+            this.outputMatList[i] = ColorSpaceOperator.convertYUVtoRGB(yuvMat);
+
+            /*Mat denoisedMat = new Mat();
+            Photo.fastNlMeansDenoisingColored(this.matList[i], denoisedMat, 3, 0, 7, 21);
             this.outputMatList[i] = denoisedMat;
             ImageWriter.getInstance().saveMatrixToImage(this.matList[i], "noise_" +i, ImageFileAttribute.FileType.JPEG);
-            ImageWriter.getInstance().saveMatrixToImage(denoisedMat, "denoise_" +i, ImageFileAttribute.FileType.JPEG);
+            ImageWriter.getInstance().saveMatrixToImage(denoisedMat, "denoise_" +i, ImageFileAttribute.FileType.JPEG);*/
 
             ProgressDialogHandler.getInstance().hideDialog();
         }

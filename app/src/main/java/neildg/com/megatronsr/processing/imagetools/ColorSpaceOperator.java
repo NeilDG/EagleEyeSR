@@ -6,6 +6,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -34,6 +35,18 @@ public class ColorSpaceOperator {
         Core.split(yuvMat, matList);
 
         return (Mat[]) matList.toArray(new Mat[matList.size()]);
+    }
+
+    /*
+     * Converts the yuv mat (assuming channels were separated in different matrices), into its RGB mat form
+     */
+    public static Mat convertYUVtoRGB(Mat[] yuvMat) {
+        Mat rgbMat = new Mat();
+        Core.merge(Arrays.asList(yuvMat), rgbMat);
+
+        Imgproc.cvtColor(rgbMat, rgbMat, Imgproc.COLOR_YUV2BGR);
+
+        return rgbMat;
     }
 
     public static Mat rgbToGray(Mat inputMat) {
