@@ -18,6 +18,7 @@ import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
+import neildg.com.megatronsr.processing.multiple.resizing.DegradationOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.megatronsr.processing.multiple.selection.TestImagesSelector;
 import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
@@ -51,9 +52,6 @@ public class MultipleImageSRProcessor extends Thread {
 
         ProgressDialogHandler.getInstance().hideDialog();
 
-        //simulate degradation
-        //DegradationOperator degradationOperator = new DegradationOperator();
-        //degradationOperator.perform();
 
         //load images and use Y channel as input for succeeding operators
         Mat[] rgbInputMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected()];
@@ -86,6 +84,15 @@ public class MultipleImageSRProcessor extends Thread {
             if(ImageReader.getInstance().doesImageExists(FilenameConstants.INPUT_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG)) {
                 break;
             }
+        }
+
+        //simulate degradation
+        DegradationOperator degradationOperator = new DegradationOperator();
+        degradationOperator.perform();
+
+        //reload images again. degradation has been imposed in input images.
+        for(int i = 0; i < rgbInputMatList.length; i++) {
+            rgbInputMatList[i] = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
         }
 
         Log.d(TAG, "First index: " +index);

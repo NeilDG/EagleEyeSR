@@ -33,9 +33,10 @@ public class DegradationOperator implements IOperator{
 
         for(int i = 0; i < numImages; i++) {
             Mat inputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
-            Imgproc.blur(inputMat, inputMat, new Size(5,5));
+            //Imgproc.blur(inputMat, inputMat, new Size(5,5));
             inputMat = ImageOperator.induceNoise(inputMat);
             ImageWriter.getInstance().saveMatrixToImage(inputMat, FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
+            inputMat.release();
         }
     }
 }
