@@ -80,16 +80,6 @@ public class MultipleImageSRProcessor extends Thread {
         testImagesSelector.perform();
         rgbInputMatList = testImagesSelector.getProposedList();
 
-        //remeasure sharpness result without the image ground-truth
-        sharpnessResult = SharpnessMeasure.getSharedInstance().measureSharpness(testImagesSelector.getProposedEdgeList());
-
-        //trim the input list from the measured sharpness mean
-        rgbInputMatList = SharpnessMeasure.getSharedInstance().trimMatList(rgbInputMatList, sharpnessResult);
-
-        //perform denoising on original input list
-        DenoisingOperator denoisingOperator = new DenoisingOperator(rgbInputMatList);
-        denoisingOperator.perform();
-
         int index = 0;
         for(int i = 0; i < BitmapURIRepository.getInstance().getNumImagesSelected(); i++) {
             index = i;
@@ -102,6 +92,16 @@ public class MultipleImageSRProcessor extends Thread {
         LRToHROperator lrToHROperator = new LRToHROperator(ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (index), ImageFileAttribute.FileType.JPEG), index);
         lrToHROperator.perform();
 
+        //remeasure sharpness result without the image ground-truth
+        sharpnessResult = SharpnessMeasure.getSharedInstance().measureSharpness(testImagesSelector.getProposedEdgeList());
+
+        //trim the input list from the measured sharpness mean
+        rgbInputMatList = SharpnessMeasure.getSharedInstance().trimMatList(rgbInputMatList, sharpnessResult, 0.0);
+
+        //perform denoising on original input list
+        DenoisingOperator denoisingOperator = new DenoisingOperator(rgbInputMatList);
+        denoisingOperator.perform();
+
         //perform feature matching of LR images against the first image as reference mat.
         rgbInputMatList = denoisingOperator.getResult();
         Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
@@ -110,10 +110,10 @@ public class MultipleImageSRProcessor extends Thread {
         }
 
         //perform affine warping
-        AffineWarpingOperator warpingOperator = new AffineWarpingOperator(rgbInputMatList[0], succeedingMatList);
+        /*AffineWarpingOperator warpingOperator = new AffineWarpingOperator(rgbInputMatList[0], succeedingMatList);
         warpingOperator.perform();
 
-        succeedingMatList = warpingOperator.getWarpedMatList();
+        succeedingMatList = warpingOperator.getWarpedMatList();*/
 
         //perform perspective warping
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(rgbInputMatList[0], succeedingMatList);
@@ -170,7 +170,7 @@ public class MultipleImageSRProcessor extends Thread {
         int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
         String[] imagePathList = new String[numImages];
         for(int i = 0; i < numImages; i++) {
-            imagePathList[i] = "affine_warp_"+i;
+            imagePathList[i] = "warp_"+i;
         }
         MeanFusionOperator fusionOperator = new MeanFusionOperator(imagePathList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();

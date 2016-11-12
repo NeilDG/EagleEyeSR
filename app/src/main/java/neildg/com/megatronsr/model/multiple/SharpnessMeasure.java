@@ -113,13 +113,17 @@ public class SharpnessMeasure {
     }
 
     /*
-     * Trims the mat list based from the sharpness result
+     * Trims the mat list based from the sharpness result. Optional weight is added to make
+     * trimming more strict (adds to sharpness mean). Weight range is 0.0 to 1.0 where 1.0 means the mean threshold is doubled (dangerous).
      */
-    public Mat[] trimMatList(Mat[] inputMatList, SharpnessResult sharpnessResult) {
+    public Mat[] trimMatList(Mat[] inputMatList, SharpnessResult sharpnessResult, double weight) {
 
         List<Mat> trimMatList = new ArrayList<>();
+        double weightedMean = sharpnessResult.mean + (sharpnessResult.mean * weight);
         for(int i = 0; i < inputMatList.length; i++) {
-            if(sharpnessResult.sharpnessValues[i] >= sharpnessResult.mean) {
+            Log.d(TAG, "Value: " +sharpnessResult.sharpnessValues[i] + " Mean: " +sharpnessResult.mean+ " Weighted mean: " +weightedMean);
+            if(sharpnessResult.sharpnessValues[i] >= weightedMean) {
+                Log.d(TAG, "Selected input mat: " +i);
                 trimMatList.add(inputMatList[i]);
             }
             else {
@@ -132,13 +136,14 @@ public class SharpnessMeasure {
     }
 
     /*
-     * Trims the mat list based from the sharpness result but only returns image indices for optimization
+     * Trims the mat list based from the sharpness result but only returns image indices for optimization. Optional weight is added to make
+     * trimming more strict (adds to sharpness mean).
      */
-    public Integer[] trimMatList(int inputLength, SharpnessResult sharpnessResult) {
+    public Integer[] trimMatList(int inputLength, SharpnessResult sharpnessResult, double weight) {
 
         List<Integer> trimMatList = new ArrayList<>();
         for(int i = 0; i < inputLength; i++) {
-            if(sharpnessResult.sharpnessValues[i] >= sharpnessResult.mean) {
+            if(sharpnessResult.sharpnessValues[i] >= sharpnessResult.mean + weight) {
                 trimMatList.add(i);
             }
         }

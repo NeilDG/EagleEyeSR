@@ -84,7 +84,7 @@ public class ReleaseSRProcessor extends Thread{
         SharpnessMeasure.SharpnessResult sharpnessResult = SharpnessMeasure.getSharedInstance().measureSharpness(yangFilter.getEdgeMatList());
 
         //trim the input list from the measured sharpness mean
-        Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(BitmapURIRepository.getInstance().getNumImagesSelected(), sharpnessResult);
+        Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(BitmapURIRepository.getInstance().getNumImagesSelected(), sharpnessResult, 0.0);
         Mat[] rgbInputMatList = new Mat[inputIndices.length];
 
         //load RGB inputs
