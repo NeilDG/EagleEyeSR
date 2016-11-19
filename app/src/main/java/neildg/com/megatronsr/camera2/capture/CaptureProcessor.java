@@ -1,6 +1,9 @@
 package neildg.com.megatronsr.camera2.capture;
 
 import android.graphics.ImageFormat;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.media.ImageReader;
 import android.os.Handler;
@@ -14,19 +17,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.camera2.CameraUserSettings;
+import neildg.com.megatronsr.camera2.capture_requests.BasicCaptureRequest;
+import neildg.com.megatronsr.io.FileImageWriter;
+import neildg.com.megatronsr.io.ImageFileAttribute;
 
 /**
  * Class that handles the capture of images with specific capture requests.
  * Created by NeilDG on 11/19/2016.
  */
 
-public class CaptureProcessor {
+public class CaptureProcessor{
 
     private final static String TAG = "CaptureProcessor";
 
     private List<Surface> outputSurfaces = new ArrayList<Surface>(); //list of output surfaces
     private List<CaptureRequest> captureRequests = new ArrayList<>(); //list of capture requests to be made.
 
+    private CameraDevice cameraDevice;
     private Size imageResolution; //size of the image/s to save
     private Size thumbnailSize; //size of the image/s' thumbnail
     private int sensorRotation;
@@ -38,8 +45,8 @@ public class CaptureProcessor {
 
     private boolean setupCalled = false;
 
-    public CaptureProcessor() {
-
+    public CaptureProcessor(CameraDevice cameraDevice) {
+        this.cameraDevice = cameraDevice;
     }
 
     public void setup(Size imageResolution, Size thumbnailSize, int sensorRotation, CameraUserSettings.CameraType cameraType) {
@@ -67,9 +74,30 @@ public class CaptureProcessor {
         }
 
         this.startBackgroundThread();
-        //perform capture request sequence here.
+        //capture sequence proper
+        try {
+            CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), "test_pic", ImageFileAttribute.FileType.JPEG);
+            final CaptureCompletedHandler captureCompletedHandler = new CaptureCompletedHandler();
+            this.imageReader.setOnImageAvailableListener(capturedImageSaver, this.backgroundTheadHandler);
+            this.addOutputSurface(this.imageReader.getSurface());
+            final BasicCaptureRequest basicCaptureRequest = new BasicCaptureRequest(this.cameraDevice, this.imageReader);
+            this.cameraDevice.createCaptureSession(this.outputSurfaces, new CameraCaptureSession.StateCallback() {
+                @Override
+                public void onConfigured(CameraCaptureSession session) {
+                    try {
+                        session.capture(basicCaptureRequest.getCaptureRequest(), captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-        this.addOutputSurface(this.imageReader.getSurface());
+                @Override
+                public void onConfigureFailed(CameraCaptureSession session) {
+                }
+            }, this.backgroundTheadHandler);
+        } catch(CameraAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private void startBackgroundThread() {

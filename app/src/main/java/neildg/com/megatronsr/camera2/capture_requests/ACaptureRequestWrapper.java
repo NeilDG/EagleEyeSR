@@ -1,5 +1,6 @@
 package neildg.com.megatronsr.camera2.capture_requests;
 
+import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.media.ImageReader;
@@ -17,7 +18,7 @@ public abstract class ACaptureRequestWrapper {
     protected ImageReader imageReader;
     protected CaptureRequest captureRequest;
 
-    public ACaptureRequestWrapper(CameraDevice cameraDevice, ImageReader imageReader) {
+    public ACaptureRequestWrapper(CameraDevice cameraDevice, ImageReader imageReader) throws CameraAccessException {
         this.cameraDevice = cameraDevice;
         this.imageReader = imageReader;
         this.createCaptureRequest();
@@ -27,5 +28,5 @@ public abstract class ACaptureRequestWrapper {
         return this.captureRequest;
     }
 
-    protected abstract void createCaptureRequest(); //implemented by custom capture request wrappers
+    protected abstract void createCaptureRequest() throws CameraAccessException; //implemented by custom capture request wrappers
 }

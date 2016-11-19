@@ -14,21 +14,17 @@ import android.media.ImageReader;
 public class BasicCaptureRequest extends ACaptureRequestWrapper {
     private final static String TAG = "BasicCaptureRequest";
 
-    public BasicCaptureRequest(CameraDevice cameraDevice, ImageReader imageReader) {
+    public BasicCaptureRequest(CameraDevice cameraDevice, ImageReader imageReader) throws CameraAccessException {
         super(cameraDevice, imageReader);
     }
 
     @Override
-    protected void createCaptureRequest() {
-        try {
-            CaptureRequest.Builder captureRequestBuilder = this.cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-            captureRequestBuilder.addTarget(this.imageReader.getSurface());
-            captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+    protected void createCaptureRequest() throws CameraAccessException {
+        CaptureRequest.Builder captureRequestBuilder = this.cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+        captureRequestBuilder.addTarget(this.imageReader.getSurface());
+        captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
-            this.captureRequest = captureRequestBuilder.build();
-        } catch(CameraAccessException e) {
-            e.printStackTrace();
-        }
+        this.captureRequest = captureRequestBuilder.build();
 
     }
 }

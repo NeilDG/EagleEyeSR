@@ -56,9 +56,13 @@ import neildg.com.megatronsr.camera2.ICameraModuleListener;
 import neildg.com.megatronsr.camera2.ICameraTextureViewListener;
 import neildg.com.megatronsr.camera2.ResolutionPicker;
 import neildg.com.megatronsr.io.FileImageWriter;
+import neildg.com.megatronsr.platformtools.utils.notifications.NotificationCenter;
+import neildg.com.megatronsr.platformtools.utils.notifications.NotificationListener;
+import neildg.com.megatronsr.platformtools.utils.notifications.Notifications;
+import neildg.com.megatronsr.platformtools.utils.notifications.Parameters;
 import neildg.com.megatronsr.ui.ResolutionPickerDialog;
 
-public class CameraActivity extends AppCompatActivity implements ICameraTextureViewListener, ICameraModuleListener, SensorEventListener, View.OnTouchListener {
+public class CameraActivity extends AppCompatActivity implements ICameraTextureViewListener, ICameraModuleListener, SensorEventListener, View.OnTouchListener, NotificationListener {
     private final static String TAG = "CameraActivity";
     private final static int REQUEST_CAMERA_PERMISSION = 200;
 
@@ -91,16 +95,6 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        this.cameraModule.getCameraDevice().close();
-
-        this.sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
-        this.sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
-        this.sensorManager = null;
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         Log.e(TAG, "onResume");
@@ -111,7 +105,23 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
 
         this.sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
         this.sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+
+        NotificationCenter.getInstance().addObserver(Notifications.ON_CAPTURE_COMPLETED, this);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.cameraModule.getCameraDevice().close();
+
+        this.sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+        this.sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
+        this.sensorManager = null;
+
+        NotificationCenter.getInstance().removeObserver(Notifications.ON_CAPTURE_COMPLETED, this);
+    }
+
+
 
     @Override
     public void onDestroy() {
@@ -465,6 +475,13 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             else if(afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_UNFOCUSED) {
                 Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
             }
+        }
+    }
+
+    @Override
+    public void onNotify(String notificationString, Parameters params) {
+        if(notificationString == Notifications.ON_CAPTURE_COMPLETED) {
+            this.createCameraPreview();
         }
     }
 }
