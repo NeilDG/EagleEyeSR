@@ -7,7 +7,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.video.Video;
 
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -50,7 +50,7 @@ public class AffineWarpingOperator implements IOperator {
             }
 
 
-            ImageWriter.getInstance().saveMatrixToImage(this.warpedMatList[i], "affine_warp_"+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(this.warpedMatList[i], "affine_warp_"+i, ImageFileAttribute.FileType.JPEG);
         }
         ProgressDialogHandler.getInstance().hideDialog();
 

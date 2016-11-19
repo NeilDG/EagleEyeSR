@@ -6,7 +6,7 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
+import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.MatWriter;
 import neildg.com.megatronsr.processing.ITest;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
@@ -32,7 +32,7 @@ public class MatSavingTest implements ITest {
 
         int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
         for (int i = 0; i < numImages; i++) {
-            Mat imageMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
+            Mat imageMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
             MatWriter.writeMat(imageMat, FilenameConstants.DEBUG_DIR, FilenameConstants.MAT_VALUE_PREFIX + i);
         }
 

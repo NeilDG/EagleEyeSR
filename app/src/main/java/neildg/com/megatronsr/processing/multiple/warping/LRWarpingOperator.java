@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -54,7 +54,7 @@ public class LRWarpingOperator {
             Mat warpedMat = this.warpImage(this.goodMatchList[i], this.keyPointList[i], this.imagesToWarpList[i]);
             this.warpedMatList[i] = warpedMat;
 
-            ImageWriter.getInstance().saveMatrixToImage(warpedMat, "warp_" +i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(warpedMat, "warp_" +i, ImageFileAttribute.FileType.JPEG);
 
             this.imagesToWarpList[i].release();
             ProgressDialogHandler.getInstance().hideDialog();

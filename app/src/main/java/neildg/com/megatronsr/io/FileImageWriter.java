@@ -19,11 +19,11 @@ import java.io.IOException;
  * @author NeilDG
  *
  */
-public class ImageWriter {
+public class FileImageWriter {
 	private final static String TAG = "SR_ImageWriter";
 	
-	private static ImageWriter sharedInstance = null;
-	public static ImageWriter getInstance() {
+	private static FileImageWriter sharedInstance = null;
+	public static FileImageWriter getInstance() {
 		return sharedInstance;
 	}
 	
@@ -32,7 +32,7 @@ public class ImageWriter {
 	private Context context;
 	private String proposedPath;
 	
-	private ImageWriter(Context context) {
+	private FileImageWriter(Context context) {
 		this.context = context;
 		this.proposedPath = DirectoryStorage.getSharedInstance().getProposedPath();
 	}
@@ -40,17 +40,17 @@ public class ImageWriter {
 	public static void initialize(Context context) {
 		
 		if(sharedInstance == null) {
-			sharedInstance = new ImageWriter(context);
+			sharedInstance = new FileImageWriter(context);
 			
 			//also initialize image reader
-			ImageReader.initialize(context);
+			FileImageReader.initialize(context);
 		}
 	}
 	
 	public static void destroy() {
 		//also destroy image reader
 		sharedInstance = null;
-		ImageReader.destroy();
+		FileImageReader.destroy();
 	}
 
 	/**

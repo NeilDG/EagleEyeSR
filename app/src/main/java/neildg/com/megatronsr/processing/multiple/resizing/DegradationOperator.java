@@ -1,14 +1,12 @@
 package neildg.com.megatronsr.processing.multiple.resizing;
 
 import org.opencv.core.Mat;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -32,10 +30,10 @@ public class DegradationOperator implements IOperator{
         ProgressDialogHandler.getInstance().showDialog("Debugging", "Imposing degradation operators");
 
         for(int i = 0; i < numImages; i++) {
-            Mat inputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
+            Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
             //Imgproc.blur(inputMat, inputMat, new Size(5,5));
             inputMat = ImageOperator.induceNoise(inputMat);
-            ImageWriter.getInstance().saveMatrixToImage(inputMat, FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(inputMat, FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
             inputMat.release();
         }
     }

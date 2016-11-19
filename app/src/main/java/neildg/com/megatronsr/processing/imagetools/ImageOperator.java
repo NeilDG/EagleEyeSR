@@ -11,10 +11,8 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
-import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageWriter;
-import neildg.com.megatronsr.metrics.ImageMetrics;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.single_gaussian.LoadedImagePatch;
 
 /**
@@ -93,7 +91,7 @@ public class ImageOperator {
             //Core.addWeighted(mergedMat, 1, mat, 1.0/matList.size(), 0, mergedMat);
 
             Core.add(mergedMat, mat, mergedMat);
-            ImageWriter.getInstance().saveMatrixToImage(mergedMat, "fusion", "fuse_"+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(mergedMat, "fusion", "fuse_"+i, ImageFileAttribute.FileType.JPEG);
         }
 
         return mergedMat;

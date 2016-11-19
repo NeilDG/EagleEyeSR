@@ -31,7 +31,7 @@ public class DirectoryStorage {
     }
 
     public boolean isAlbumDirExisting(int albumNumber) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + ImageWriter.ALBUM_NAME_PREFIX + albumNumber);
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + FileImageWriter.ALBUM_NAME_PREFIX + albumNumber);
 
         return file.isDirectory() && file.exists();
     }

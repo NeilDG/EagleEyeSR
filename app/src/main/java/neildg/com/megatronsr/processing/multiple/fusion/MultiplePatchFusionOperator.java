@@ -1,22 +1,16 @@
 package neildg.com.megatronsr.processing.multiple.fusion;
 
-import android.graphics.Color;
 import android.util.Log;
 
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.photo.Photo;
 
 import java.util.Arrays;
 
-import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.single_gaussian.LoadedImagePatch;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
@@ -88,11 +82,11 @@ public class MultiplePatchFusionOperator implements IOperator {
 
         ProgressDialogHandler.getInstance().showDialog("Forming HR", "Finalizing");
 
-        ImageWriter.getInstance().saveMatrixToImage(this.originMat, "initial_output", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(this.originMat, "initial_output", ImageFileAttribute.FileType.JPEG);
 
         Mat processedYMat = Mat.ones(this.originMat.rows() * ParameterConfig.getScalingFactor(), this.originMat.cols() * ParameterConfig.getScalingFactor(), this.originMat.type());
         Imgproc.resize(this.originMat, processedYMat, processedYMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        ImageWriter.getInstance().saveMatrixToImage(processedYMat, "initial_result", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(processedYMat, "initial_result", ImageFileAttribute.FileType.JPEG);
 
         this.mergeResults(processedYMat);
         processedYMat.release();
@@ -122,6 +116,6 @@ public class MultiplePatchFusionOperator implements IOperator {
 
         Core.merge(Arrays.asList(this.yuvOriginMat), outputMat);
         Imgproc.cvtColor(outputMat, outputMat, Imgproc.COLOR_YUV2BGR);
-        ImageWriter.getInstance().saveMatrixToImage(outputMat, "result", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(outputMat, "result", ImageFileAttribute.FileType.JPEG);
     }
 }

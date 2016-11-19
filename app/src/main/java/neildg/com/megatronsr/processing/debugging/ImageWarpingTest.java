@@ -11,8 +11,8 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.processing.ITest;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
@@ -39,17 +39,17 @@ public class ImageWarpingTest implements ITest {
 
         List<Mat> testMatList = new LinkedList<>();
         for (int i = 0; i < numImages; i++) {
-            Mat imageMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
+            Mat imageMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
             imageMat = ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 0, 0);
 
-            ImageWriter.getInstance().saveMatrixToImage(imageMat, FilenameConstants.INPUT_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(imageMat, FilenameConstants.INPUT_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
             testMatList.add(imageMat);
         }
 
-        Mat referenceMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
+        Mat referenceMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + "0", ImageFileAttribute.FileType.JPEG);
         Mat[] comparingMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected()];
         for(int i = 0; i < comparingMatList.length; i++) {
-            comparingMatList[i] = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i+1), ImageFileAttribute.FileType.JPEG);
+            comparingMatList[i] = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i+1), ImageFileAttribute.FileType.JPEG);
         }
 
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(referenceMat, comparingMatList);
@@ -75,7 +75,7 @@ public class ImageWarpingTest implements ITest {
             maskMat.release();
         }
 
-        ImageWriter.getInstance().saveMatrixToImage(testOutputMat, "test", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(testOutputMat, "test", ImageFileAttribute.FileType.JPEG);
 
         //ProcessedImageRepo.destroy();
         ProgressDialogHandler.getInstance().hideDialog();

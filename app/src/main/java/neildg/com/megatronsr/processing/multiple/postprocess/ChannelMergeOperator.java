@@ -1,19 +1,14 @@
 package neildg.com.megatronsr.processing.multiple.postprocess;
 
-import android.util.Log;
-
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.utils.Converters;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
@@ -67,9 +62,9 @@ public class ChannelMergeOperator implements IOperator{
         Mat mergedMat = new Mat();
         Core.merge(Arrays.asList(this.yuvMat), mergedMat);
 
-        ImageWriter.getInstance().saveMatrixToImage(mergedMat, "yuv_merged", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(mergedMat, "yuv_merged", ImageFileAttribute.FileType.JPEG);
         Imgproc.cvtColor(mergedMat, mergedMat, Imgproc.COLOR_YUV2BGR);
-        ImageWriter.getInstance().saveMatrixToImage(mergedMat, "rgb_merged", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(mergedMat, "rgb_merged", ImageFileAttribute.FileType.JPEG);
 
         ProgressDialogHandler.getInstance().hideDialog();
     }

@@ -15,8 +15,8 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.MatWriter;
 import neildg.com.megatronsr.processing.ITest;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
@@ -39,7 +39,7 @@ public class OpticalFlowTest implements ITest {
         DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConfig.getScalingFactor(), BitmapURIRepository.getInstance().getNumImagesSelected());
         downsamplingOperator.perform();
 
-        Mat imageMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
+        Mat imageMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
         Mat xPoints = new Mat(imageMat.size(), CvType.CV_32FC1);
         Mat yPoints = new Mat(imageMat.size(), CvType.CV_32FC1);
         //perform simple remapping to the right
@@ -53,7 +53,7 @@ public class OpticalFlowTest implements ITest {
         Mat offsetMat = new Mat(imageMat.size(), imageMat.type());
 
         Imgproc.remap(imageMat, offsetMat, xPoints, yPoints, Imgproc.INTER_CUBIC);
-        ImageWriter.getInstance().saveMatrixToImage(offsetMat, "right", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(offsetMat, "right", ImageFileAttribute.FileType.JPEG);
 
         Mat prevMat = new Mat(); Mat nextMat = new Mat();
         Imgproc.cvtColor(imageMat, prevMat, Imgproc.COLOR_RGB2GRAY);
@@ -79,20 +79,20 @@ public class OpticalFlowTest implements ITest {
 
         Mat outputMat = Mat.zeros(offsetMat.size(), offsetMat.type());
         Imgproc.remap(offsetMat, outputMat, xPoints, yPoints, Imgproc.INTER_CUBIC, Core.BORDER_TRANSPARENT, Scalar.all(0));
-        ImageWriter.getInstance().saveMatrixToImage(outputMat, "test_remap_output", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(outputMat, "test_remap_output", ImageFileAttribute.FileType.JPEG);
 
         Imgproc.remap(offsetMat, offsetMat, xPoints, yPoints, Imgproc.INTER_CUBIC, Core.BORDER_TRANSPARENT, Scalar.all(0));
-        ImageWriter.getInstance().saveMatrixToImage(offsetMat, "test_remap", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(offsetMat, "test_remap", ImageFileAttribute.FileType.JPEG);
 
         ProgressDialogHandler.getInstance().showDialog("Debug mode", "Testing fusion");
 
         List<Mat> toBlend = new LinkedList<>();
         Mat testMat = ImageOperator.performZeroFill(offsetMat, ParameterConfig.getScalingFactor(), xPoints, yPoints);
-        ImageWriter.getInstance().saveMatrixToImage(testMat, "zero_fill_remap", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(testMat, "zero_fill_remap", ImageFileAttribute.FileType.JPEG);
         toBlend.add(testMat);
 
         Mat testMat2 = ImageOperator.performZeroFill(imageMat, ParameterConfig.getScalingFactor(), 0 , 0);
-        ImageWriter.getInstance().saveMatrixToImage(testMat2, "zero_fill_original", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(testMat2, "zero_fill_original", ImageFileAttribute.FileType.JPEG);
         toBlend.add(testMat2);
 
         for(Mat mat: toBlend) {
@@ -100,7 +100,7 @@ public class OpticalFlowTest implements ITest {
             mat.copyTo(outputMat, maskMat);
 
         }
-        ImageWriter.getInstance().saveMatrixToImage(outputMat, "test_blend", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(outputMat, "test_blend", ImageFileAttribute.FileType.JPEG);
 
         /*ProgressDialogHandler.getInstance().showDialog("Debug mode", "Blend images test");
 

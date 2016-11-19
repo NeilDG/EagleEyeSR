@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.processing.IOperator;
 
@@ -23,7 +23,7 @@ public class DownsamplingOperator implements IOperator {
     }
 
     public void perform() {
-        ImageWriter imageWriter = ImageWriter.getInstance();
+        FileImageWriter imageWriter = FileImageWriter.getInstance();
         BitmapURIRepository bitmapURIRepository = BitmapURIRepository.getInstance();
 
         //get bitmap ground-truth and transfer to debugging folder

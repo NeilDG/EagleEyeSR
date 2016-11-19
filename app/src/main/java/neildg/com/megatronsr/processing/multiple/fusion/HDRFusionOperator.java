@@ -2,26 +2,20 @@ package neildg.com.megatronsr.processing.multiple.fusion;
 
 import android.util.Log;
 
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.photo.AlignExposures;
 import org.opencv.photo.AlignMTB;
-import org.opencv.photo.CalibrateDebevec;
-import org.opencv.photo.MergeDebevec;
 import org.opencv.photo.MergeMertens;
 import org.opencv.photo.Photo;
-import org.opencv.photo.TonemapDurand;
-import org.opencv.utils.Converters;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -70,7 +64,7 @@ public class HDRFusionOperator implements IOperator {
         fusionMat.convertTo(fusionMat, CvType.CV_8UC3);
         Log.d(TAG, "FusionMap type: " + CvType.typeToString(fusionMat.type()));
 
-        ImageWriter.getInstance().saveMatrixToImage(fusionMat, "exposure_fusion", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(fusionMat, "exposure_fusion", ImageFileAttribute.FileType.JPEG);
 
         fusionMat.release();
         multMat.release();

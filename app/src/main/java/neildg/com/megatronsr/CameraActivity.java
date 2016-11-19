@@ -3,7 +3,6 @@ package neildg.com.megatronsr;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Camera;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
@@ -56,7 +55,7 @@ import neildg.com.megatronsr.camera2.CameraUserSettings;
 import neildg.com.megatronsr.camera2.ICameraModuleListener;
 import neildg.com.megatronsr.camera2.ICameraTextureViewListener;
 import neildg.com.megatronsr.camera2.ResolutionPicker;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.ui.ResolutionPickerDialog;
 
 public class CameraActivity extends AppCompatActivity implements ICameraTextureViewListener, ICameraModuleListener, SensorEventListener, View.OnTouchListener {
@@ -291,7 +290,6 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-
             if(CameraUserSettings.getInstance().getCameraType() == CameraUserSettings.CameraType.FRONT) {
                 captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, 270);
             }
@@ -302,7 +300,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                 captureBuilder.set(CaptureRequest.JPEG_THUMBNAIL_SIZE, preferredSize); //swap size
             }
 
-            final File file = new File(ImageWriter.getInstance().getFilePath()+"/pic.jpg");
+            final File file = new File(FileImageWriter.getInstance().getFilePath()+"/pic.jpg");
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
@@ -345,6 +343,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                     createCameraPreview();
                 }
             };
+
             cameraDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(CameraCaptureSession session) {

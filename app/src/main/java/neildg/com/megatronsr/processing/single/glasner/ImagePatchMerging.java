@@ -12,8 +12,8 @@ import java.util.concurrent.Semaphore;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.single_glasner.HRPatchAttribute;
@@ -52,10 +52,10 @@ public class ImagePatchMerging implements IOperator {
 
 
         String fullImagePath = FilenameConstants.PYRAMID_DIR +"/"+ FilenameConstants.PYRAMID_IMAGE_PREFIX + "0";
-        Mat lrMat = ImageReader.getInstance().imReadOpenCV(fullImagePath, ImageFileAttribute.FileType.JPEG);
+        Mat lrMat = FileImageReader.getInstance().imReadOpenCV(fullImagePath, ImageFileAttribute.FileType.JPEG);
         this.originalHRMat = Mat.zeros(lrMat.rows() * ParameterConfig.getScalingFactor(), lrMat.cols() * ParameterConfig.getScalingFactor(), lrMat.type());
         Imgproc.resize(lrMat, this.originalHRMat, this.originalHRMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_LANCZOS4);
-        ImageWriter.getInstance().saveMatrixToImage(this.originalHRMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_CUBIC, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(this.originalHRMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_CUBIC, ImageFileAttribute.FileType.JPEG);
 
 
         ProgressDialogHandler.getInstance().hideDialog();
@@ -66,7 +66,7 @@ public class ImagePatchMerging implements IOperator {
 
         this.identifyPatchSimilarities();
 
-        ImageWriter.getInstance().saveMatrixToImage(this.originalHRMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_GLASNER, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(this.originalHRMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_GLASNER, ImageFileAttribute.FileType.JPEG);
 
     }
     public Mat getOriginalHRMat() {

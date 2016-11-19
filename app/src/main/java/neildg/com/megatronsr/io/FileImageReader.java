@@ -4,7 +4,6 @@
 package neildg.com.megatronsr.io;
 
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 
 import org.opencv.core.Mat;
@@ -20,22 +19,22 @@ import java.io.IOException;
  * @author NeilDG
  *
  */
-public class ImageReader {
+public class FileImageReader {
 	private final static String TAG = "SR_ImageReader";
 	
-	private static ImageReader sharedInstance = null;
-	public static ImageReader getInstance() {
+	private static FileImageReader sharedInstance = null;
+	public static FileImageReader getInstance() {
 		return sharedInstance;
 	}
 	
 	private Context context;
 	
-	private ImageReader(Context context) {
+	private FileImageReader(Context context) {
 		this.context = context;
 	}
 	
 	public static void initialize(Context context) {
-		sharedInstance = new ImageReader(context);
+		sharedInstance = new FileImageReader(context);
 	}
 	
 	public static void destroy() {
@@ -50,7 +49,7 @@ public class ImageReader {
 	 * Loads the specified image and returns its byte data
 	 */
 	public byte[] getBytesFromFile(String fileName, ImageFileAttribute.FileType fileType) {
-		File file = new File(ImageWriter.getInstance().getFilePath() + "/" +fileName + ImageFileAttribute.getFileExtension(fileType));
+		File file = new File(FileImageWriter.getInstance().getFilePath() + "/" +fileName + ImageFileAttribute.getFileExtension(fileType));
 		
 		try {
 			if(file.exists()) {
@@ -78,21 +77,21 @@ public class ImageReader {
 	 * @return
 	 */
 	public Mat imReadOpenCV(String fileName, ImageFileAttribute.FileType fileType) {
-		String completeFilePath = ImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
+		String completeFilePath = FileImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
 
 		Log.d(TAG, "Filepath for imread: " + completeFilePath);
 		return Imgcodecs.imread(completeFilePath);
 	}
 
 	public Mat imReadColor(String fileName, ImageFileAttribute.FileType fileType) {
-		String completeFilePath = ImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
+		String completeFilePath = FileImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
 
 		Log.d(TAG, "Filepath for imread: " + completeFilePath);
 		return Imgcodecs.imread(completeFilePath, Imgcodecs.CV_LOAD_IMAGE_COLOR);
 	}
 
 	public boolean doesImageExists(String fileName, ImageFileAttribute.FileType fileType) {
-		File file = new File(ImageWriter.getInstance().getFilePath() + "/" +fileName + ImageFileAttribute.getFileExtension(fileType));
+		File file = new File(FileImageWriter.getInstance().getFilePath() + "/" +fileName + ImageFileAttribute.getFileExtension(fileType));
 		return file.exists();
 	}
 }

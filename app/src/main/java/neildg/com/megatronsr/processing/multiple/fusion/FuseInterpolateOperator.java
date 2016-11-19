@@ -9,8 +9,8 @@ import java.util.List;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.MetricsLogger;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageMeasures;
@@ -43,11 +43,11 @@ public class FuseInterpolateOperator implements IOperator {
 
     private void loadImages() {
         ProgressDialogHandler.getInstance().showDialog("Setting up fusion", "Setting up");
-        this.groundTruthMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
-        this.fusedMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
+        this.groundTruthMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
+        this.fusedMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
-        Mat initialHRMat= ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_CUBIC + 0, ImageFileAttribute.FileType.JPEG);
-        Mat nearestMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_NEAREST, ImageFileAttribute.FileType.JPEG);
+        Mat initialHRMat= FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_CUBIC + 0, ImageFileAttribute.FileType.JPEG);
+        Mat nearestMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_NEAREST, ImageFileAttribute.FileType.JPEG);
         MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_nearest", this.groundTruthMat, "GroundTruth", nearestMat,
                 "NearestMat", "Ground truth vs Nearest");
 
@@ -79,7 +79,7 @@ public class FuseInterpolateOperator implements IOperator {
         this.outputMat = Mat.zeros(this.fusedMat.rows() * ParameterConfig.getScalingFactor(), this.fusedMat.cols() * ParameterConfig.getScalingFactor(), this.fusedMat.type());
 
         Imgproc.resize(this.fusedMat, this.outputMat, this.outputMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
         ProgressDialogHandler.getInstance().hideDialog();
 
         /*MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_result", this.groundTruthMat, "GroundTruth", this.fusedMat,

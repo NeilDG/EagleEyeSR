@@ -9,8 +9,8 @@ import org.opencv.imgproc.Imgproc;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.MetricsLogger;
 import neildg.com.megatronsr.metrics.ImageMetrics;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
@@ -39,7 +39,7 @@ public class WarpedToHROperator {
     }
 
     public void perform() {
-        this.groundTruthMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
+        this.groundTruthMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
 
         int scalingFactor = ParameterConfig.getScalingFactor();
         ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warping base image");
@@ -60,8 +60,8 @@ public class WarpedToHROperator {
 
         baseHRWarpMat.copyTo(this.outputMat, this.baseMaskMat); //replace initial output
 
-        ImageWriter.getInstance().saveMatrixToImage(candidateHRMat, "candidate_" + 0, ImageFileAttribute.FileType.JPEG);
-        ImageWriter.getInstance().saveMatrixToImage(medianMat, "candidate_median_" + 0, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(candidateHRMat, "candidate_" + 0, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(medianMat, "candidate_median_" + 0, ImageFileAttribute.FileType.JPEG);
         this.rmse = ImageMetrics.getRMSE(candidateHRMat, medianMat);
 
         MetricsLogger.getSharedInstance().takeMetrics("Noise_evaluate_0", candidateHRMat, "candidate_0", medianMat,
@@ -81,8 +81,8 @@ public class WarpedToHROperator {
             baseHRWarpMat.copyTo(candidateHRMat, this.baseMaskMat); //store on candidate mat to compare PSNR with initial output
             Imgproc.medianBlur(candidateHRMat, medianMat, 3);
 
-            ImageWriter.getInstance().saveMatrixToImage(candidateHRMat, "candidate_" + i, ImageFileAttribute.FileType.JPEG);
-            ImageWriter.getInstance().saveMatrixToImage(medianMat, "candidate_median_" + i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(candidateHRMat, "candidate_" + i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(medianMat, "candidate_median_" + i, ImageFileAttribute.FileType.JPEG);
 
             MetricsLogger.getSharedInstance().takeMetrics("Noise_evaluate_"+i, candidateHRMat, "candidate_" + i, medianMat,
                     "candidate_median_filter_" + i, "Candidate_Vs_Median_RMSE");
@@ -100,7 +100,7 @@ public class WarpedToHROperator {
             }
 
             this.outputMat.copyTo(candidateHRMat); //overwrite as new candidate
-            ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result_" + i, ImageFileAttribute.FileType.JPEG);
 
             this.warpedMatrixList[i].release();
         }
@@ -112,7 +112,7 @@ public class WarpedToHROperator {
 
         System.gc();
 
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "warped_to_hr_result", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, "warped_to_hr_result", ImageFileAttribute.FileType.JPEG);
         ProgressDialogHandler.getInstance().hideDialog();
     }
 

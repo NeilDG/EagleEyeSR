@@ -3,13 +3,12 @@ package neildg.com.megatronsr.processing.single.glasner;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -29,7 +28,7 @@ public class PostProcessImage implements IOperator {
         ProgressDialogHandler.getInstance().showDialog("Postprocessing", "Smoothing and refining HR image");
         this.performLaplace();
 
-        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_GLASNER_SHARPEN, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_GLASNER_SHARPEN, ImageFileAttribute.FileType.JPEG);
     }
 
     private void performLaplace() {
@@ -44,7 +43,7 @@ public class PostProcessImage implements IOperator {
 
         Imgproc.Laplacian(greyScaleMat, this.hrMat, CvType.CV_16S, 3, 1, 0);
         Core.convertScaleAbs(this.hrMat, this.hrMat);
-        ImageWriter.getInstance().saveMatrixToImage(this.hrMat, "laplace_filter", FilenameConstants.RESULTS_DIR, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(this.hrMat, "laplace_filter", FilenameConstants.RESULTS_DIR, ImageFileAttribute.FileType.JPEG);
 
         Imgproc.cvtColor(this.hrMat, this.hrMat, Imgproc.COLOR_GRAY2BGR);
         Core.addWeighted(this.hrMat, -0.25, rgbMat, 1.0, 0, this.hrMat);

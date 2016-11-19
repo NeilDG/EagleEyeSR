@@ -2,7 +2,6 @@ package neildg.com.megatronsr.processing.single.gaussian;
 
 import android.graphics.Bitmap;
 
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -10,8 +9,8 @@ import org.opencv.imgproc.Imgproc;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -31,13 +30,13 @@ public class InputImageAssociator implements IOperator {
         ProgressDialogHandler.getInstance().showDialog("Formulating blurred image", "Formulating blurred image");
 
         Bitmap originalBitmap = BitmapURIRepository.getInstance().getOriginalBitmap(0);
-        ImageWriter.getInstance().saveBitmapImage(originalBitmap, FilenameConstants.INPUT_GAUSSIAN_DIR, FilenameConstants.INPUT_FILE_NAME, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveBitmapImage(originalBitmap, FilenameConstants.INPUT_GAUSSIAN_DIR, FilenameConstants.INPUT_FILE_NAME, ImageFileAttribute.FileType.JPEG);
 
-        Mat originalMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_GAUSSIAN_DIR + "/" + FilenameConstants.INPUT_FILE_NAME, ImageFileAttribute.FileType.JPEG);
+        Mat originalMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_GAUSSIAN_DIR + "/" + FilenameConstants.INPUT_FILE_NAME, ImageFileAttribute.FileType.JPEG);
         Mat blurredMat = new Mat();
         Imgproc.GaussianBlur(originalMat, blurredMat, new Size(3,3), 0.55, 0.55); //0.55 as stated by paper
 
-        ImageWriter.getInstance().saveMatrixToImage(blurredMat, FilenameConstants.INPUT_GAUSSIAN_DIR, FilenameConstants.INPUT_BLUR_FILENAME, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(blurredMat, FilenameConstants.INPUT_GAUSSIAN_DIR, FilenameConstants.INPUT_BLUR_FILENAME, ImageFileAttribute.FileType.JPEG);
         ProgressDialogHandler.getInstance().hideDialog();
     }
 }

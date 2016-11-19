@@ -1,18 +1,16 @@
 package neildg.com.megatronsr.processing.single.gaussian;
 
 import org.opencv.core.Mat;
-import org.opencv.core.Size;
 
 import java.util.concurrent.Semaphore;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
+import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.single_gaussian.GausianPatchTable;
 import neildg.com.megatronsr.model.single_gaussian.LoadedImagePatch;
-import neildg.com.megatronsr.model.single_glasner.HRPatchAttributeTable;
 import neildg.com.megatronsr.number.MathUtils;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.single.gaussian.listeners.ThreadFinishedListener;
@@ -36,8 +34,8 @@ public class PatchPairGenerator implements IOperator, ThreadFinishedListener{
 
         GausianPatchTable.initialize();
 
-        Mat originalMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_GAUSSIAN_DIR + "/" + FilenameConstants.INPUT_FILE_NAME, ImageFileAttribute.FileType.JPEG);
-        Mat blurredMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_GAUSSIAN_DIR + "/" + FilenameConstants.INPUT_BLUR_FILENAME, ImageFileAttribute.FileType.JPEG);
+        Mat originalMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_GAUSSIAN_DIR + "/" + FilenameConstants.INPUT_FILE_NAME, ImageFileAttribute.FileType.JPEG);
+        Mat blurredMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_GAUSSIAN_DIR + "/" + FilenameConstants.INPUT_BLUR_FILENAME, ImageFileAttribute.FileType.JPEG);
 
         this.createPatchPairs(originalMat, blurredMat);
     }

@@ -2,17 +2,15 @@ package neildg.com.megatronsr.threads;
 
 import android.util.Log;
 
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.photo.Photo;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
@@ -24,8 +22,6 @@ import neildg.com.megatronsr.processing.listeners.IProcessListener;
 import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.TransferToDirOperator;
 import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
-import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
-import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -61,10 +57,10 @@ public class ReleaseSRProcessor extends Thread{
         Mat inputMat = null;
 
         for(int i = 0; i < energyInputMatList.length; i++) {
-            inputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
+            inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
             inputMat = ImageOperator.downsample(inputMat, 0.125f); //downsample
 
-            ImageWriter.getInstance().saveMatrixToImage(inputMat, "downsample_"+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(inputMat, "downsample_"+i, ImageFileAttribute.FileType.JPEG);
 
             Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(inputMat);
             energyInputMatList[i] = yuvMat[ColorSpaceOperator.Y_CHANNEL];
@@ -89,7 +85,7 @@ public class ReleaseSRProcessor extends Thread{
 
         //load RGB inputs
         for(int i = 0; i < inputIndices.length; i++) {
-            rgbInputMatList[i] = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG);
+            rgbInputMatList[i] = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG);
         }
 
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length);
@@ -140,14 +136,14 @@ public class ReleaseSRProcessor extends Thread{
     private void interpolateFirstImage() {
         //ProgressDialogHandler.getInstance().showUserDialog("Interpolating images", "Upsampling image using nearest-neighbor, bilinear and bicubic");
 
-        Mat inputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
+        Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
         Mat outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
-        ImageWriter.getInstance().saveMatrixToImage(outputMat, "nearest", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(outputMat, "nearest", ImageFileAttribute.FileType.JPEG);
         outputMat.release();
 
         outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        ImageWriter.getInstance().saveMatrixToImage(outputMat, "bicubic", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(outputMat, "bicubic", ImageFileAttribute.FileType.JPEG);
         outputMat.release();
 
         inputMat.release();
@@ -164,7 +160,7 @@ public class ReleaseSRProcessor extends Thread{
         }
         MeanFusionOperator fusionOperator = new MeanFusionOperator(imagePathList, "Fusing", "Fusing images using mean");
         fusionOperator.perform();
-        ImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
 
     }
 }

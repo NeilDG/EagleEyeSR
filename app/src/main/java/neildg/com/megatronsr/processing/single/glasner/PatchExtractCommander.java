@@ -9,8 +9,8 @@ import java.util.concurrent.Semaphore;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.single_glasner.PatchAttributeTable;
@@ -77,7 +77,7 @@ public class PatchExtractCommander implements IOperator {
             this.index = index;
             this.imagePrefix = imagePrefix;
             this.fullImagePath = imageDir + this.imagePrefix;
-            this.inputMat = ImageReader.getInstance().imReadOpenCV(this.fullImagePath, ImageFileAttribute.FileType.JPEG);
+            this.inputMat = FileImageReader.getInstance().imReadOpenCV(this.fullImagePath, ImageFileAttribute.FileType.JPEG);
 
             //this.inputMat = IntensityMatConverter.convertMatToIntensity(this.inputMat);
             this.commander = commander;
@@ -96,7 +96,7 @@ public class PatchExtractCommander implements IOperator {
                     String patchDir = PATCH_DIR + this.index;
                     String patchImageName = PATCH_PREFIX +col+"_"+row;
                     String patchImagePath =  patchDir + "/" +patchImageName;
-                    ImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
+                    FileImageWriter.getInstance().saveMatrixToImage(patchMat, patchDir,patchImageName, ImageFileAttribute.FileType.JPEG);
                     PatchAttributeTable.getInstance().addPatchAttribute(this.index, col, row, col + patchSize, row + patchSize, patchImageName, patchImagePath);
 
                     patchMat.release();

@@ -5,7 +5,7 @@ import android.util.Log;
 import org.opencv.core.Mat;
 
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
+import neildg.com.megatronsr.io.FileImageReader;
 
 /**
  * Represents an image patch
@@ -35,7 +35,7 @@ public class ImagePatch {
 
     public void loadPatchMatIfNull() {
       if(this.patchMat == null) {
-          this.patchMat = ImageReader.getInstance().imReadOpenCV(this.imagePath, ImageFileAttribute.FileType.JPEG);
+          this.patchMat = FileImageReader.getInstance().imReadOpenCV(this.imagePath, ImageFileAttribute.FileType.JPEG);
           Log.d(TAG, "Patch "+this.imagePath+ " loaded! Size: " +this.patchMat.elemSize()+ " Cols: " +this.patchMat.cols()+ " Rows: " +this.patchMat.rows());
       }
     }

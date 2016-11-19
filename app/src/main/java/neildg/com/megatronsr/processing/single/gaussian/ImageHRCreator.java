@@ -10,8 +10,8 @@ import java.util.concurrent.Semaphore;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.single_gaussian.GausianPatchTable;
@@ -44,12 +44,12 @@ public class ImageHRCreator implements IOperator, ThreadFinishedListener {
         ProgressDialogHandler.getInstance().showDialog("Upsampling", "Upsampling image");
         int scalingFactor = ParameterConfig.getScalingFactor();
 
-        Mat originalMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_GAUSSIAN_DIR + "/" + FilenameConstants.INPUT_FILE_NAME, ImageFileAttribute.FileType.JPEG);
+        Mat originalMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_GAUSSIAN_DIR + "/" + FilenameConstants.INPUT_FILE_NAME, ImageFileAttribute.FileType.JPEG);
         this.hrMat = ImageOperator.performInterpolation(originalMat, scalingFactor, Imgproc.INTER_CUBIC);
 
         originalMat.release();
 
-        ImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_CUBIC, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_CUBIC, ImageFileAttribute.FileType.JPEG);
 
         ProgressDialogHandler.getInstance().showDialog("Replacing patches", "Searching for found patches in table and replacing them.");
         this.createPatchPairs();

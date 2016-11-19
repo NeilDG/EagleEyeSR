@@ -6,8 +6,8 @@ import org.opencv.core.Mat;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -28,7 +28,7 @@ public class MotionFusionOperator implements IOperator {
     public MotionFusionOperator(Mat[] zeroFilledMatSequences) {
         this.zeroFilledMatSequences = zeroFilledMatSequences;
 
-        this.outputMat = ImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_CUBIC + 0, ImageFileAttribute.FileType.JPEG);
+        this.outputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_CUBIC + 0, ImageFileAttribute.FileType.JPEG);
     }
 
     @Override
@@ -45,10 +45,10 @@ public class MotionFusionOperator implements IOperator {
             mat.release();
             mask.release();
 
-            ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "fusion", "step_"+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, "fusion", "step_"+i, ImageFileAttribute.FileType.JPEG);
         }
 
-        ImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, "result", ImageFileAttribute.FileType.JPEG);
 
         //deallocate memory
         this.outputMat.release();

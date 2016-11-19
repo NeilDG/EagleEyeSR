@@ -12,7 +12,7 @@ import java.util.List;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageReader;
+import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -48,7 +48,7 @@ public class MeanFusionOperator implements IOperator {
         int scale = ParameterConfig.getScalingFactor();
         //divide only by the number of known pixel values. do not consider zero pixels
         //Mat sumMat = Mat.zeros(rows * scale, cols * scale, CvType.CV_32FC(this.combineMatList[0].channels()));
-        Mat inputMat = ImageReader.getInstance().imReadColor(this.imageMatPathList[0], ImageFileAttribute.FileType.JPEG);
+        Mat inputMat = FileImageReader.getInstance().imReadColor(this.imageMatPathList[0], ImageFileAttribute.FileType.JPEG);
         Mat sumMat = ImageOperator.performInterpolation(inputMat, scale, Imgproc.INTER_CUBIC);
         inputMat.release();
         sumMat.convertTo(sumMat, CvType.CV_32FC(sumMat.channels()));
@@ -56,7 +56,7 @@ public class MeanFusionOperator implements IOperator {
         Mat maskMat = new Mat();
 
         for(int i = 1; i < this.imageMatPathList.length; i++) {
-            inputMat = ImageReader.getInstance().imReadColor(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
+            inputMat = FileImageReader.getInstance().imReadColor(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
 
             Mat hrMat = ImageOperator.performInterpolation(inputMat, scale, Imgproc.INTER_CUBIC);
             inputMat.release();

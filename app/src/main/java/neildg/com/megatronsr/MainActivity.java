@@ -15,7 +15,6 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import org.opencv.android.*;
-import org.w3c.dom.Attr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +22,8 @@ import java.util.List;
 import neildg.com.megatronsr.constants.BuildMode;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.DirectoryStorage;
-import neildg.com.megatronsr.io.ImageReader;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.platformtools.utils.ApplicationCore;
 import neildg.com.megatronsr.io.BitmapURIRepository;
@@ -72,8 +71,8 @@ public class MainActivity extends AppCompatActivity{
         ApplicationCore.initialize(this);
         ProgressDialogHandler.initialize(this);
         DirectoryStorage.getSharedInstance().createDirectory();
-        ImageWriter.initialize(this);
-        ImageReader.initialize(this);
+        FileImageWriter.initialize(this);
+        FileImageReader.initialize(this);
         ParameterConfig.initialize(this);
         AttributeHolder.initialize(this);
 
@@ -98,8 +97,8 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         ProgressDialogHandler.destroy();
-        ImageWriter.destroy();
-        ImageReader.destroy();
+        FileImageWriter.destroy();
+        FileImageReader.destroy();
         super.onDestroy();
     }
 

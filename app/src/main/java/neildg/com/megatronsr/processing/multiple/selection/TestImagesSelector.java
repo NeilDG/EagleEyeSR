@@ -11,7 +11,7 @@ import java.util.List;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.io.ImageWriter;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -48,7 +48,7 @@ public class TestImagesSelector implements IOperator {
 
         int bestIndex = this.sharpnessResult.getBestIndex();
         Bitmap bitmap = BitmapURIRepository.getInstance().getOriginalBitmap(bestIndex);
-        ImageWriter.getInstance().saveBitmapImage(bitmap, FilenameConstants.GROUND_TRUTH_PREFIX_STRING+bestIndex, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveBitmapImage(bitmap, FilenameConstants.GROUND_TRUTH_PREFIX_STRING+bestIndex, ImageFileAttribute.FileType.JPEG);
         bitmap.recycle();
 
         //remove best mat from input list
@@ -61,7 +61,7 @@ public class TestImagesSelector implements IOperator {
                 Log.d(TAG, "Added image " +i);
             }
             else {
-                ImageWriter.getInstance().deleteImage(FilenameConstants.INPUT_PREFIX_STRING +i, ImageFileAttribute.FileType.JPEG);
+                FileImageWriter.getInstance().deleteImage(FilenameConstants.INPUT_PREFIX_STRING +i, ImageFileAttribute.FileType.JPEG);
             }
         }
         this.outputMatList = filteredMatList.toArray(new Mat[filteredMatList.size()]);
