@@ -3,6 +3,7 @@ package neildg.com.megatronsr;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Camera;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
@@ -55,6 +56,7 @@ import neildg.com.megatronsr.camera2.CameraUserSettings;
 import neildg.com.megatronsr.camera2.ICameraModuleListener;
 import neildg.com.megatronsr.camera2.ICameraTextureViewListener;
 import neildg.com.megatronsr.camera2.ResolutionPicker;
+import neildg.com.megatronsr.camera2.capture.CaptureProcessor;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.platformtools.utils.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.utils.notifications.NotificationListener;
@@ -83,7 +85,9 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     private SensorManager sensorManager;
     private int sensorRotation = 0;
 
-    private FocusCallback focusCallback = new FocusCallback(this);
+    //private FocusCallback focusCallback = new FocusCallback(this);
+
+    private CaptureProcessor captureProcessor = new CaptureProcessor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +102,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     protected void onResume() {
         super.onResume();
         Log.e(TAG, "onResume");
-        startBackgroundThread();
+        this.captureProcessor.startBackgroundThread();
         if (this.cameraTextureView.getTextureView().isAvailable()) {
             this.openCamera();
         }
@@ -112,7 +116,8 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     @Override
     public void onPause() {
         super.onPause();
-        this.cameraModule.getCameraDevice().close();
+        this.cameraModule.closeCamera();
+        this.captureProcessor.cleanup();
 
         this.sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
         this.sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
@@ -190,6 +195,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             e.printStackTrace();
         }
         Log.e(TAG, "openCamera X");
+        this.printCameraCharacteristics();
     }
 
     private void closeCamera() {
@@ -207,7 +213,33 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         }
     }
 
-    protected void startBackgroundThread() {
+    /*
+     * Determine if specified camera modes are available
+     */
+    private void printCameraCharacteristics() {
+        try {
+            CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            CameraCharacteristics characteristics = manager.getCameraCharacteristics(this.cameraId);
+            int hardwareLevel = characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+
+            if(hardwareLevel == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED) {
+                Log.d(TAG, "Camera hardware level: INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED");
+            }
+            else if(hardwareLevel == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY) {
+                Log.d(TAG, "Camera hardware level: INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY");
+            }
+            else if(hardwareLevel == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_3) {
+                Log.d(TAG, "Camera hardware level: INFO_SUPPORTED_HARDWARE_LEVEL_3");
+            }
+            else if(hardwareLevel == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_FULL) {
+                Log.d(TAG, "Camera hardware level: INFO_SUPPORTED_HARDWARE_LEVEL_FULL");
+            }
+        } catch(CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*protected void startBackgroundThread() {
         mBackgroundThread = new HandlerThread("Camera Background");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
@@ -221,7 +253,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     @Override
     public void onCameraOpenedSuccess(CameraDevice cameraDevice) {
@@ -271,105 +303,26 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         if(null == cameraDevice) {
             Log.e(TAG, "updatePreview error, return");
         }
-        //captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-        this.captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_OFF);
+        this.captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+        //this.captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_OFF);
 
         try {
-            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), this.focusCallback, mBackgroundHandler);
+            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
     }
 
     protected void takePicture() {
-        CameraDevice cameraDevice = this.cameraModule.getCameraDevice();
+        Size lastResolutionSize = ResolutionPicker.getSharedInstance().getLastAvailableSize();
+        Size thumbnailSize = ResolutionPicker.getSharedInstance().getLastAvailableThumbnailSize();
+        Size swappedThumbnailSize = new Size(thumbnailSize.getHeight(), thumbnailSize.getWidth());
         TextureView textureView = this.cameraTextureView.getTextureView();
-        if(null == cameraDevice) {
-            Log.e(TAG, "cameraDevice is null");
-            return;
-        }
-        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        try {
 
-            Size imageSize = ResolutionPicker.getSharedInstance().getLastAvailableSize();
-            Log.d(TAG, "Image size to save: " +imageSize.getWidth()+ " X "+imageSize.getHeight());
-            ImageReader reader = ImageReader.newInstance(imageSize.getWidth(), imageSize.getHeight(), ImageFormat.JPEG, 1);
-            List<Surface> outputSurfaces = new ArrayList<Surface>(2);
-            outputSurfaces.add(reader.getSurface());
-            outputSurfaces.add(new Surface(textureView.getSurfaceTexture()));
-            final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-            captureBuilder.addTarget(reader.getSurface());
-            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-            if(CameraUserSettings.getInstance().getCameraType() == CameraUserSettings.CameraType.FRONT) {
-                captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, 270);
-            }
-            else {
-                captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, this.sensorRotation);
-                Size thumbnailSize = ResolutionPicker.getSharedInstance().getLastAvailableThumbnailSize();
-                Size preferredSize = new Size(thumbnailSize.getHeight(), thumbnailSize.getWidth());
-                captureBuilder.set(CaptureRequest.JPEG_THUMBNAIL_SIZE, preferredSize); //swap size
-            }
-
-            final File file = new File(FileImageWriter.getInstance().getFilePath()+"/pic.jpg");
-            ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
-                @Override
-                public void onImageAvailable(ImageReader reader) {
-                    Image image = null;
-                    try {
-                        image = reader.acquireLatestImage();
-                        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                        byte[] bytes = new byte[buffer.capacity()];
-                        buffer.get(bytes);
-                        save(bytes);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (image != null) {
-                            image.close();
-                            reader.close();
-                        }
-                    }
-                }
-                private void save(byte[] bytes) throws IOException {
-                    OutputStream output = null;
-                    try {
-                        output = new FileOutputStream(file);
-                        output.write(bytes);
-                    } finally {
-                        if (null != output) {
-                            output.close();
-                        }
-                    }
-                }
-            };
-            reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
-            final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
-                @Override
-                public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-                    super.onCaptureCompleted(session, request, result);
-                    Toast.makeText(CameraActivity.this, "Saved:" + file, Toast.LENGTH_SHORT).show();
-                    createCameraPreview();
-                }
-            };
-
-            cameraDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
-                @Override
-                public void onConfigured(CameraCaptureSession session) {
-                    try {
-                        session.capture(captureBuilder.build(), captureListener, mBackgroundHandler);
-                    } catch (CameraAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-                @Override
-                public void onConfigureFailed(CameraCaptureSession session) {
-                }
-            }, mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
+        this.captureProcessor.setup(this.cameraModule.getCameraDevice(), lastResolutionSize, swappedThumbnailSize, this.sensorRotation, CameraUserSettings.getInstance().getCameraType());
+        this.captureProcessor.clearSurfaces();
+        this.captureProcessor.createSurfaceFromTextureView(textureView);
+        this.captureProcessor.performCapture();
     }
 
     @Override
@@ -408,11 +361,11 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         int x = Math.round(event.getX());
         int y = Math.round(event.getY());
         this.cameraDrawableView.drawFocusRegion(x, y, 1000);
-        this.performAutoFocusOnRegion(x, y);
+        //this.performAutoFocusOnRegion(x, y);
         return true;
     }
 
-    private void performAutoFocusOnRegion(int x, int y) {
+    /*private void performAutoFocusOnRegion(int x, int y) {
         try {
             CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(this.cameraId);
@@ -451,36 +404,37 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             super.onCaptureCompleted(session, request, result);
             Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
             if(afState == CaptureRequest.CONTROL_AF_STATE_INACTIVE) {
-                Log.d(TAG, "CONTROL_AF_STATE_INACTIVE");
+                //Log.d(TAG, "CONTROL_AF_STATE_INACTIVE");
             }
             else if(afState == CaptureRequest.CONTROL_AF_STATE_INACTIVE) {
-                Log.d(TAG, "CONTROL_AF_STATE_INACTIVE");
+                //Log.d(TAG, "CONTROL_AF_STATE_INACTIVE");
             }
             else if(afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN) {
-                Log.d(TAG, "CONTROL_AF_STATE_PASSIVE_SCAN");
+                //Log.d(TAG, "CONTROL_AF_STATE_PASSIVE_SCAN");
             }
             else if(afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_FOCUSED) {
-                Log.d(TAG, "CONTROL_AF_STATE_PASSIVE_FOCUSED");
+                //Log.d(TAG, "CONTROL_AF_STATE_PASSIVE_FOCUSED");
             }
             else if(afState == CaptureRequest.CONTROL_AF_STATE_ACTIVE_SCAN) {
-                Log.d(TAG, "CONTROL_AF_STATE_ACTIVE_SCAN");
+                //Log.d(TAG, "CONTROL_AF_STATE_ACTIVE_SCAN");
             }
             else if(afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED) {
-                Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
+                //Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
                 this.activity.unlockAutoFocus();
             }
             else if(afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
-                Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
+                //Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
             }
             else if(afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_UNFOCUSED) {
-                Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
+                //Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
             }
         }
-    }
+    }*/
 
     @Override
     public void onNotify(String notificationString, Parameters params) {
         if(notificationString == Notifications.ON_CAPTURE_COMPLETED) {
+            Toast.makeText(this, "Picture saved!", Toast.LENGTH_SHORT).show();
             this.createCameraPreview();
         }
     }

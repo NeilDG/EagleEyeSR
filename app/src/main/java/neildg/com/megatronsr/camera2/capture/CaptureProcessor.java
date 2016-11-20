@@ -45,11 +45,12 @@ public class CaptureProcessor{
 
     private boolean setupCalled = false;
 
-    public CaptureProcessor(CameraDevice cameraDevice) {
-        this.cameraDevice = cameraDevice;
+    public CaptureProcessor() {
+
     }
 
-    public void setup(Size imageResolution, Size thumbnailSize, int sensorRotation, CameraUserSettings.CameraType cameraType) {
+    public void setup(CameraDevice cameraDevice, Size imageResolution, Size thumbnailSize, int sensorRotation, CameraUserSettings.CameraType cameraType) {
+        this.cameraDevice = cameraDevice;
         this.imageResolution = imageResolution;
         this.thumbnailSize = thumbnailSize;
         if(cameraType == CameraUserSettings.CameraType.FRONT) {
@@ -73,14 +74,18 @@ public class CaptureProcessor{
             return;
         }
 
-        this.startBackgroundThread();
+        if(this.backgroundThread == null) {
+            Log.e(TAG, "Background thread is not available! Call startBackgroundThread() first!");
+            return;
+        }
+
         //capture sequence proper
         try {
             CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), "test_pic", ImageFileAttribute.FileType.JPEG);
             final CaptureCompletedHandler captureCompletedHandler = new CaptureCompletedHandler();
             this.imageReader.setOnImageAvailableListener(capturedImageSaver, this.backgroundTheadHandler);
             this.addOutputSurface(this.imageReader.getSurface());
-            final BasicCaptureRequest basicCaptureRequest = new BasicCaptureRequest(this.cameraDevice, this.imageReader);
+            final BasicCaptureRequest basicCaptureRequest = new BasicCaptureRequest(this.cameraDevice, this.imageReader, this.sensorRotation, this.thumbnailSize);
             this.cameraDevice.createCaptureSession(this.outputSurfaces, new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(CameraCaptureSession session) {
@@ -100,13 +105,17 @@ public class CaptureProcessor{
         }
     }
 
-    private void startBackgroundThread() {
+    public void startBackgroundThread() {
         this.backgroundThread = new HandlerThread("Camera Background");
         this.backgroundThread.start();
         this.backgroundTheadHandler = new Handler(this.backgroundThread.getLooper());
     }
 
-    private void stopBackgroundThread() {
+    public void stopBackgroundThread() {
+        if(this.backgroundThread == null) {
+            return;
+        }
+
         this.backgroundThread.quitSafely();
         try {
             this.backgroundThread.join();
@@ -123,12 +132,21 @@ public class CaptureProcessor{
     }
 
     public void createSurfaceFromTextureView(TextureView textureView) {
-        outputSurfaces.add(new Surface(textureView.getSurfaceTexture()));
+        this.outputSurfaces.add(new Surface(textureView.getSurfaceTexture()));
+    }
+
+    public void clearSurfaces() {
+        this.outputSurfaces.clear();
     }
 
     public void cleanup() {
-        this.outputSurfaces.clear();
-        this.setupCalled = false;
+        if(this.setupCalled) {
+            this.stopBackgroundThread();
+            this.outputSurfaces.clear();
+            this.imageReader.close();
+            this.setupCalled = false;
+        }
+
     }
 
 }

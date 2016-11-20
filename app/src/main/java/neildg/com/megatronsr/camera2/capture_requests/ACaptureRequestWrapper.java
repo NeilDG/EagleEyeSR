@@ -21,7 +21,6 @@ public abstract class ACaptureRequestWrapper {
     public ACaptureRequestWrapper(CameraDevice cameraDevice, ImageReader imageReader) throws CameraAccessException {
         this.cameraDevice = cameraDevice;
         this.imageReader = imageReader;
-        this.createCaptureRequest();
     }
 
     public CaptureRequest getCaptureRequest() {
