@@ -321,7 +321,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
 
         this.captureProcessor.setup(this.cameraModule.getCameraDevice(), lastResolutionSize, swappedThumbnailSize, this.sensorRotation, CameraUserSettings.getInstance().getCameraType());
         this.captureProcessor.clearSurfaces();
-        this.captureProcessor.createSurfaceFromTextureView(textureView);
+        //this.captureProcessor.createSurfaceFromTextureView(textureView);
         this.captureProcessor.performCapture();
     }
 

@@ -6,6 +6,7 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.media.ImageReader;
+import android.media.MediaActionSound;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
@@ -31,7 +32,6 @@ public class CaptureProcessor{
     private final static String TAG = "CaptureProcessor";
 
     private List<Surface> outputSurfaces = new ArrayList<Surface>(); //list of output surfaces
-    private List<CaptureRequest> captureRequests = new ArrayList<>(); //list of capture requests to be made.
 
     private CameraDevice cameraDevice;
     private Size imageResolution; //size of the image/s to save
@@ -44,6 +44,8 @@ public class CaptureProcessor{
     private ImageReader imageReader;
 
     private boolean setupCalled = false;
+
+    private MediaActionSound soundPlayer = new MediaActionSound();
 
     public CaptureProcessor() {
 
@@ -60,7 +62,9 @@ public class CaptureProcessor{
             this.sensorRotation = sensorRotation;
         }
 
-        this.imageReader = ImageReader.newInstance(this.imageResolution.getWidth(), this.imageResolution.getHeight(), ImageFormat.JPEG, 1);
+        CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), "test_pic", ImageFileAttribute.FileType.JPEG);
+        this.imageReader = ImageReader.newInstance(this.imageResolution.getWidth(), this.imageResolution.getHeight(), ImageFormat.YUV_420_888, 10);
+        this.imageReader.setOnImageAvailableListener(capturedImageSaver, this.backgroundTheadHandler);
 
         this.setupCalled = true;
     }
@@ -81,16 +85,15 @@ public class CaptureProcessor{
 
         //capture sequence proper
         try {
-            CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), "test_pic", ImageFileAttribute.FileType.JPEG);
             final CaptureCompletedHandler captureCompletedHandler = new CaptureCompletedHandler();
-            this.imageReader.setOnImageAvailableListener(capturedImageSaver, this.backgroundTheadHandler);
             this.addOutputSurface(this.imageReader.getSurface());
-            final BasicCaptureRequest basicCaptureRequest = new BasicCaptureRequest(this.cameraDevice, this.imageReader, this.sensorRotation, this.thumbnailSize);
+            final List<CaptureRequest> captureRequests = this.assembleCaptureRequests();
             this.cameraDevice.createCaptureSession(this.outputSurfaces, new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(CameraCaptureSession session) {
                     try {
-                        session.capture(basicCaptureRequest.getCaptureRequest(), captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
+                        CaptureProcessor.this.soundPlayer.play(MediaActionSound.SHUTTER_CLICK);
+                        session.captureBurst(captureRequests, captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     }
@@ -147,6 +150,20 @@ public class CaptureProcessor{
             this.setupCalled = false;
         }
 
+    }
+
+    /*
+     * Function for assembling the list of capture requests for burst mode
+     */
+    private List<CaptureRequest> assembleCaptureRequests() throws CameraAccessException {
+        List<CaptureRequest> captureRequests = new ArrayList<>();
+
+        for(int i = 0; i < 10; i++) {
+            BasicCaptureRequest basicCaptureRequest = new BasicCaptureRequest(this.cameraDevice, this.imageReader, this.sensorRotation, this.thumbnailSize);
+            captureRequests.add(basicCaptureRequest.getCaptureRequest());
+        }
+
+        return captureRequests;
     }
 
 }
