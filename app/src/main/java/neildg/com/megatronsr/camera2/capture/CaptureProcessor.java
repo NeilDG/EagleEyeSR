@@ -1,5 +1,6 @@
 package neildg.com.megatronsr.camera2.capture;
 
+import android.app.Notification;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -22,13 +23,17 @@ import neildg.com.megatronsr.camera2.capture_requests.BasicCaptureRequest;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
+import neildg.com.megatronsr.platformtools.utils.notifications.NotificationCenter;
+import neildg.com.megatronsr.platformtools.utils.notifications.NotificationListener;
+import neildg.com.megatronsr.platformtools.utils.notifications.Notifications;
+import neildg.com.megatronsr.platformtools.utils.notifications.Parameters;
 
 /**
  * Class that handles the capture of images with specific capture requests.
  * Created by NeilDG on 11/19/2016.
  */
 
-public class CaptureProcessor{
+public class CaptureProcessor implements NotificationListener{
 
     private final static String TAG = "CaptureProcessor";
 
@@ -49,7 +54,7 @@ public class CaptureProcessor{
     private MediaActionSound soundPlayer = new MediaActionSound();
 
     public CaptureProcessor() {
-
+        NotificationCenter.getInstance().addObserver(Notifications.ON_CAPTURE_COMPLETED, this);
     }
 
     public void setup(CameraDevice cameraDevice, Size imageResolution, Size thumbnailSize, int sensorRotation, CameraUserSettings.CameraType cameraType) {
@@ -66,8 +71,8 @@ public class CaptureProcessor{
         CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
         this.imageReader = ImageReader.newInstance(this.imageResolution.getWidth(), this.imageResolution.getHeight(), ImageFormat.JPEG, 10);
         this.imageReader.setOnImageAvailableListener(capturedImageSaver, this.backgroundTheadHandler);
-
         this.setupCalled = true;
+
     }
 
     /*
@@ -94,7 +99,6 @@ public class CaptureProcessor{
                 @Override
                 public void onConfigured(CameraCaptureSession session) {
                     try {
-                        CaptureProcessor.this.soundPlayer.play(MediaActionSound.SHUTTER_CLICK);
                         session.capture(basicCaptureRequest.getCaptureRequest(), captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
                         //session.captureBurst(captureRequests, captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
                     } catch (CameraAccessException e) {
@@ -151,6 +155,7 @@ public class CaptureProcessor{
             this.outputSurfaces.clear();
             this.imageReader.close();
             this.setupCalled = false;
+            NotificationCenter.getInstance().removeObserver(Notifications.ON_CAPTURE_COMPLETED, this);
         }
 
     }
@@ -169,4 +174,10 @@ public class CaptureProcessor{
         return captureRequests;
     }
 
+    @Override
+    public void onNotify(String notificationString, Parameters params) {
+        if(notificationString == Notifications.ON_CAPTURE_COMPLETED) {
+            this.soundPlayer.play(MediaActionSound.SHUTTER_CLICK);
+        }
+    }
 }

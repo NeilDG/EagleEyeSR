@@ -58,20 +58,21 @@
     </layouts>
   </component>
   <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="Capture completed" />
     <option name="TOOL_WINDOW_LOG_LEVEL" value="verbose" />
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Firebase" />
     <option name="LOGCAT_FORMAT_STRING" value="%2$s/%3$s %4$c/%5$s: %6$s" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2c48bf2a-6a1d-4178-89ff-4ae5cce147e0" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/support_v4_22_2_1.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/appcompat_v7_22_2_1.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/support_annotations_22_2_1.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/design_22_2_1.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/support_v4_22_2_1.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/appcompat_v7_22_2_1.xml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/MainActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/MainActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="MegatronSR.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -106,26 +107,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="CameraModule.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/CameraModule.java">
+      <file leaf-file-name="CameraActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/CameraActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="118">
-              <caret line="26" column="38" selection-start-line="26" selection-start-column="38" selection-end-line="26" selection-end-column="38" />
-              <folding />
+            <state relative-caret-position="608">
+              <caret line="302" column="37" selection-start-line="302" selection-start-column="37" selection-end-line="302" selection-end-column="37" />
+              <folding>
+                <element signature="e#9083#9084#0" expanded="true" />
+                <element signature="e#9130#9131#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CameraActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/CameraActivity.java">
+      <file leaf-file-name="FocusProcessor.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/FocusProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="157" column="67" selection-start-line="157" selection-start-column="67" selection-end-line="157" selection-end-column="67" />
+            <state relative-caret-position="299">
+              <caret line="49" column="41" selection-start-line="49" selection-start-column="41" selection-end-line="49" selection-end-column="41" />
               <folding>
-                <element signature="e#19141#19913#0" expanded="true" />
-                <element signature="e#19912#19913#0" expanded="true" />
-                <marker date="1480225926171" expanded="false" signature="17304:17319" ph=" { " />
-                <marker date="1480225926171" expanded="false" signature="17344:17354" ph=" }" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -134,11 +135,23 @@
       <file leaf-file-name="CaptureProcessor.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CaptureProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="16">
-              <caret line="66" column="134" selection-start-line="66" selection-start-column="130" selection-end-line="66" selection-end-column="134" />
+            <state relative-caret-position="18">
+              <caret line="109" column="77" selection-start-line="109" selection-start-column="77" selection-end-line="109" selection-end-column="77" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#5968#5969#0" expanded="true" />
+                <element signature="e#6011#6012#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CaptureCompletedHandler.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CaptureCompletedHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="144">
+              <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -146,7 +159,7 @@
       <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="646">
+            <state relative-caret-position="880">
               <caret line="55" column="4" selection-start-line="55" selection-start-column="4" selection-end-line="55" selection-end-column="4" />
               <folding />
             </state>
@@ -166,7 +179,7 @@
       <file leaf-file-name="FileImageReader.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/io/FileImageReader.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="806">
+            <state relative-caret-position="1424">
               <caret line="113" column="31" selection-start-line="113" selection-start-column="31" selection-end-line="113" selection-end-column="31" />
               <folding />
             </state>
@@ -2615,7 +2628,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/build/intermediates/manifests/instant-run/debug/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/build/intermediates/manifests/full/debug/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/build/intermediates/res/merged/debug/layout/activity_camera.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/toggle.xml" />
@@ -2661,11 +2673,12 @@
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/io/DirectoryStorage.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CapturedImageSaver.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CaptureCompletedHandler.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/CameraActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CaptureProcessor.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/io/FileImageReader.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/ImageViewActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_image_view.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/FocusProcessor.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/CameraActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CaptureProcessor.java" />
       </list>
     </option>
   </component>
@@ -2700,9 +2713,32 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane />
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="app">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="app">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="PackagesPane" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -2730,60 +2766,6 @@
               <option name="myItemId" value="app" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MegatronSR" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="layout" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MegatronSR" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="layout" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activity_camera.xml" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResGroupNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MegatronSR" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -2815,50 +2797,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="megatronsr" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MegatronSR" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="megatronsr" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="io" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MegatronSR" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="megatronsr" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="constants" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -2880,32 +2818,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="camera2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MegatronSR" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="megatronsr" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="camera2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="capture_requests" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -2937,31 +2849,8 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scratches" />
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="app">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="app">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
+      <pane id="ProjectPane">
+        <subPane />
       </pane>
     </panes>
   </component>
@@ -3389,7 +3278,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="false" />
     <layout>
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -3407,9 +3296,8 @@
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23450854" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32739422" sideWeight="0.49358973" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32739422" sideWeight="0.49358973" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32850778" sideWeight="0.49786323" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32942432" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5089087" sideWeight="0.49679488" order="14" side_tool="true" content_ui="tabs" />
@@ -3431,6 +3319,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23450854" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.37371856" sideWeight="0.4479718" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="Memory Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.37371856" sideWeight="0.55202824" order="7" side_tool="true" content_ui="tabs" />
@@ -3454,27 +3343,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/fusion/MeanFusionOperator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="576">
-          <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/resizing/LRToHROperator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="496">
-          <caret line="42" column="112" selection-start-line="42" selection-start-column="112" selection-end-line="42" selection-end-column="112" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/model/multiple/SharpnessMeasure.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1680">
-          <caret line="121" column="84" selection-start-line="121" selection-start-column="84" selection-end-line="121" selection-end-column="84" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/resizing/DownsamplingOperator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="112">
@@ -3575,26 +3443,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/AndroidSDK/sdk/sources/android-24/android/hardware/camera2/CaptureRequest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4654">
-          <caret line="74" column="19" selection-start-line="74" selection-start-column="19" selection-end-line="74" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/AndroidSDK/sdk/sources/android-24/java/util/List.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="139">
           <caret line="120" column="8" selection-start-line="120" selection-start-column="8" selection-end-line="120" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/AndroidSDK/sdk/sources/android-24/android/hardware/camera2/CameraCaptureSession.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1250">
-          <caret line="288" column="24" selection-start-line="288" selection-start-column="24" selection-end-line="288" selection-end-column="24" />
           <folding />
         </state>
       </provider>
@@ -3604,16 +3456,6 @@
         <state relative-caret-position="482">
           <caret line="122" column="30" selection-start-line="122" selection-start-column="30" selection-end-line="122" selection-end-column="30" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture_requests/BasicCaptureRequest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="512">
-          <caret line="38" column="0" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3636,7 +3478,6 @@
       <provider editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
       <provider selected="true" editor-type-id="android-designer2">
@@ -3652,29 +3493,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/camera_view_layout.xml" />
     <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
-      <provider editor-type-id="android-manifest">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="688">
           <caret line="53" column="79" selection-start-line="53" selection-start-column="79" selection-end-line="53" selection-end-column="79" />
           <folding />
         </state>
       </provider>
+      <provider editor-type-id="android-manifest">
+        <state />
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="704">
           <caret line="260" column="49" selection-start-line="259" selection-start-column="11" selection-end-line="260" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/AndroidSDK/sdk/sources/android-24/android/hardware/camera2/CameraDevice.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="482">
-          <caret line="429" column="25" selection-start-line="429" selection-start-column="25" selection-end-line="429" selection-end-column="25" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3688,7 +3520,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="646">
+        <state relative-caret-position="880">
           <caret line="55" column="4" selection-start-line="55" selection-start-column="4" selection-end-line="55" selection-end-column="4" />
           <folding />
         </state>
@@ -3698,7 +3530,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-176">
           <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3730,10 +3561,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1291">
           <caret line="426" column="25" selection-start-line="426" selection-start-column="25" selection-end-line="426" selection-end-column="25" />
-          <folding>
-            <element signature="e#19625#19626#0" expanded="false" />
-            <element signature="e#19674#19675#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3741,7 +3568,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="139">
           <caret line="199" column="25" selection-start-line="199" selection-start-column="25" selection-end-line="199" selection-end-column="25" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3749,10 +3575,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="226">
           <caret line="59" column="73" selection-start-line="59" selection-start-column="40" selection-end-line="59" selection-end-column="73" />
-          <folding>
-            <element signature="e#1642#1643#0" expanded="true" />
-            <element signature="e#1682#1683#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3767,54 +3589,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CaptureCompletedHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="23" column="41" selection-start-line="23" selection-start-column="41" selection-end-line="23" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CapturedImageSaver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="71" column="63" selection-start-line="71" selection-start-column="63" selection-end-line="71" selection-end-column="63" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/AndroidSDK/sdk/sources/android-24/android/graphics/ImageFormat.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="257">
           <caret line="177" column="53" selection-start-line="177" selection-start-column="53" selection-end-line="177" selection-end-column="53" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/CameraActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="157" column="67" selection-start-line="157" selection-start-column="67" selection-end-line="157" selection-end-column="67" />
-          <folding>
-            <element signature="e#19141#19913#0" expanded="true" />
-            <element signature="e#19912#19913#0" expanded="true" />
-            <marker date="1480225926171" expanded="false" signature="17304:17319" ph=" { " />
-            <marker date="1480225926171" expanded="false" signature="17344:17354" ph=" }" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/CameraModule.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="26" column="38" selection-start-line="26" selection-start-column="38" selection-end-line="26" selection-end-column="38" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/io/FileImageReader.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="806">
+        <state relative-caret-position="1424">
           <caret line="113" column="31" selection-start-line="113" selection-start-column="31" selection-end-line="113" selection-end-column="31" />
           <folding />
         </state>
@@ -3832,7 +3616,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
       <provider editor-type-id="android-designer2">
@@ -3854,19 +3637,113 @@
       <provider editor-type-id="text-editor">
         <state relative-caret-position="96">
           <caret line="6" column="45" selection-start-line="6" selection-start-column="45" selection-end-line="6" selection-end-column="45" />
-          <folding />
         </state>
       </provider>
       <provider selected="true" editor-type-id="android-designer2">
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CaptureProcessor.java">
+    <entry file="file://C:/AndroidSDK/sdk/sources/android-24/android/hardware/camera2/CaptureRequest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16">
-          <caret line="66" column="134" selection-start-line="66" selection-start-column="130" selection-end-line="66" selection-end-column="134" />
+        <state relative-caret-position="722">
+          <caret line="1194" column="81" selection-start-line="1194" selection-start-column="81" selection-end-line="1194" selection-end-column="81" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/AndroidSDK/sdk/sources/android-24/android/content/Context.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1456">
+          <caret line="79" column="22" selection-start-line="79" selection-start-column="22" selection-end-line="79" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture_requests/BasicCaptureRequest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="21" column="11" selection-start-line="21" selection-start-column="11" selection-end-line="21" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/CameraModule.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="118">
+          <caret line="24" column="16" selection-start-line="24" selection-start-column="16" selection-end-line="24" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/AndroidSDK/sdk/sources/android-24/android/hardware/camera2/CameraDevice.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-771">
+          <caret line="65" column="28" selection-start-line="65" selection-start-column="28" selection-end-line="65" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CapturedImageSaver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="290">
+          <caret line="32" column="11" selection-start-line="32" selection-start-column="11" selection-end-line="32" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/AndroidSDK/sdk/sources/android-24/android/hardware/camera2/CameraCaptureSession.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="139">
+          <caret line="288" column="24" selection-start-line="288" selection-start-column="24" selection-end-line="288" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/CameraUserSettings.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="310">
+          <caret line="50" column="16" selection-start-line="50" selection-start-column="16" selection-end-line="50" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CaptureCompletedHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/FocusProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="49" column="41" selection-start-line="49" selection-start-column="41" selection-end-line="49" selection-end-column="41" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/CameraActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="608">
+          <caret line="302" column="37" selection-start-line="302" selection-start-column="37" selection-end-line="302" selection-end-column="37" />
+          <folding>
+            <element signature="e#9083#9084#0" expanded="true" />
+            <element signature="e#9130#9131#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/camera2/capture/CaptureProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="109" column="77" selection-start-line="109" selection-start-column="77" selection-end-line="109" selection-end-column="77" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#5968#5969#0" expanded="true" />
+            <element signature="e#6011#6012#0" expanded="true" />
           </folding>
         </state>
       </provider>

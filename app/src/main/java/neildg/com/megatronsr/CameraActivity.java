@@ -60,6 +60,7 @@ import neildg.com.megatronsr.camera2.ICameraModuleListener;
 import neildg.com.megatronsr.camera2.ICameraTextureViewListener;
 import neildg.com.megatronsr.camera2.ResolutionPicker;
 import neildg.com.megatronsr.camera2.capture.CaptureProcessor;
+import neildg.com.megatronsr.camera2.capture.FocusProcessor;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.FileImageWriter;
@@ -80,9 +81,6 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     private CameraTextureView cameraTextureView;
     private CameraDrawableView cameraDrawableView;
 
-    private Handler mBackgroundHandler;
-    private HandlerThread mBackgroundThread;
-
     protected CameraCaptureSession cameraCaptureSessions;
     protected CaptureRequest.Builder captureRequestBuilder;
 
@@ -91,8 +89,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     private SensorManager sensorManager;
     private int sensorRotation = 0;
 
-    //private FocusCallback focusCallback = new FocusCallback(this);
-
+    private FocusProcessor focusProcessor = new FocusProcessor();
     private CaptureProcessor captureProcessor = new CaptureProcessor();
 
     @Override
@@ -109,6 +106,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         super.onResume();
         Log.e(TAG, "onResume");
         this.captureProcessor.startBackgroundThread();
+        this.focusProcessor.startBackgroundThread();
         if (this.cameraTextureView.getTextureView().isAvailable()) {
             this.openCamera();
         }
@@ -124,6 +122,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         super.onPause();
         this.cameraModule.closeCamera();
         this.captureProcessor.cleanup();
+        this.focusProcessor.cleanup();
 
         this.sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
         this.sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
@@ -273,7 +272,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             Size lastResolutionSize = ResolutionPicker.getSharedInstance().getLastAvailableSize();
             Log.d(TAG, "Last resolution size: " +lastResolutionSize.toString());
             texture.setDefaultBufferSize(lastResolutionSize.getWidth(), lastResolutionSize.getHeight());
-            Surface surface = new Surface(texture);
+            final Surface surface = new Surface(texture);
             final CameraDevice cameraDevice = this.cameraModule.getCameraDevice();
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureRequestBuilder.addTarget(surface);
@@ -285,8 +284,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                         return;
                     }
                     // When the session is ready, we start displaying the preview.
-                    cameraCaptureSessions = cameraCaptureSession;
-                    updatePreview();
+                    CameraActivity.this.setupProcessors(cameraCaptureSession, cameraDevice, surface);
                 }
                 @Override
                 public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
@@ -298,30 +296,23 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         }
     }
 
-    protected void updatePreview() {
-        CameraDevice cameraDevice = this.cameraModule.getCameraDevice();
-        if(null == cameraDevice) {
-            Log.e(TAG, "updatePreview error, return");
-        }
-        this.captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-        //this.captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_OFF);
-
-        try {
-            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
+    private void setupProcessors(CameraCaptureSession cameraCaptureSession, CameraDevice cameraDevice, Surface surface) {
+        this.cameraCaptureSessions = cameraCaptureSession;
+        this.focusProcessor.setup(CameraActivity.this, cameraDevice, CameraActivity.this.cameraCaptureSessions, surface); //setup focus processor
+        this.focusProcessor.initiatePreview();
+        this.updatePictureSettings();
     }
 
-    protected void takePicture() {
+    public void updatePictureSettings() {
         Size lastResolutionSize = ResolutionPicker.getSharedInstance().getLastAvailableSize();
         Size thumbnailSize = ResolutionPicker.getSharedInstance().getLastAvailableThumbnailSize();
         Size swappedThumbnailSize = new Size(thumbnailSize.getHeight(), thumbnailSize.getWidth());
-        TextureView textureView = this.cameraTextureView.getTextureView();
 
         this.captureProcessor.setup(this.cameraModule.getCameraDevice(), lastResolutionSize, swappedThumbnailSize, this.sensorRotation, CameraUserSettings.getInstance().getCameraType());
+    }
+
+    protected void takePicture() {
         this.captureProcessor.clearSurfaces();
-        //this.captureProcessor.createSurfaceFromTextureView(textureView);
         this.captureProcessor.performCapture();
     }
 
@@ -361,75 +352,9 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         int x = Math.round(event.getX());
         int y = Math.round(event.getY());
         this.cameraDrawableView.drawFocusRegion(x, y, 1000);
-        //this.performAutoFocusOnRegion(x, y);
+        this.focusProcessor.performAutoFocusOnRegion(x, y);
         return true;
     }
-
-    /*private void performAutoFocusOnRegion(int x, int y) {
-        try {
-            CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-            CameraCharacteristics characteristics = manager.getCameraCharacteristics(this.cameraId);
-            Log.d(TAG, "Max focus count:" + characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF)+ " Max auto-exposure count: " +characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AE));
-            MeteringRectangle[] regionRectList = new MeteringRectangle[1];
-            regionRectList[0] = new MeteringRectangle(new Point(x,y), new Size(150,150), MeteringRectangle.METERING_WEIGHT_MAX);
-            this.captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START); //trigger Auto-focus algorithm
-            this.captureRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS, regionRectList);
-            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), this.focusCallback, mBackgroundHandler);
-
-        } catch(CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void unlockAutoFocus() {
-        try {
-            CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-            this.captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL); //cancel auto-focus
-            this.cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), this.focusCallback, mBackgroundHandler);
-
-        } catch(CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private class FocusCallback extends CameraCaptureSession.CaptureCallback {
-
-        private CameraActivity activity;
-
-        public FocusCallback(CameraActivity activity) {
-            this.activity = activity;
-        }
-        @Override
-        public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-            super.onCaptureCompleted(session, request, result);
-            Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
-            if(afState == CaptureRequest.CONTROL_AF_STATE_INACTIVE) {
-                //Log.d(TAG, "CONTROL_AF_STATE_INACTIVE");
-            }
-            else if(afState == CaptureRequest.CONTROL_AF_STATE_INACTIVE) {
-                //Log.d(TAG, "CONTROL_AF_STATE_INACTIVE");
-            }
-            else if(afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN) {
-                //Log.d(TAG, "CONTROL_AF_STATE_PASSIVE_SCAN");
-            }
-            else if(afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_FOCUSED) {
-                //Log.d(TAG, "CONTROL_AF_STATE_PASSIVE_FOCUSED");
-            }
-            else if(afState == CaptureRequest.CONTROL_AF_STATE_ACTIVE_SCAN) {
-                //Log.d(TAG, "CONTROL_AF_STATE_ACTIVE_SCAN");
-            }
-            else if(afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED) {
-                //Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
-                this.activity.unlockAutoFocus();
-            }
-            else if(afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
-                //Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
-            }
-            else if(afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_UNFOCUSED) {
-                //Log.d(TAG, "CONTROL_AF_STATE_FOCUSED_LOCKED");
-            }
-        }
-    }*/
 
     @Override
     public void onNotify(String notificationString, Parameters params) {
