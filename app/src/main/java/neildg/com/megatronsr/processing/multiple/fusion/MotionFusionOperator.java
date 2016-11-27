@@ -28,7 +28,7 @@ public class MotionFusionOperator implements IOperator {
     public MotionFusionOperator(Mat[] zeroFilledMatSequences) {
         this.zeroFilledMatSequences = zeroFilledMatSequences;
 
-        this.outputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_CUBIC + 0, ImageFileAttribute.FileType.JPEG);
+        this.outputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.HR_CUBIC + 0, ImageFileAttribute.FileType.JPEG);
     }
 
     @Override

@@ -69,6 +69,7 @@ import neildg.com.megatronsr.platformtools.utils.notifications.NotificationCente
 import neildg.com.megatronsr.platformtools.utils.notifications.NotificationListener;
 import neildg.com.megatronsr.platformtools.utils.notifications.Notifications;
 import neildg.com.megatronsr.platformtools.utils.notifications.Parameters;
+import neildg.com.megatronsr.ui.ProgressDialogHandler;
 import neildg.com.megatronsr.ui.ResolutionPickerDialog;
 
 public class CameraActivity extends AppCompatActivity implements ICameraTextureViewListener, ICameraModuleListener, SensorEventListener, View.OnTouchListener, NotificationListener {
@@ -114,6 +115,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         this.sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
         this.sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 
+        ProgressDialogHandler.initialize(this);
         NotificationCenter.getInstance().addObserver(Notifications.ON_CAPTURE_COMPLETED, this);
     }
 
@@ -128,6 +130,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         this.sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
         this.sensorManager = null;
 
+        ProgressDialogHandler.destroy();
         NotificationCenter.getInstance().removeObserver(Notifications.ON_CAPTURE_COMPLETED, this);
     }
 
@@ -367,7 +370,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                     CameraActivity.this.createCameraPreview();
 
                     ImageButton imageButton = (ImageButton) CameraActivity.this.findViewById(R.id.btn_image_preview);
-                    Bitmap thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG, 300, 300);
+                    Bitmap thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(FilenameConstants.INPUT_PREFIX_STRING, ImageFileAttribute.FileType.JPEG, 300, 300);
                     Log.d(TAG, "Thumbnail BMP:  "+thumbnailBmp.getAllocationByteCount());
                     imageButton.setImageBitmap(thumbnailBmp);
                     imageButton.setEnabled(true);

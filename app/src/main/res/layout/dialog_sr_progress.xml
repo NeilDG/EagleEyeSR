@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar2"
+            android:layout_weight="1" />
+
+        <TextView
+            android:text="This is a custom text message for processing."
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_view_message"
+            android:textAlignment="viewStart"
+            android:layout_margin="10dp"
+            android:textSize="14dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+        android:layout_width= "match_parent"
+        android:layout_height="25dp"
+        android:layout_marginTop="20dp"
+        android:layout_margin="10dp"
+        app:rcBackgroundPadding="5dp"
+        app:rcReverse="false"
+        app:rcProgressColor="@android:color/holo_blue_dark"
+        android:id="@+id/progress_bar" />
+
+</LinearLayout>

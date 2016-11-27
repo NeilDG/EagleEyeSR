@@ -18,8 +18,10 @@ import android.view.TextureView;
 import java.util.ArrayList;
 import java.util.List;
 
+import neildg.com.megatronsr.CameraActivity;
 import neildg.com.megatronsr.camera2.CameraUserSettings;
 import neildg.com.megatronsr.camera2.capture_requests.BasicCaptureRequest;
+import neildg.com.megatronsr.constants.DialogConstants;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
@@ -27,6 +29,8 @@ import neildg.com.megatronsr.platformtools.utils.notifications.NotificationCente
 import neildg.com.megatronsr.platformtools.utils.notifications.NotificationListener;
 import neildg.com.megatronsr.platformtools.utils.notifications.Notifications;
 import neildg.com.megatronsr.platformtools.utils.notifications.Parameters;
+import neildg.com.megatronsr.threads.CaptureSRProcessor;
+import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
  * Class that handles the capture of images with specific capture requests.
@@ -68,11 +72,10 @@ public class CaptureProcessor implements NotificationListener{
             this.sensorRotation = sensorRotation;
         }
 
-        CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
+        CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), FilenameConstants.INPUT_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
         this.imageReader = ImageReader.newInstance(this.imageResolution.getWidth(), this.imageResolution.getHeight(), ImageFormat.JPEG, 10);
         this.imageReader.setOnImageAvailableListener(capturedImageSaver, this.backgroundTheadHandler);
         this.setupCalled = true;
-
     }
 
     /*
@@ -99,8 +102,9 @@ public class CaptureProcessor implements NotificationListener{
                 @Override
                 public void onConfigured(CameraCaptureSession session) {
                     try {
+                        ProgressDialogHandler.getInstance().showProcessDialog(DialogConstants.DIALOG_PROGRESS_TITLE, "Processing captured image." , 0.0f);
+                        CaptureProcessor.this.soundPlayer.play(MediaActionSound.SHUTTER_CLICK);
                         session.capture(basicCaptureRequest.getCaptureRequest(), captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
-                        //session.captureBurst(captureRequests, captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     }
@@ -177,7 +181,9 @@ public class CaptureProcessor implements NotificationListener{
     @Override
     public void onNotify(String notificationString, Parameters params) {
         if(notificationString == Notifications.ON_CAPTURE_COMPLETED) {
-            this.soundPlayer.play(MediaActionSound.SHUTTER_CLICK);
+            //initiate capture SR processor proper
+            CaptureSRProcessor srProcessor = new CaptureSRProcessor();
+            srProcessor.start();
         }
     }
 }

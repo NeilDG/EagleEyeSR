@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
+import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
  * Handles the saving of image upon capture
@@ -66,6 +67,7 @@ public class CapturedImageSaver implements ImageReader.OnImageAvailableListener 
     private void save(byte[] bytes) throws IOException {
         OutputStream output = null;
         try {
+            ProgressDialogHandler.getInstance().updateProgress(20.0f);
             output = new FileOutputStream(this.file);
             output.write(bytes);
 

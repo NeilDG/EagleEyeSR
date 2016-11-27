@@ -27,7 +27,7 @@ public class ImageViewActivity extends AppCompatActivity {
 
     private void loadImageView() {
         SubsamplingScaleImageView scaleImageView = (SubsamplingScaleImageView) this.findViewById(R.id.subscale_image_view);
-        String imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
+        String imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
         scaleImageView.setImage(ImageSource.uri(imageSource));
     }
 }

@@ -41,7 +41,6 @@ public class ReleaseSRProcessor extends Thread{
 
         ProgressDialogHandler.getInstance().showUserDialog("", "Processing image");
 
-
         TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
         transferToDirOperator.perform();
         transferToDirOperator = null;

@@ -8,9 +8,10 @@ public class FilenameConstants {
     public final static String INPUT_PREFIX_STRING = "input_";
     public final static String HR_PROCESSED_STRING = "result";
 
-    public final static String INITIAL_HR_NEAREST = "nearest";
-    public final static String INITIAL_HR_CUBIC = "cubic";
-    public final static String INITIAL_HR_ZERO_FILLED_STRING = "zerofill";
+    public final static String HR_NEAREST = "nearest";
+    public final static String HR_CUBIC = "cubic";
+    public final static String HR_LINEAR = "linear";
+    public final static String HR_ZERO_FILL = "zerofill";
 
     public final static String MATCHES_PREFIX_STRING = "refimage_matchto_";
     public final static String KEYPOINTS_STRING = "refimage_keypoint";

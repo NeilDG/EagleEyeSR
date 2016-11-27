@@ -28,10 +28,12 @@ public class ProgressDialogHandler {
 	}
 	
 	private ProgressDialog progressDialog;
+	private ProcessingDialog processingDialog;
 	private Activity activity;
 	
 	public ProgressDialogHandler(Activity activity) {
 		this.activity = activity;
+		this.processingDialog = new ProcessingDialog(this.activity);
 	}
 	
 	public static void initialize(Activity activity) {
@@ -43,6 +45,12 @@ public class ProgressDialogHandler {
 			sharedInstance.progressDialog.dismiss();
 			sharedInstance.progressDialog = null;
 		}
+
+		if(sharedInstance != null && sharedInstance.processingDialog != null) {
+			sharedInstance.processingDialog.dismiss();
+			sharedInstance.processingDialog = null;
+		}
+
 		sharedInstance = null;
 	}
 	
@@ -76,11 +84,56 @@ public class ProgressDialogHandler {
 	}
 
 	/*
+	 * Shows a custom processing dialog created via layout res
+	 */
+	public void showProcessDialog(final String title, final String message, final float progress) {
+		this.activity.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				sharedInstance.hideDialog();
+				sharedInstance.processingDialog.setup(title, message);
+				sharedInstance.processingDialog.updateProgress(progress);
+				sharedInstance.processingDialog.show();
+				sharedInstance.processingDialog.setCancelable(false);
+
+			}
+		});
+	}
+
+	/*
+	 * Updates the progress of the process dialog, should it be shown.
+	 */
+	public void updateProgress(final float progress) {
+		this.activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if(sharedInstance.processingDialog.isShowing()) {
+					sharedInstance.processingDialog.updateProgress(progress);
+				}
+			}
+		});
+	}
+
+	public float getProgress() {
+		return sharedInstance.processingDialog.getProgress();
+	}
+
+	/*
 	 * For release-build user dialogs
 	 */
 	public void hideUserDialog() {
 		if (this.progressDialog != null) {
 			this.progressDialog.dismiss();
+		}
+	}
+
+	/*
+	 * Hides the custom process dialog
+	 */
+	public void hideProcessDialog() {
+		if(this.processingDialog != null) {
+			this.processingDialog.dismiss();
 		}
 	}
 	

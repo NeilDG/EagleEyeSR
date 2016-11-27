@@ -46,8 +46,8 @@ public class FuseInterpolateOperator implements IOperator {
         this.groundTruthMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
         this.fusedMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
-        Mat initialHRMat= FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_CUBIC + 0, ImageFileAttribute.FileType.JPEG);
-        Mat nearestMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INITIAL_HR_NEAREST, ImageFileAttribute.FileType.JPEG);
+        Mat initialHRMat= FileImageReader.getInstance().imReadOpenCV(FilenameConstants.HR_CUBIC + 0, ImageFileAttribute.FileType.JPEG);
+        Mat nearestMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
         MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_nearest", this.groundTruthMat, "GroundTruth", nearestMat,
                 "NearestMat", "Ground truth vs Nearest");
 

@@ -32,13 +32,13 @@ public class LRToHROperator implements IOperator {
         Mat hrMat = Mat.ones(this.lrMat.rows() * ParameterConfig.getScalingFactor(), this.lrMat.cols() * ParameterConfig.getScalingFactor(), this.lrMat.type());
 
         Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
-        FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.INITIAL_HR_NEAREST, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
 
         Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.INITIAL_HR_CUBIC, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
 
         Mat zeroFillMat = ImageOperator.performZeroFill(this.lrMat, ParameterConfig.getScalingFactor(), 0, 0);
-        FileImageWriter.getInstance().saveMatrixToImage(zeroFillMat, FilenameConstants.INITIAL_HR_ZERO_FILLED_STRING, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(zeroFillMat, FilenameConstants.HR_ZERO_FILL, ImageFileAttribute.FileType.JPEG);
 
         hrMat.release();
 
