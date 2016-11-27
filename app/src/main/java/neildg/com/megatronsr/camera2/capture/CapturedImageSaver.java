@@ -39,8 +39,8 @@ public class CapturedImageSaver implements ImageReader.OnImageAvailableListener 
 
     @Override
     public void onImageAvailable(ImageReader reader) {
-        this.file = new File(this.filePath + "/" + this.name + "_" +this.index + ImageFileAttribute.getFileExtension(this.fileType));
-        Log.d(TAG, "On image available: " +this.file.getPath() + "Time = " + System.currentTimeMillis());
+        this.file = new File(this.filePath + "/" + this.name+ ImageFileAttribute.getFileExtension(this.fileType));
+        Log.d(TAG, "On image available: " +this.file.getPath() + " Time = " + System.currentTimeMillis());
         Image image = null;
         try {
             image = reader.acquireNextImage();

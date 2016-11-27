@@ -4,6 +4,9 @@
 package neildg.com.megatronsr.io;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.util.Log;
 
 import org.opencv.core.Mat;
@@ -93,5 +96,21 @@ public class FileImageReader {
 	public boolean doesImageExists(String fileName, ImageFileAttribute.FileType fileType) {
 		File file = new File(FileImageWriter.getInstance().getFilePath() + "/" +fileName + ImageFileAttribute.getFileExtension(fileType));
 		return file.exists();
+	}
+
+	public Bitmap loadBitmapFromFile(String fileName, ImageFileAttribute.FileType fileType) {
+		String completeFilePath = FileImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
+		Log.d(TAG, "Filepath for loading bitmap: " +completeFilePath);
+		return BitmapFactory.decodeFile(completeFilePath);
+	}
+
+	public Bitmap loadBitmapThumbnail(String fileName, ImageFileAttribute.FileType fileType, int width, int height) {
+		Bitmap resized = ThumbnailUtils.extractThumbnail(this.loadBitmapFromFile(fileName, fileType), width, height);
+		return resized;
+	}
+
+	public String getDecodedFilePath(String fileName, ImageFileAttribute.FileType fileType) {
+		String completeFilePath = FileImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
+		return completeFilePath;
 	}
 }

@@ -19,6 +19,7 @@ import java.util.List;
 
 import neildg.com.megatronsr.camera2.CameraUserSettings;
 import neildg.com.megatronsr.camera2.capture_requests.BasicCaptureRequest;
+import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 
@@ -62,8 +63,8 @@ public class CaptureProcessor{
             this.sensorRotation = sensorRotation;
         }
 
-        CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), "test_pic", ImageFileAttribute.FileType.JPEG);
-        this.imageReader = ImageReader.newInstance(this.imageResolution.getWidth(), this.imageResolution.getHeight(), ImageFormat.YUV_420_888, 10);
+        CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
+        this.imageReader = ImageReader.newInstance(this.imageResolution.getWidth(), this.imageResolution.getHeight(), ImageFormat.JPEG, 10);
         this.imageReader.setOnImageAvailableListener(capturedImageSaver, this.backgroundTheadHandler);
 
         this.setupCalled = true;
@@ -87,13 +88,15 @@ public class CaptureProcessor{
         try {
             final CaptureCompletedHandler captureCompletedHandler = new CaptureCompletedHandler();
             this.addOutputSurface(this.imageReader.getSurface());
-            final List<CaptureRequest> captureRequests = this.assembleCaptureRequests();
+            //final List<CaptureRequest> captureRequests = this.assembleCaptureRequests();
+            final BasicCaptureRequest basicCaptureRequest = new BasicCaptureRequest(this.cameraDevice, this.imageReader, this.sensorRotation, this.thumbnailSize);
             this.cameraDevice.createCaptureSession(this.outputSurfaces, new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(CameraCaptureSession session) {
                     try {
                         CaptureProcessor.this.soundPlayer.play(MediaActionSound.SHUTTER_CLICK);
-                        session.captureBurst(captureRequests, captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
+                        session.capture(basicCaptureRequest.getCaptureRequest(), captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
+                        //session.captureBurst(captureRequests, captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     }

@@ -2,11 +2,14 @@ package neildg.com.megatronsr;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Camera;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -57,7 +60,10 @@ import neildg.com.megatronsr.camera2.ICameraModuleListener;
 import neildg.com.megatronsr.camera2.ICameraTextureViewListener;
 import neildg.com.megatronsr.camera2.ResolutionPicker;
 import neildg.com.megatronsr.camera2.capture.CaptureProcessor;
+import neildg.com.megatronsr.constants.FilenameConstants;
+import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.FileImageWriter;
+import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.platformtools.utils.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.utils.notifications.NotificationListener;
 import neildg.com.megatronsr.platformtools.utils.notifications.Notifications;
@@ -168,6 +174,16 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                 switchCamBtn.setImageResource(CameraUserSettings.getInstance().getCameraResource(CameraUserSettings.getInstance().getCameraType()));
             }
         });
+
+        ImageButton imagePreviewBtn = (ImageButton) this.findViewById(R.id.btn_image_preview);
+        imagePreviewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent previewIntent = new Intent(CameraActivity.this,ImageViewActivity.class);
+                startActivity(previewIntent);
+            }
+        });
+        imagePreviewBtn.setEnabled(false);
     }
 
     @Override
@@ -238,22 +254,6 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             e.printStackTrace();
         }
     }
-
-    /*protected void startBackgroundThread() {
-        mBackgroundThread = new HandlerThread("Camera Background");
-        mBackgroundThread.start();
-        mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
-    }
-    protected void stopBackgroundThread() {
-        mBackgroundThread.quitSafely();
-        try {
-            mBackgroundThread.join();
-            mBackgroundThread = null;
-            mBackgroundHandler = null;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     @Override
     public void onCameraOpenedSuccess(CameraDevice cameraDevice) {
@@ -434,8 +434,21 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     @Override
     public void onNotify(String notificationString, Parameters params) {
         if(notificationString == Notifications.ON_CAPTURE_COMPLETED) {
-            Toast.makeText(this, "Picture saved!", Toast.LENGTH_SHORT).show();
-            this.createCameraPreview();
+
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(CameraActivity.this, "Picture saved!", Toast.LENGTH_SHORT).show();
+                    CameraActivity.this.createCameraPreview();
+
+                    ImageButton imageButton = (ImageButton) CameraActivity.this.findViewById(R.id.btn_image_preview);
+                    Bitmap thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG, 300, 300);
+                    Log.d(TAG, "Thumbnail BMP:  "+thumbnailBmp.getAllocationByteCount());
+                    imageButton.setImageBitmap(thumbnailBmp);
+                    imageButton.setEnabled(true);
+                }
+            });
+
         }
     }
 }
