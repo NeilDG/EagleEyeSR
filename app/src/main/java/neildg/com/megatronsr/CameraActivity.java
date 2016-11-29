@@ -26,6 +26,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.media.Image;
 import android.media.ImageReader;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -100,6 +101,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
 
         CameraUserSettings.initialize();
         this.initializeCameraModule();
+        this.initializeCameraViews();
     }
 
     @Override
@@ -161,9 +163,11 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         modeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               resolutionPickerDialog.show();
+                View optionsOverlayView = CameraActivity.this.findViewById(R.id.options_overlay_layout);
+                optionsOverlayView.setVisibility(View.VISIBLE);
             }
         });
+
 
         final ImageButton switchCamBtn = (ImageButton) this.findViewById(R.id.btn_switch_camera);
         switchCamBtn.setOnClickListener(new View.OnClickListener() {
@@ -186,6 +190,38 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             }
         });
         imagePreviewBtn.setEnabled(false);
+    }
+
+    private void initializeCameraViews() {
+        final View optionsOverlayView = this.findViewById(R.id.options_overlay_layout);
+        optionsOverlayView.setVisibility(View.INVISIBLE);
+
+        Button resolutionBtn = (Button) optionsOverlayView.findViewById(R.id.btn_image_resolution);
+        resolutionBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CameraActivity.this.resolutionPickerDialog.show();
+            }
+        });
+
+        Button closeBtn = (Button) optionsOverlayView.findViewById(R.id.btn_overlay_close);
+        closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                optionsOverlayView.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        View optionsOverlayView = this.findViewById(R.id.options_overlay_layout);
+        if(optionsOverlayView.getVisibility() == View.VISIBLE) {
+            optionsOverlayView.setVisibility(View.INVISIBLE);
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
     @Override

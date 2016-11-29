@@ -5,4 +5,6 @@
     <string name="sr_intro">ABOUT: This is a mobile application that utilizes super-resolution to further enhance an image. You may modify the configurations seen below, before
     proceeding in taking an image.</string>
     <string name="title_activity_image_capture">ImageCaptureActivity</string>
+    <string name ="desc_debug_mode">Produce nearest-neighbor, bilinear and bicubic HR images if debugging mode is enabled.</string>
+    <string name ="desc_denoise_mode">Enable image denoising. Recommended for low-light situations.</string>
 </resources>
