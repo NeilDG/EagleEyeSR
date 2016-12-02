@@ -77,7 +77,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
 
-        <ToggleButton
+        <!--<ToggleButton
             android:background="@drawable/flash_toggle"
             android:id="@+id/toggle_flash"
             android:checked="false"
@@ -87,7 +87,7 @@
             android:layout_marginEnd="20dp"
             android:layout_alignBaseline="@+id/btn_mode"
             android:layout_alignBottom="@+id/btn_mode"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true" />-->
 
         <Button
             android:text="MODE"
@@ -102,6 +102,15 @@
             android:layout_marginStart="20dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_height="50dp"
+            android:id="@+id/processing_bar"
+            android:layout_width="50dp"
+            android:layout_marginEnd="17dp"
+            android:layout_alignBottom="@+id/btn_mode"
+            android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
 
@@ -200,5 +209,11 @@
         </ScrollView>
 
     </FrameLayout>
+
+    <ViewStub
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout="@layout/processing_queue_view"
+        android:id="@+id/processing_queue_stub" />
 
 </RelativeLayout>

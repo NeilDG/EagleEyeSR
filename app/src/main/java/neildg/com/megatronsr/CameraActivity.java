@@ -26,9 +26,11 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -75,6 +77,9 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     private FocusProcessor focusProcessor = new FocusProcessor();
     private CaptureProcessor captureProcessor = new CaptureProcessor();
 
+    //overlay views
+    private View processingQueueView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +87,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
 
         CameraUserSettings.initialize();
         this.initializeCameraModule();
-        this.initializeOptionsView();
+        this.initializeOverlayViews();
     }
 
     @Override
@@ -173,7 +178,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         imagePreviewBtn.setEnabled(false);
     }
 
-    private void initializeOptionsView() {
+    private void initializeOverlayViews() {
         final View optionsOverlayView = this.findViewById(R.id.options_overlay_layout);
         optionsOverlayView.setVisibility(View.INVISIBLE);
 
@@ -210,6 +215,28 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                 Log.d(TAG, ParameterConfig.DENOISE_FLAG_KEY + " set to " +ParameterConfig.getPrefsBoolean(ParameterConfig.DENOISE_FLAG_KEY, false));
             }
         });
+
+        //inflate processing queue  view
+        ViewStub processingQueue = (ViewStub) this.findViewById(R.id.processing_queue_stub);
+        this.processingQueueView = processingQueue.inflate();
+        this.processingQueueView.setVisibility(View.INVISIBLE);
+
+        ProgressBar processingQueueBar = (ProgressBar) this.findViewById(R.id.processing_bar);
+        processingQueueBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CameraActivity.this.processingQueueView.setVisibility(View.VISIBLE);
+            }
+        });
+
+        ImageButton processingCloseBtn = (ImageButton) this.processingQueueView.findViewById(R.id.processing_close_btn);
+        processingCloseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CameraActivity.this.processingQueueView.setVisibility(View.INVISIBLE);
+            }
+        });
+
     }
 
     @Override
@@ -217,6 +244,9 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         View optionsOverlayView = this.findViewById(R.id.options_overlay_layout);
         if(optionsOverlayView.getVisibility() == View.VISIBLE) {
             optionsOverlayView.setVisibility(View.INVISIBLE);
+        }
+        else if(this.processingQueueView != null && this.processingQueueView.getVisibility() == View.VISIBLE) {
+            this.processingQueueView.setVisibility(View.INVISIBLE);
         }
         else {
             super.onBackPressed();
