@@ -8,8 +8,79 @@
     tools:context="neildg.com.megatronsr.ImageViewActivity">
 
     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-        android:id="@+id/subscale_image_view"
+        android:id="@+id/nearest_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        android:id="@+id/linear_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        android:id="@+id/cubic_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        android:id="@+id/sr_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:checkedButton="@+id/nearest_radio_btn"
+        android:id="@+id/image_view_radio_group">
+
+        <RadioButton
+            android:text="Nearest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:textColor="@android:color/white"
+            android:background="#D4404040"
+            android:padding="10dp"
+            android:id="@+id/nearest_radio_btn"
+            android:layout_margin="5dp" />
+
+        <RadioButton
+            android:text="Linear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:textColor="@android:color/white"
+            android:background="#D4404040"
+            android:padding="10dp"
+            android:id="@+id/linear_radio_btn"
+            android:layout_margin="5dp" />
+
+        <RadioButton
+            android:text="Cubic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:textColor="@android:color/white"
+            android:background="#D4404040"
+            android:padding="10dp"
+            android:id="@+id/cubic_radio_btn"
+            android:layout_margin="5dp" />
+
+        <RadioButton
+            android:text="Super HD"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:textColor="@android:color/white"
+            android:background="#D4404040"
+            android:padding="10dp"
+            android:id="@+id/sr_radio_btn"
+            android:layout_margin="5dp" />
+    </RadioGroup>
 
 </RelativeLayout>

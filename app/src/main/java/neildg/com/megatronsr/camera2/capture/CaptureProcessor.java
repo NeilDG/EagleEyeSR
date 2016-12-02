@@ -102,7 +102,6 @@ public class CaptureProcessor implements NotificationListener{
                 @Override
                 public void onConfigured(CameraCaptureSession session) {
                     try {
-                        ProgressDialogHandler.getInstance().showProcessDialog(DialogConstants.DIALOG_PROGRESS_TITLE, "Processing captured image." , 0.0f);
                         CaptureProcessor.this.soundPlayer.play(MediaActionSound.SHUTTER_CLICK);
                         session.capture(basicCaptureRequest.getCaptureRequest(), captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
                     } catch (CameraAccessException e) {
@@ -182,6 +181,7 @@ public class CaptureProcessor implements NotificationListener{
     public void onNotify(String notificationString, Parameters params) {
         if(notificationString == Notifications.ON_CAPTURE_COMPLETED) {
             //initiate capture SR processor proper
+            ProgressDialogHandler.getInstance().showProcessDialog(DialogConstants.DIALOG_PROGRESS_TITLE, "Processing captured image." , 0.0f);
             CaptureSRProcessor srProcessor = new CaptureSRProcessor();
             srProcessor.start();
         }
