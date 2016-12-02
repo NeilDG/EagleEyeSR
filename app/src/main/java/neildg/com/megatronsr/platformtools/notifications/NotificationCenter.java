@@ -1,5 +1,5 @@
 
-package neildg.com.megatronsr.platformtools.utils.notifications;
+package neildg.com.megatronsr.platformtools.notifications;
 
 import java.util.ArrayList;
 import java.util.HashMap;

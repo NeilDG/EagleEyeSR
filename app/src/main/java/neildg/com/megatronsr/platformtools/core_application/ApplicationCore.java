@@ -1,7 +1,7 @@
 /**
  * 
  */
-package neildg.com.megatronsr.platformtools.utils;
+package neildg.com.megatronsr.platformtools.core_application;
 
 import android.app.Activity;
 import android.content.Context;

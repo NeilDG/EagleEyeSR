@@ -1,6 +1,5 @@
 package neildg.com.megatronsr.camera2.capture;
 
-import android.app.Notification;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -18,17 +17,16 @@ import android.view.TextureView;
 import java.util.ArrayList;
 import java.util.List;
 
-import neildg.com.megatronsr.CameraActivity;
 import neildg.com.megatronsr.camera2.CameraUserSettings;
 import neildg.com.megatronsr.camera2.capture_requests.BasicCaptureRequest;
 import neildg.com.megatronsr.constants.DialogConstants;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.platformtools.utils.notifications.NotificationCenter;
-import neildg.com.megatronsr.platformtools.utils.notifications.NotificationListener;
-import neildg.com.megatronsr.platformtools.utils.notifications.Notifications;
-import neildg.com.megatronsr.platformtools.utils.notifications.Parameters;
+import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
+import neildg.com.megatronsr.platformtools.notifications.NotificationListener;
+import neildg.com.megatronsr.platformtools.notifications.Notifications;
+import neildg.com.megatronsr.platformtools.notifications.Parameters;
 import neildg.com.megatronsr.threads.CaptureSRProcessor;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 

@@ -5,11 +5,9 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.util.Log;
-import android.widget.Toast;
 
-import neildg.com.megatronsr.CameraActivity;
-import neildg.com.megatronsr.platformtools.utils.notifications.NotificationCenter;
-import neildg.com.megatronsr.platformtools.utils.notifications.Notifications;
+import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
+import neildg.com.megatronsr.platformtools.notifications.Notifications;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**

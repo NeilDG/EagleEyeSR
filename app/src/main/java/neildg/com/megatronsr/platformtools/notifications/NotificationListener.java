@@ -1,5 +1,5 @@
 
-package neildg.com.megatronsr.platformtools.utils.notifications;
+package neildg.com.megatronsr.platformtools.notifications;
 
 /**
  * Add this to the one who will listen to a certain notification

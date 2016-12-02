@@ -1,7 +1,7 @@
 /**
  * 
  */
-package neildg.com.megatronsr.platformtools.utils.notifications;
+package neildg.com.megatronsr.platformtools.notifications;
 
 import java.util.HashMap;
 

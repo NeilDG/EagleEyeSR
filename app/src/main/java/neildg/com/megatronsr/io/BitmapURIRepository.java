@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import neildg.com.megatronsr.platformtools.utils.ApplicationCore;
+import neildg.com.megatronsr.platformtools.core_application.ApplicationCore;
 
 /**
  * Created by NeilDG on 3/5/2016.

@@ -25,7 +25,7 @@ import neildg.com.megatronsr.io.DirectoryStorage;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
-import neildg.com.megatronsr.platformtools.utils.ApplicationCore;
+import neildg.com.megatronsr.platformtools.core_application.ApplicationCore;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 

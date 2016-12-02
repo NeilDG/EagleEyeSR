@@ -5,11 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Camera;
-import android.graphics.ImageFormat;
-import android.graphics.Point;
 import android.graphics.SurfaceTexture;
-import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,17 +15,8 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.CaptureResult;
-import android.hardware.camera2.TotalCaptureResult;
-import android.hardware.camera2.params.MeteringRectangle;
-import android.media.Image;
-import android.media.ImageReader;
-import android.opengl.Visibility;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -40,18 +27,12 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import neildg.com.megatronsr.camera2.CameraDrawableView;
 import neildg.com.megatronsr.camera2.CameraModule;
@@ -63,13 +44,13 @@ import neildg.com.megatronsr.camera2.ResolutionPicker;
 import neildg.com.megatronsr.camera2.capture.CaptureProcessor;
 import neildg.com.megatronsr.camera2.capture.FocusProcessor;
 import neildg.com.megatronsr.constants.FilenameConstants;
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageReader;
-import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.platformtools.utils.notifications.NotificationCenter;
-import neildg.com.megatronsr.platformtools.utils.notifications.NotificationListener;
-import neildg.com.megatronsr.platformtools.utils.notifications.Notifications;
-import neildg.com.megatronsr.platformtools.utils.notifications.Parameters;
+import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
+import neildg.com.megatronsr.platformtools.notifications.NotificationListener;
+import neildg.com.megatronsr.platformtools.notifications.Notifications;
+import neildg.com.megatronsr.platformtools.notifications.Parameters;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 import neildg.com.megatronsr.ui.ResolutionPickerDialog;
 
@@ -101,7 +82,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
 
         CameraUserSettings.initialize();
         this.initializeCameraModule();
-        this.initializeCameraViews();
+        this.initializeOptionsView();
     }
 
     @Override
@@ -192,7 +173,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         imagePreviewBtn.setEnabled(false);
     }
 
-    private void initializeCameraViews() {
+    private void initializeOptionsView() {
         final View optionsOverlayView = this.findViewById(R.id.options_overlay_layout);
         optionsOverlayView.setVisibility(View.INVISIBLE);
 
@@ -209,6 +190,24 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             @Override
             public void onClick(View v) {
                 optionsOverlayView.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        ToggleButton debugBtn = (ToggleButton) optionsOverlayView.findViewById(R.id.debug_option_btn);
+        debugBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ParameterConfig.setPrefs(ParameterConfig.DEBUGGING_FLAG_KEY, isChecked);
+                Log.d(TAG, ParameterConfig.DEBUGGING_FLAG_KEY + " set to " +ParameterConfig.getPrefsBoolean(ParameterConfig.DEBUGGING_FLAG_KEY, false));
+            }
+        });
+
+        ToggleButton denoiseBtn = (ToggleButton) optionsOverlayView.findViewById(R.id.denoise_option_btn);
+        denoiseBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ParameterConfig.setPrefs(ParameterConfig.DENOISE_FLAG_KEY, isChecked);
+                Log.d(TAG, ParameterConfig.DENOISE_FLAG_KEY + " set to " +ParameterConfig.getPrefsBoolean(ParameterConfig.DENOISE_FLAG_KEY, false));
             }
         });
     }
