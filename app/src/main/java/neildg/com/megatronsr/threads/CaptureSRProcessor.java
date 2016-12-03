@@ -27,7 +27,7 @@ public class CaptureSRProcessor extends Thread {
 
     @Override
     public void run() {
-        this.interpolateFirstImage();
+        //this.interpolateFirstImage();
     }
 
     private void interpolateFirstImage() {

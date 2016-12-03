@@ -33,5 +33,6 @@ public class CaptureCompletedHandler extends CameraCaptureSession.CaptureCallbac
         super.onCaptureCompleted(session, request, result);
         Log.d(TAG, "Capture completed!");
         NotificationCenter.getInstance().postNotification(Notifications.ON_CAPTURE_COMPLETED);
+        NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_ENQUEUED);
     }
 }

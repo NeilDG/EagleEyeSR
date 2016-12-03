@@ -22,6 +22,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Size;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
@@ -49,6 +50,7 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.ImageFileAttribute;
+import neildg.com.megatronsr.model.multiple.ProcessingQueue;
 import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.notifications.NotificationListener;
 import neildg.com.megatronsr.platformtools.notifications.Notifications;
@@ -186,16 +188,11 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         this.optionsScreen.hide();
 
         //create container for processing queue view
-        this.processingQueueScreen = new ProcessingQueueScreen((ViewStub)this.findViewById(R.id.processing_queue_stub), false);
+        ProgressBar processingQueueBar = (ProgressBar) this.findViewById(R.id.processing_bar);
+        this.processingQueueScreen = new ProcessingQueueScreen((ViewStub)this.findViewById(R.id.processing_queue_stub), false, (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE),
+                processingQueueBar, this);
         this.processingQueueScreen.initialize();
 
-        ProgressBar processingQueueBar = (ProgressBar) this.findViewById(R.id.processing_bar);
-        processingQueueBar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CameraActivity.this.processingQueueScreen.show();
-            }
-        });
     }
 
     @Override
@@ -395,7 +392,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                     CameraActivity.this.createCameraPreview();
 
                     ImageButton imageButton = (ImageButton) CameraActivity.this.findViewById(R.id.btn_image_preview);
-                    Bitmap thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(FilenameConstants.INPUT_PREFIX_STRING, ImageFileAttribute.FileType.JPEG, 300, 300);
+                    Bitmap thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(ProcessingQueue.getInstance().peekImageName(), ImageFileAttribute.FileType.JPEG, 300, 300);
                     Log.d(TAG, "Thumbnail BMP:  "+thumbnailBmp.getAllocationByteCount());
                     imageButton.setImageBitmap(thumbnailBmp);
                     imageButton.setEnabled(true);

@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
+import neildg.com.megatronsr.model.multiple.ProcessingQueue;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -29,10 +30,7 @@ public class CapturedImageSaver implements ImageReader.OnImageAvailableListener 
     private String name;
     private ImageFileAttribute.FileType fileType;
 
-    private int index = 0;
-
     public CapturedImageSaver(String filePath, String name, ImageFileAttribute.FileType fileType) {
-        this.index = 0;
         this.filePath = filePath;
         this.name = name;
         this.fileType = fileType;
@@ -49,8 +47,7 @@ public class CapturedImageSaver implements ImageReader.OnImageAvailableListener 
             byte[] bytes = new byte[buffer.capacity()];
             buffer.get(bytes);
             save(bytes);
-
-            this.index++;
+            ProcessingQueue.getInstance().enqueueImageName(this.name);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

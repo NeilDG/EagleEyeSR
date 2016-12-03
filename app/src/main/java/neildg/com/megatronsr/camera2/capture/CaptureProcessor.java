@@ -23,6 +23,7 @@ import neildg.com.megatronsr.constants.DialogConstants;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
+import neildg.com.megatronsr.model.multiple.ProcessingQueue;
 import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.notifications.NotificationListener;
 import neildg.com.megatronsr.platformtools.notifications.Notifications;
@@ -70,7 +71,8 @@ public class CaptureProcessor implements NotificationListener{
             this.sensorRotation = sensorRotation;
         }
 
-        CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), FilenameConstants.INPUT_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
+        String formattedString = FilenameConstants.INPUT_PREFIX_STRING + ProcessingQueue.getInstance().getInputLength();
+        CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), formattedString, ImageFileAttribute.FileType.JPEG);
         this.imageReader = ImageReader.newInstance(this.imageResolution.getWidth(), this.imageResolution.getHeight(), ImageFormat.JPEG, 10);
         this.imageReader.setOnImageAvailableListener(capturedImageSaver, this.backgroundTheadHandler);
         this.setupCalled = true;
@@ -179,7 +181,6 @@ public class CaptureProcessor implements NotificationListener{
     public void onNotify(String notificationString, Parameters params) {
         if(notificationString == Notifications.ON_CAPTURE_COMPLETED) {
             //initiate capture SR processor proper
-            ProgressDialogHandler.getInstance().showProcessDialog(DialogConstants.DIALOG_PROGRESS_TITLE, "Processing captured image." , 0.0f);
             CaptureSRProcessor srProcessor = new CaptureSRProcessor();
             srProcessor.start();
         }
