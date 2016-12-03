@@ -55,6 +55,8 @@ import neildg.com.megatronsr.platformtools.notifications.Notifications;
 import neildg.com.megatronsr.platformtools.notifications.Parameters;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 import neildg.com.megatronsr.ui.ResolutionPickerDialog;
+import neildg.com.megatronsr.ui.views.OptionsScreen;
+import neildg.com.megatronsr.ui.views.ProcessingQueueScreen;
 
 public class CameraActivity extends AppCompatActivity implements ICameraTextureViewListener, ICameraModuleListener, SensorEventListener, View.OnTouchListener, NotificationListener {
     private final static String TAG = "CameraActivity";
@@ -69,8 +71,6 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     protected CameraCaptureSession cameraCaptureSessions;
     protected CaptureRequest.Builder captureRequestBuilder;
 
-    private ResolutionPickerDialog resolutionPickerDialog;
-
     private SensorManager sensorManager;
     private int sensorRotation = 0;
 
@@ -78,7 +78,8 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     private CaptureProcessor captureProcessor = new CaptureProcessor();
 
     //overlay views
-    private View processingQueueView;
+    private ProcessingQueueScreen processingQueueScreen;
+    private OptionsScreen optionsScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,64 +180,22 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     }
 
     private void initializeOverlayViews() {
-        final View optionsOverlayView = this.findViewById(R.id.options_overlay_layout);
-        optionsOverlayView.setVisibility(View.INVISIBLE);
+        //create container for options view
+        this.optionsScreen = new OptionsScreen(this.findViewById(R.id.options_overlay_layout));
+        this.optionsScreen.initialize();
+        this.optionsScreen.hide();
 
-        Button resolutionBtn = (Button) optionsOverlayView.findViewById(R.id.btn_image_resolution);
-        resolutionBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CameraActivity.this.resolutionPickerDialog.show();
-            }
-        });
-
-        Button closeBtn = (Button) optionsOverlayView.findViewById(R.id.btn_overlay_close);
-        closeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                optionsOverlayView.setVisibility(View.INVISIBLE);
-            }
-        });
-
-        ToggleButton debugBtn = (ToggleButton) optionsOverlayView.findViewById(R.id.debug_option_btn);
-        debugBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                ParameterConfig.setPrefs(ParameterConfig.DEBUGGING_FLAG_KEY, isChecked);
-                Log.d(TAG, ParameterConfig.DEBUGGING_FLAG_KEY + " set to " +ParameterConfig.getPrefsBoolean(ParameterConfig.DEBUGGING_FLAG_KEY, false));
-            }
-        });
-
-        ToggleButton denoiseBtn = (ToggleButton) optionsOverlayView.findViewById(R.id.denoise_option_btn);
-        denoiseBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                ParameterConfig.setPrefs(ParameterConfig.DENOISE_FLAG_KEY, isChecked);
-                Log.d(TAG, ParameterConfig.DENOISE_FLAG_KEY + " set to " +ParameterConfig.getPrefsBoolean(ParameterConfig.DENOISE_FLAG_KEY, false));
-            }
-        });
-
-        //inflate processing queue  view
-        ViewStub processingQueue = (ViewStub) this.findViewById(R.id.processing_queue_stub);
-        this.processingQueueView = processingQueue.inflate();
-        this.processingQueueView.setVisibility(View.INVISIBLE);
+        //create container for processing queue view
+        this.processingQueueScreen = new ProcessingQueueScreen((ViewStub)this.findViewById(R.id.processing_queue_stub), false);
+        this.processingQueueScreen.initialize();
 
         ProgressBar processingQueueBar = (ProgressBar) this.findViewById(R.id.processing_bar);
         processingQueueBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CameraActivity.this.processingQueueView.setVisibility(View.VISIBLE);
+                CameraActivity.this.processingQueueScreen.show();
             }
         });
-
-        ImageButton processingCloseBtn = (ImageButton) this.processingQueueView.findViewById(R.id.processing_close_btn);
-        processingCloseBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CameraActivity.this.processingQueueView.setVisibility(View.INVISIBLE);
-            }
-        });
-
     }
 
     @Override
@@ -245,8 +204,8 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         if(optionsOverlayView.getVisibility() == View.VISIBLE) {
             optionsOverlayView.setVisibility(View.INVISIBLE);
         }
-        else if(this.processingQueueView != null && this.processingQueueView.getVisibility() == View.VISIBLE) {
-            this.processingQueueView.setVisibility(View.INVISIBLE);
+        else if(this.processingQueueScreen != null && this.processingQueueScreen.isShown()) {
+            this.processingQueueScreen.hide();
         }
         else {
             super.onBackPressed();
@@ -264,8 +223,9 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         try {
             this.cameraId = manager.getCameraIdList()[CameraUserSettings.getInstance().getCameraId()];
             ResolutionPicker.updateCameraSettings(this, this.cameraId);
-            this.resolutionPickerDialog = new ResolutionPickerDialog(this);
-            this.resolutionPickerDialog.setup(ResolutionPicker.getSharedInstance().getAvailableCameraSizes());
+            ResolutionPickerDialog resolutionPickerDialog = new ResolutionPickerDialog(this);
+            resolutionPickerDialog.setup(ResolutionPicker.getSharedInstance().getAvailableCameraSizes());
+            this.optionsScreen.setupResolutionButton(resolutionPickerDialog);
             this.cameraTextureView.updateToOptimalSize(ResolutionPicker.getSharedInstance().getAvailableCameraSizes());
 
             // Add permission for camera and let user grant the permission
