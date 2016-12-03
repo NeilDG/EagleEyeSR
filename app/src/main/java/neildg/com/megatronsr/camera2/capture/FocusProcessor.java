@@ -18,6 +18,7 @@ import android.os.HandlerThread;
 import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
+import android.widget.Toast;
 
 import neildg.com.megatronsr.camera2.CameraUserSettings;
 
@@ -64,6 +65,8 @@ public class FocusProcessor extends CameraCaptureSession.CaptureCallback {
             this.captureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
         } catch(CameraAccessException  e) {
             e.printStackTrace();
+        } catch(IllegalStateException e) {
+            Log.e(TAG, "Preview focus failed. Processor busy.");
         }
 
     }
@@ -124,6 +127,8 @@ public class FocusProcessor extends CameraCaptureSession.CaptureCallback {
 
         } catch(CameraAccessException e) {
             e.printStackTrace();
+        } catch(IllegalStateException e) {
+            Log.e(TAG, "Focus failed. Processor busy. Try again!");
         }
     }
 

@@ -13,10 +13,12 @@ import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import neildg.com.megatronsr.CameraActivity;
 import neildg.com.megatronsr.camera2.CameraUserSettings;
 import neildg.com.megatronsr.camera2.capture_requests.BasicCaptureRequest;
 import neildg.com.megatronsr.constants.DialogConstants;
@@ -36,7 +38,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
  * Created by NeilDG on 11/19/2016.
  */
 
-public class CaptureProcessor implements NotificationListener{
+public class CaptureProcessor{
 
     private final static String TAG = "CaptureProcessor";
 
@@ -47,6 +49,8 @@ public class CaptureProcessor implements NotificationListener{
     private Size thumbnailSize; //size of the image/s' thumbnail
     private int sensorRotation;
 
+    private CameraActivity cameraActivity;
+
     private Handler backgroundTheadHandler;
     private HandlerThread backgroundThread;
 
@@ -56,8 +60,8 @@ public class CaptureProcessor implements NotificationListener{
 
     private MediaActionSound soundPlayer = new MediaActionSound();
 
-    public CaptureProcessor() {
-        NotificationCenter.getInstance().addObserver(Notifications.ON_CAPTURE_COMPLETED, this);
+    public CaptureProcessor(CameraActivity cameraActivity) {
+        this.cameraActivity = cameraActivity;
     }
 
     public void setup(CameraDevice cameraDevice, Size imageResolution, Size thumbnailSize, int sensorRotation, CameraUserSettings.CameraType cameraType) {
@@ -106,6 +110,10 @@ public class CaptureProcessor implements NotificationListener{
                         session.capture(basicCaptureRequest.getCaptureRequest(), captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
+                    }
+                    catch(IllegalStateException e) {
+                        Log.e(TAG, "Capture failed. Processor busy. Try again!");
+                        Toast.makeText(CaptureProcessor.this.cameraActivity, "Capture failed. Processor busy. Try again!", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -158,7 +166,6 @@ public class CaptureProcessor implements NotificationListener{
             this.outputSurfaces.clear();
             this.imageReader.close();
             this.setupCalled = false;
-            NotificationCenter.getInstance().removeObserver(Notifications.ON_CAPTURE_COMPLETED, this);
         }
 
     }
@@ -175,14 +182,5 @@ public class CaptureProcessor implements NotificationListener{
         }
 
         return captureRequests;
-    }
-
-    @Override
-    public void onNotify(String notificationString, Parameters params) {
-        if(notificationString == Notifications.ON_CAPTURE_COMPLETED) {
-            //initiate capture SR processor proper
-            CaptureSRProcessor srProcessor = new CaptureSRProcessor();
-            srProcessor.start();
-        }
     }
 }

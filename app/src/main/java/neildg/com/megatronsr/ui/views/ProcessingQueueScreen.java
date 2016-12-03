@@ -57,6 +57,9 @@ public class ProcessingQueueScreen extends AViewStubScreen implements Notificati
 
         NotificationCenter.getInstance().removeObserver(Notifications.ON_IMAGE_ENQUEUED, this); //remove first before adding to avoid duplication
         NotificationCenter.getInstance().addObserver(Notifications.ON_IMAGE_ENQUEUED, this);
+
+        NotificationCenter.getInstance().removeObserver(Notifications.ON_IMAGE_DEQUEUED, this); //remove first before adding to avoid duplication
+        NotificationCenter.getInstance().addObserver(Notifications.ON_IMAGE_DEQUEUED, this);
     }
 
     @Override
@@ -97,6 +100,8 @@ public class ProcessingQueueScreen extends AViewStubScreen implements Notificati
             ImageDetailElement imageDetailElement = this.arrayAdapter.getItem(i);
             if(imageDetailElement.getImageName() == fileName) {
                 imageDetailElement.destroy();
+                this.arrayAdapter.remove(imageDetailElement);
+                Log.d(TAG, "Image element " +fileName+ " removed.");
                 break;
             }
         }
@@ -106,6 +111,7 @@ public class ProcessingQueueScreen extends AViewStubScreen implements Notificati
             this.processingBar.setVisibility(View.INVISIBLE);
         }
 
+
     }
 
     public void clearElements() {
@@ -113,13 +119,21 @@ public class ProcessingQueueScreen extends AViewStubScreen implements Notificati
     }
 
     @Override
-    public void onNotify(String notificationString, Parameters params) {
+    public void onNotify(String notificationString, final Parameters params) {
         if(notificationString == Notifications.ON_IMAGE_ENQUEUED) {
             this.activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     String imageEnqueued = ProcessingQueue.getInstance().getLatestImageName();
                     ProcessingQueueScreen.this.addImageToProcess(imageEnqueued);
+                }
+            });
+        }
+        else if(notificationString == Notifications.ON_IMAGE_DEQUEUED) {
+            this.activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ProcessingQueueScreen.this.removeImageElement(params.getStringExtra(ProcessingQueue.IMAGE_NAME_KEY, ""));
                 }
             });
         }

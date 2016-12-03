@@ -55,6 +55,7 @@ import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.notifications.NotificationListener;
 import neildg.com.megatronsr.platformtools.notifications.Notifications;
 import neildg.com.megatronsr.platformtools.notifications.Parameters;
+import neildg.com.megatronsr.threads.CaptureSRProcessor;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 import neildg.com.megatronsr.ui.ResolutionPickerDialog;
 import neildg.com.megatronsr.ui.views.OptionsScreen;
@@ -76,8 +77,9 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     private SensorManager sensorManager;
     private int sensorRotation = 0;
 
-    private FocusProcessor focusProcessor = new FocusProcessor();
-    private CaptureProcessor captureProcessor = new CaptureProcessor();
+    private FocusProcessor focusProcessor = new FocusProcessor(); //thread that handles auto-focus algorithm
+    private CaptureProcessor captureProcessor = new CaptureProcessor(this); //thread that handles capturing and saving of photos
+    private CaptureSRProcessor srProcessor = new CaptureSRProcessor(); //thread that performs super-resolution.
 
     //overlay views
     private ProcessingQueueScreen processingQueueScreen;
@@ -99,6 +101,8 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         Log.e(TAG, "onResume");
         this.captureProcessor.startBackgroundThread();
         this.focusProcessor.startBackgroundThread();
+        this.srProcessor.startBackgroundThread();
+
         if (this.cameraTextureView.getTextureView().isAvailable()) {
             this.openCamera();
         }
@@ -131,6 +135,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     public void onDestroy() {
         super.onDestroy();
         CameraUserSettings.destroy();
+        this.srProcessor.stopBackgroundThread();
     }
 
     private void initializeCameraModule() {
@@ -189,7 +194,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
 
         //create container for processing queue view
         ProgressBar processingQueueBar = (ProgressBar) this.findViewById(R.id.processing_bar);
-        this.processingQueueScreen = new ProcessingQueueScreen((ViewStub)this.findViewById(R.id.processing_queue_stub), false, (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE),
+        this.processingQueueScreen = new ProcessingQueueScreen((ViewStub)this.findViewById(R.id.processing_queue_stub), false,
                 processingQueueBar, this);
         this.processingQueueScreen.initialize();
 
@@ -388,12 +393,10 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
             this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(CameraActivity.this, "Picture saved!", Toast.LENGTH_SHORT).show();
                     CameraActivity.this.createCameraPreview();
 
                     ImageButton imageButton = (ImageButton) CameraActivity.this.findViewById(R.id.btn_image_preview);
                     Bitmap thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(ProcessingQueue.getInstance().getLatestImageName(), ImageFileAttribute.FileType.JPEG, 300, 300);
-                    Log.d(TAG, "Thumbnail BMP:  "+thumbnailBmp.getAllocationByteCount());
                     imageButton.setImageBitmap(thumbnailBmp);
                     imageButton.setEnabled(true);
                 }

@@ -5,6 +5,8 @@ import android.util.Log;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import neildg.com.megatronsr.platformtools.notifications.Parameters;
+
 /**
  * Singleton instance that contains a queue of input string filenames that will be processed by the capture processor, and shown by the processing queue screen.
  * Created by NeilDG on 12/3/2016.
@@ -12,6 +14,7 @@ import java.util.Queue;
 
 public class ProcessingQueue {
     private final static String TAG = "ProcessingQueue";
+    public final static String IMAGE_NAME_KEY = "IMAGE_NAME_KEY";
 
     private static ProcessingQueue sharedInstance = null;
     public static ProcessingQueue getInstance() {
