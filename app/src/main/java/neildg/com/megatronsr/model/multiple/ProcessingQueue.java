@@ -30,7 +30,7 @@ public class ProcessingQueue {
 
     public void enqueueImageName(String imageName) {
         this.inputQueue.add(imageName);
-        Log.d(TAG, "Added image "+imageName+ " to input queue.");
+        Log.d(TAG, "Queue: Added image "+imageName+ " to input queue.");
     }
 
     public String dequeueImageName() {
@@ -46,6 +46,17 @@ public class ProcessingQueue {
     public String peekImageName() {
         if(this.inputQueue.size() > 0) {
             return this.inputQueue.peek();
+        }
+        else {
+            Log.d(TAG, "Input queue is already empty!");
+            return null;
+        }
+    }
+
+    public String getLatestImageName() {
+        if(this.inputQueue.size() > 0) {
+            LinkedList<String> inputList = (LinkedList<String>) this.inputQueue;
+            return inputList.getLast();
         }
         else {
             Log.d(TAG, "Input queue is already empty!");

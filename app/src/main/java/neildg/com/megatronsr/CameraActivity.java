@@ -392,7 +392,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
                     CameraActivity.this.createCameraPreview();
 
                     ImageButton imageButton = (ImageButton) CameraActivity.this.findViewById(R.id.btn_image_preview);
-                    Bitmap thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(ProcessingQueue.getInstance().peekImageName(), ImageFileAttribute.FileType.JPEG, 300, 300);
+                    Bitmap thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(ProcessingQueue.getInstance().getLatestImageName(), ImageFileAttribute.FileType.JPEG, 300, 300);
                     Log.d(TAG, "Thumbnail BMP:  "+thumbnailBmp.getAllocationByteCount());
                     imageButton.setImageBitmap(thumbnailBmp);
                     imageButton.setEnabled(true);

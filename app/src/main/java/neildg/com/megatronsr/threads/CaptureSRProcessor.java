@@ -3,6 +3,9 @@ package neildg.com.megatronsr.threads;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import neildg.com.megatronsr.camera2.capture.CaptureProcessor;
 import neildg.com.megatronsr.constants.DialogConstants;
 import neildg.com.megatronsr.constants.FilenameConstants;
@@ -20,6 +23,8 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 public class CaptureSRProcessor extends Thread {
     private final static String TAG = "CaptureSRProcessor";
+
+    private Lock processLock = new ReentrantLock();
 
     public CaptureSRProcessor() {
 

@@ -30,21 +30,15 @@
             android:padding="10dp"
             android:layout_height="40dp"
             android:layout_width="80dp" />
+
     </LinearLayout>
 
-    <ScrollView
+    <ListView
+        android:id = "@+id/queue_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="50dp">
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/queue_container">
-
-        </LinearLayout>
-    </ScrollView>
+        android:layout_weight="1"
+        android:layout_marginTop="50dp"/>
 
 
 </FrameLayout>
