@@ -12,6 +12,7 @@ public class FilenameConstants {
     public final static String HR_CUBIC = "cubic";
     public final static String HR_LINEAR = "linear";
     public final static String HR_ZERO_FILL = "zerofill";
+    public final static String HR_ITERATION_PREFIX_STRING = "hr_initial_";
 
     public final static String MATCHES_PREFIX_STRING = "refimage_matchto_";
     public final static String KEYPOINTS_STRING = "refimage_keypoint";

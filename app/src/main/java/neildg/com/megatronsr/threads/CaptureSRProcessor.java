@@ -9,8 +9,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import neildg.com.megatronsr.camera2.capture.CaptureProcessor;
-import neildg.com.megatronsr.constants.DialogConstants;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageReader;
@@ -22,7 +20,6 @@ import neildg.com.megatronsr.platformtools.notifications.NotificationListener;
 import neildg.com.megatronsr.platformtools.notifications.Notifications;
 import neildg.com.megatronsr.platformtools.notifications.Parameters;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
-import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
  * The main entry point for the SR functionality that is triggered via image captured.
@@ -58,24 +55,31 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
 
     @Override
     public void run() {
-        //this.interpolateFirstImage();
+        //this.produceInitialHRImage();
 
         this.processLock.lock();
 
         try {
 
+            boolean firstImage = true;
             //thread is always alive
             while(true) {
-
                 while (ProcessingQueue.getInstance().getInputLength() == 0) {
                     Log.d(TAG, "No images to process yet. Awaiting images.");
                     this.hasImage.await();
                 }
 
                 //perform code here
-                Log.d(TAG, "I can now process  "+ProcessingQueue.getInstance().peekImageName()); //NOTE: should be peek image name. for testing only.
+                if(firstImage) {
+                    Log.d(TAG, "Interpolating as initial HR  "+ProcessingQueue.getInstance().peekImageName());
+                    this.produceInitialHRImage(ProcessingQueue.getInstance().peekImageName());
+                    firstImage = false;
+                }
+                else {
+                    Log.d(TAG, "Processing image input  "+ProcessingQueue.getInstance().peekImageName());
+                    Thread.sleep(4000); //testing
 
-                Thread.sleep(4000); //testing
+                }
 
                 //once finished, dequeue image name, then broadcast dequeue event
                 String imageName = ProcessingQueue.getInstance().dequeueImageName();
@@ -92,39 +96,32 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
         }
     }
 
-    private void interpolateFirstImage() {
-        ProgressDialogHandler.getInstance().showProcessDialog(DialogConstants.DIALOG_PROGRESS_TITLE, "Upsampling image using nearest-neighbor.", 40.0f);
+    private void produceInitialHRImage(String fileName) {
+        boolean isDebugMode = ParameterConfig.getPrefsBoolean(ParameterConfig.DEBUGGING_FLAG_KEY, false);
 
-        Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
+        //produce initial HR using cubic interpolation
+        Mat inputMat = FileImageReader.getInstance().imReadOpenCV(fileName, ImageFileAttribute.FileType.JPEG);
+        Mat outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_ITERATION_PREFIX_STRING + fileName, ImageFileAttribute.FileType.JPEG);
 
-        Mat outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
-        FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
-        outputMat.release();
+        if(isDebugMode) {
+            //create cubic interpolation copy for comparison
+            FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
+            outputMat.release();
 
-        ProgressDialogHandler.getInstance().showProcessDialog(DialogConstants.DIALOG_PROGRESS_TITLE, "Upsampling image using linear.", 60.0f);
+            //produce other types of known interpolation techniques for comparison
+            outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
+            FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
+            outputMat.release();
 
-        outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_LINEAR);
-        FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG);
-        outputMat.release();
+            outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_LINEAR);
+            FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG);
+            outputMat.release();
 
-        ProgressDialogHandler.getInstance().showProcessDialog(DialogConstants.DIALOG_PROGRESS_TITLE, "Upsampling image using bicubic.", 80.0f);
-
-        outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
-        outputMat.release();
-
-        ProgressDialogHandler.getInstance().showProcessDialog(DialogConstants.DIALOG_PROGRESS_TITLE, "Upsampling image using bicubic.", 95.0f);
-
-        inputMat.release();
-        System.gc();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            inputMat.release();
+            System.gc();
         }
 
-        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 
     @Override

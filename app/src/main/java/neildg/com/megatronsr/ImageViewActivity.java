@@ -44,6 +44,7 @@ public class ImageViewActivity extends AppCompatActivity {
     }
 
     private void loadImageView() {
+
         this.nearestView = (SubsamplingScaleImageView) this.findViewById(R.id.nearest_image_view);
         String imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
         this.nearestView.setImage(ImageSource.uri(imageSource));
@@ -82,6 +83,32 @@ public class ImageViewActivity extends AppCompatActivity {
                 }
             }
         });
+
+        RadioButton nearestBtn = (RadioButton) radioGroup.findViewById(R.id.nearest_radio_btn);
+        RadioButton linearBtn = (RadioButton) radioGroup.findViewById(R.id.linear_radio_btn);
+        RadioButton cubicBtn = (RadioButton) radioGroup.findViewById(R.id.cubic_radio_btn);
+
+        if(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG)) {
+            nearestBtn.setEnabled(true);
+        }
+        else {
+            nearestBtn.setEnabled(false);
+        }
+
+        if(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG)) {
+            linearBtn.setEnabled(true);
+        }
+        else {
+            linearBtn.setEnabled(false);
+        }
+
+        if(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG)) {
+            cubicBtn.setEnabled(true);
+        }
+        else {
+            cubicBtn.setEnabled(false);
+        }
+
     }
 
     private void setImageViewType(ImageViewType imageViewType) {
