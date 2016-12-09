@@ -133,28 +133,27 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-
-
         RadioGroup scaleRadioGroup = (RadioGroup) this.findViewById(R.id.scale_radio_group);
-        ParameterConfig.setScalingFactor(4);
+        scaleRadioGroup.check(R.id.scale_2_btn); ParameterConfig.setScalingFactor(2);
         scaleRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
 
                 if(checkedId == R.id.scale_1_btn) {
-                    Toast.makeText(MainActivity.this, "Scale 1", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "No scaling applied", Toast.LENGTH_SHORT).show();
                     ParameterConfig.setScalingFactor(1);
                 }
                 else if(checkedId == R.id.scale_2_btn) {
-                    Toast.makeText(MainActivity.this, "Scale 2", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "2x scale", Toast.LENGTH_SHORT).show();
                     ParameterConfig.setScalingFactor(2);
                 }
                 else if(checkedId == R.id.scale_4_btn) {
-                    Toast.makeText(MainActivity.this, "Scale 4", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "4x scale", Toast.LENGTH_SHORT).show();
                     ParameterConfig.setScalingFactor(4);
                 }
             }
         });
+
 
         RadioGroup techniqueRadioGroup = (RadioGroup) this.findViewById(R.id.technique_radio_group);
         techniqueRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

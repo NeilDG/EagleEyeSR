@@ -20,8 +20,11 @@ import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
 import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
+import neildg.com.megatronsr.processing.multiple.fusion.OptimizedMeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.TransferToDirOperator;
 import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
+import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
+import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -39,12 +42,13 @@ public class ReleaseSRProcessor extends Thread{
     @Override
     public void run() {
 
-        ProgressDialogHandler.getInstance().showUserDialog("", "Processing image");
+        ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Creating backup copy for processing.", 0.0f);
 
         TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
         transferToDirOperator.perform();
         transferToDirOperator = null;
 
+        ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Interpolating images and extracting energy channel", 10.0f);
         this.interpolateFirstImage();
 
         //initialize storage classes
@@ -68,6 +72,8 @@ public class ReleaseSRProcessor extends Thread{
 
         }
 
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Assessing sharpness measure of images", 20.0f);
+
         //extract features
         YangFilter yangFilter = new YangFilter(energyInputMatList);
         yangFilter.perform();
@@ -89,6 +95,8 @@ public class ReleaseSRProcessor extends Thread{
 
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length);
 
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing feature matching against first image", 30.0f);
+
         //perform feature matching of LR images against the first image as reference mat.
         Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
         for(int i = 1; i < rgbInputMatList.length; i++) {
@@ -96,14 +104,17 @@ public class ReleaseSRProcessor extends Thread{
         }
 
         //perform affine warping
-        AffineWarpingOperator warpingOperator = new AffineWarpingOperator(rgbInputMatList[0], succeedingMatList);
+        /*AffineWarpingOperator warpingOperator = new AffineWarpingOperator(rgbInputMatList[0], succeedingMatList);
         warpingOperator.perform();
 
-        succeedingMatList = warpingOperator.getWarpedMatList();
+        succeedingMatList = warpingOperator.getWarpedMatList();*/
 
         //perform perspective warping
-        /*FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(rgbInputMatList[0], succeedingMatList);
+
+        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(rgbInputMatList[0], succeedingMatList);
         matchingOperator.perform();
+
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 60.0f);
 
         LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), succeedingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         perspectiveWarpOperator.perform();
@@ -116,16 +127,21 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.releaseAll(rgbInputMatList, false);
 
         Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
-        MatMemory.releaseAll(warpedMatList, true);*/
-
-        MatMemory.releaseAll(rgbInputMatList, false);
-        MatMemory.releaseAll(succeedingMatList, false);
+        MatMemory.releaseAll(warpedMatList, true);
 
         //deallocate some classes
         SharpnessMeasure.destroy();
+
+        ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 80.0f);
         this.performMeanFusion();
 
-        ProgressDialogHandler.getInstance().hideUserDialog();
+        ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 100.0f);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        ProgressDialogHandler.getInstance().hideProcessDialog();
 
         System.gc();
 
@@ -155,11 +171,11 @@ public class ReleaseSRProcessor extends Thread{
         int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
         String[] imagePathList = new String[numImages];
         for(int i = 0; i < numImages; i++) {
-            imagePathList[i] = "affine_warp_"+i;
+            imagePathList[i] = "warp_"+i;
         }
-        MeanFusionOperator fusionOperator = new MeanFusionOperator(imagePathList, "Fusing", "Fusing images using mean");
+        OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(imagePathList, "Optimized fusing", "Fusing images using mean");
         fusionOperator.perform();
-        FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), "rgb_merged", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
 
     }
 }
