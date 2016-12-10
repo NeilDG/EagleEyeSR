@@ -5,6 +5,7 @@ import android.util.Log;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import java.nio.channels.Pipe;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -15,6 +16,7 @@ import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.model.multiple.ProcessingQueue;
+import neildg.com.megatronsr.pipeline.PipelineManager;
 import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.notifications.NotificationListener;
 import neildg.com.megatronsr.platformtools.notifications.Notifications;
@@ -31,17 +33,20 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
 
     private Lock processLock = new ReentrantLock();
     private final Condition hasImage = processLock.newCondition();
+    private boolean firstImage = true;
     private boolean active = false;
+    private boolean processing = false;
 
     public CaptureSRProcessor() {
 
     }
-
     public void startBackgroundThread() {
         if(this.active == false) {
             NotificationCenter.getInstance().addObserver(Notifications.ON_SR_AWAKE, this);
             this.active = true;
             this.start();
+            PipelineManager.initialize();
+            PipelineManager.getInstance().startWorkers();
         }
     }
 
@@ -50,42 +55,42 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
             this.active = false;
             NotificationCenter.getInstance().removeObserver(Notifications.ON_SR_AWAKE, this);
             this.interrupt();
+            PipelineManager.destroy();
         }
     }
 
     @Override
     public void run() {
-        //this.produceInitialHRImage();
 
         this.processLock.lock();
 
         try {
 
-            boolean firstImage = true;
             //thread is always alive
             while(true) {
                 while (ProcessingQueue.getInstance().getInputLength() == 0) {
                     Log.d(TAG, "No images to process yet. Awaiting images.");
+                    this.processing = false;
                     this.hasImage.await();
                 }
 
+                this.processing = true;
+
                 //perform code here
-                if(firstImage) {
-                    Log.d(TAG, "Interpolating as initial HR  "+ProcessingQueue.getInstance().peekImageName());
-                    this.produceInitialHRImage(ProcessingQueue.getInstance().peekImageName());
-                    firstImage = false;
+                if(this.firstImage) {
+                    String imageName = ProcessingQueue.getInstance().dequeueImageName();
+                    Log.d(TAG, "Interpolating as initial HR "+imageName);
+                    this.produceInitialHRImage(imageName);
+                    this.firstImage = false;
+
+                    //pass to pipeline manager
+                    PipelineManager.getInstance().addImageEntry(imageName);
                 }
                 else {
-                    Log.d(TAG, "Processing image input  "+ProcessingQueue.getInstance().peekImageName());
-                    Thread.sleep(4000); //testing
-
+                    PipelineManager.getInstance().addImageEntry(ProcessingQueue.getInstance().dequeueImageName());
                 }
 
-                //once finished, dequeue image name, then broadcast dequeue event
-                String imageName = ProcessingQueue.getInstance().dequeueImageName();
-                Parameters parameters = new Parameters();
-                parameters.putExtra(ProcessingQueue.IMAGE_NAME_KEY, imageName);
-                NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_DEQUEUED, parameters);
+
             }
 
         } catch (InterruptedException e) {
@@ -124,12 +129,16 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
 
     }
 
+
     @Override
     public void onNotify(String notificationString, Parameters params) {
-        if(notificationString == Notifications.ON_SR_AWAKE) {
+        if(notificationString == Notifications.ON_SR_AWAKE && this.processing == false) {
             this.processLock.lock();
             this.hasImage.signal();
             this.processLock.unlock();
+        }
+        else {
+            Log.d(TAG, "Thread is already processing.");
         }
     }
 }

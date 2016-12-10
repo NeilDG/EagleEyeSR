@@ -13,12 +13,12 @@ import java.util.HashMap;
  */
 public class Parameters {
 
-	private HashMap<String, Object> objData = new HashMap<String, Object>();
-	private HashMap<String, Integer> intData = new HashMap<String, Integer>();
-	private HashMap<String, Boolean> boolData = new  HashMap<String, Boolean>();
-	private HashMap<String, Float> floatData = new HashMap<String, Float>();
-	private HashMap<String, Double> doubleData = new HashMap<String, Double>();
-	private HashMap<String, String> stringData = new HashMap<String, String>();
+	protected HashMap<String, Object> objData = new HashMap<String, Object>();
+	protected HashMap<String, Integer> intData = new HashMap<String, Integer>();
+	protected HashMap<String, Boolean> boolData = new  HashMap<String, Boolean>();
+	protected HashMap<String, Float> floatData = new HashMap<String, Float>();
+	protected HashMap<String, Double> doubleData = new HashMap<String, Double>();
+	protected HashMap<String, String> stringData = new HashMap<String, String>();
 	
 	public void putExtra(String key, int data){
 		this.intData.put(key, data);

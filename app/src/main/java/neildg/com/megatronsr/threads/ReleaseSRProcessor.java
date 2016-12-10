@@ -22,6 +22,7 @@ import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
 import neildg.com.megatronsr.processing.multiple.fusion.OptimizedMeanFusionOperator;
+import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.TransferToDirOperator;
 import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
@@ -72,7 +73,7 @@ public class ReleaseSRProcessor extends Thread{
 
         }
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Assessing sharpness measure of images", 20.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Assessing sharpness measure of images", 15.0f);
 
         //extract features
         YangFilter yangFilter = new YangFilter(energyInputMatList);
@@ -95,7 +96,16 @@ public class ReleaseSRProcessor extends Thread{
 
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length);
 
+        ProgressDialogHandler.getInstance().showProcessDialog("Denoising", "Performing denoising", 20.0f);
+
+        //perform denoising on original input list
+        DenoisingOperator denoisingOperator = new DenoisingOperator(rgbInputMatList);
+        denoisingOperator.perform();
+        MatMemory.releaseAll(rgbInputMatList, false);
+        rgbInputMatList = denoisingOperator.getResult();
+
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing feature matching against first image", 30.0f);
+
 
         //perform feature matching of LR images against the first image as reference mat.
         Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
@@ -177,13 +187,13 @@ public class ReleaseSRProcessor extends Thread{
 
         //add initial input HR image
         imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + 0);
-        for(int i = 0; i < numImages; i++) {
-            imagePathList.add("warp_"+i);
-        }
-
-        OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(imagePathList.toArray(new String[imagePathList.size()]), "Optimized fusing", "Fusing images using mean");
-        fusionOperator.perform();
-        FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
-
+    for(int i = 0; i < numImages; i++) {
+        imagePathList.add("warp_"+i);
     }
+
+    OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(imagePathList.toArray(new String[imagePathList.size()]), "Optimized fusing", "Fusing images using mean");
+    fusionOperator.perform();
+    FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+
+}
 }

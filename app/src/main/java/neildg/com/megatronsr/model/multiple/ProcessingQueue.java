@@ -18,21 +18,28 @@ public class ProcessingQueue {
 
     private static ProcessingQueue sharedInstance = null;
     public static ProcessingQueue getInstance() {
-        if(sharedInstance == null) {
-            sharedInstance = new ProcessingQueue();
-        }
-
         return sharedInstance;
+    }
+
+    public static void initialize() {
+        sharedInstance = new ProcessingQueue();
+    }
+
+    public static void destroy() {
+        sharedInstance = null;
     }
 
     private Queue<String> inputQueue = new LinkedList<>();
 
-    private ProcessingQueue() {
+    private int counter = 0;
 
+    private ProcessingQueue() {
+        this.counter = 0;
     }
 
     public void enqueueImageName(String imageName) {
         this.inputQueue.add(imageName);
+        this.counter++;
         Log.d(TAG, "Queue: Added image "+imageName+ " to input queue.");
     }
 
@@ -71,6 +78,9 @@ public class ProcessingQueue {
         return this.inputQueue.size() > 0;
     }
 
+    public int getCounter() {
+        return this.counter;
+    }
     public int getInputLength() {
         return this.inputQueue.size();
     }

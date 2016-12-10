@@ -103,7 +103,7 @@ public class SharpnessMeasure {
         return this.latestResult;
     }
 
-    public double measure(Mat edgeMat) {
+    public static double measure(Mat edgeMat) {
         int withValues = Core.countNonZero(edgeMat);
         int dimension = edgeMat.cols() * edgeMat.rows();
 

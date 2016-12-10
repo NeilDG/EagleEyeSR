@@ -93,6 +93,8 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         CameraUserSettings.initialize();
         this.initializeCameraModule();
         this.initializeOverlayViews();
+
+        ProcessingQueue.initialize();
     }
 
     @Override
@@ -136,6 +138,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         super.onDestroy();
         CameraUserSettings.destroy();
         this.srProcessor.stopBackgroundThread();
+        ProcessingQueue.destroy();
     }
 
     private void initializeCameraModule() {
