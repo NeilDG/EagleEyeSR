@@ -79,7 +79,7 @@ public class FuseInterpolateOperator implements IOperator {
         this.outputMat = Mat.zeros(this.fusedMat.rows() * ParameterConfig.getScalingFactor(), this.fusedMat.cols() * ParameterConfig.getScalingFactor(), this.fusedMat.type());
 
         Imgproc.resize(this.fusedMat, this.outputMat, this.outputMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
         ProgressDialogHandler.getInstance().hideDialog();
 
         /*MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_result", this.groundTruthMat, "GroundTruth", this.fusedMat,

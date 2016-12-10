@@ -5,6 +5,8 @@ import android.util.Log;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.ArrayList;
+
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
@@ -19,10 +21,8 @@ import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
-import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.OptimizedMeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.TransferToDirOperator;
-import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -154,11 +154,15 @@ public class ReleaseSRProcessor extends Thread{
         Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
         Mat outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
-        FileImageWriter.getInstance().saveMatrixToImage(outputMat, "nearest", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
         outputMat.release();
 
+        /*outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_LINEAR);
+        FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG);
+        outputMat.release();*/
+
         outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        FileImageWriter.getInstance().saveMatrixToImage(outputMat, "bicubic", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
         outputMat.release();
 
         inputMat.release();
@@ -169,13 +173,17 @@ public class ReleaseSRProcessor extends Thread{
 
     private void performMeanFusion() {
         int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
-        String[] imagePathList = new String[numImages];
+        ArrayList<String> imagePathList = new ArrayList<>();
+
+        //add initial input HR image
+        imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + 0);
         for(int i = 0; i < numImages; i++) {
-            imagePathList[i] = "warp_"+i;
+            imagePathList.add("warp_"+i);
         }
-        OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(imagePathList, "Optimized fusing", "Fusing images using mean");
+
+        OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(imagePathList.toArray(new String[imagePathList.size()]), "Optimized fusing", "Fusing images using mean");
         fusionOperator.perform();
-        FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_PROCESSED_STRING, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
 
     }
 }

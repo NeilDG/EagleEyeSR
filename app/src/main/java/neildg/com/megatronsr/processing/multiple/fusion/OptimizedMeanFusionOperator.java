@@ -44,14 +44,16 @@ public class OptimizedMeanFusionOperator implements IOperator {
         ProgressDialogHandler.getInstance().showDialog(this.title, this.message);
 
         int scale = ParameterConfig.getScalingFactor();
+        this.outputMat = new Mat();
 
         Mat initialMat = FileImageReader.getInstance().imReadOpenCV(this.imageMatPathList[0], ImageFileAttribute.FileType.JPEG);
         initialMat.convertTo(initialMat, CvType.CV_32FC(initialMat.channels())); //convert to CV_32F
 
-        Mat sumMat = ImageOperator.performInterpolation(initialMat, scale, Imgproc.INTER_CUBIC); //perform cubic interpolation
+        Mat sumMat = ImageOperator.performInterpolation(initialMat, scale, Imgproc.INTER_CUBIC); //perform cubic interpolation for initial HR
+        sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
+        FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_ITERATION_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
         initialMat.release();
-
-        this.outputMat = new Mat();
+        this.outputMat.release();
 
         for(int i = 1; i < this.imageMatPathList.length; i++) {
             //load second mat
@@ -71,7 +73,7 @@ public class OptimizedMeanFusionOperator implements IOperator {
 
             Log.d(TAG, "sumMat size: " +sumMat.size().toString());
             sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
-            FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, "sum_after"+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_ITERATION_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
 
             initialMat.release();
             maskMat.release();

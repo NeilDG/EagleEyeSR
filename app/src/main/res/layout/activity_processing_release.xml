@@ -50,37 +50,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Image Results"
+            android:text="View Image Results"
             android:id="@+id/textView6"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="0dp"
             android:layout_marginBottom="0dp" />
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Nearest-Neighbor"
-                android:id="@+id/nearest_btn"
-                android:layout_weight="0.5" />
-
-            <Button
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Bicubic"
-                android:id="@+id/bicubic_btn"
-                android:layout_weight="0.5" />
-        </LinearLayout>
-
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Super-Resolution"
-            android:id="@+id/sr_view_btn" />
+            android:text="Image Viewer"
+            android:id="@+id/image_results_view_btn" />
 
     </LinearLayout>
 

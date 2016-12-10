@@ -54,14 +54,17 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
         });
 
         //temporarily disable results button
-        Button nearestBtn = (Button) this.findViewById(R.id.nearest_btn);
-        nearestBtn.setEnabled(false);
+        Button imageViewBtn = (Button) this.findViewById(R.id.image_results_view_btn);
+        imageViewBtn.setEnabled(false);
 
-        Button bicubicBtn = (Button) this.findViewById(R.id.bicubic_btn);
-        bicubicBtn.setEnabled(false);
+        imageViewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent previewIntent = new Intent(ProcessingActivityRelease.this, ImageViewActivity.class);
+                startActivity(previewIntent);
+            }
+        });
 
-        Button srViewBtn = (Button) this.findViewById(R.id.sr_view_btn);
-        srViewBtn.setEnabled(false);
     }
 
 
@@ -77,7 +80,12 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
 
     @Override
     public void onProcessCompleted() {
-        //Intent processingIntent = new Intent(ProcessingActivityRelease.this, MeanFusionActivity.class);
-        //this.startActivity(processingIntent);
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Button imageViewBtn = (Button) ProcessingActivityRelease.this.findViewById(R.id.image_results_view_btn);
+                imageViewBtn.setEnabled(true);
+            }
+        });
     }
 }

@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity{
     private List<String> imagesEncodedList;
 
     static {
+        System.loadLibrary("opencv_java3");
         System.loadLibrary("opencv_bridge");
     }
 
