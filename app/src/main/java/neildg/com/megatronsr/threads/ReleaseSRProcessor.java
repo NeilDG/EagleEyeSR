@@ -47,13 +47,11 @@ public class ReleaseSRProcessor extends Thread{
 
         TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
         transferToDirOperator.perform();
-        transferToDirOperator = null;
 
         ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Interpolating images and extracting energy channel", 10.0f);
         this.interpolateFirstImage();
 
-        //initialize storage classes
-        //ProcessedImageRepo.initialize();
+        //initialize classes
         SharpnessMeasure.initialize();
 
         //load images and use Y channel as input for succeeding operators
@@ -96,17 +94,23 @@ public class ReleaseSRProcessor extends Thread{
 
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length);
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Denoising", "Performing denoising", 20.0f);
+        boolean performDenoising = ParameterConfig.getPrefsBoolean(ParameterConfig.DENOISE_FLAG_KEY, false);
 
-        //perform denoising on original input list
-        DenoisingOperator denoisingOperator = new DenoisingOperator(rgbInputMatList);
-        denoisingOperator.perform();
-        MatMemory.releaseAll(rgbInputMatList, false);
-        rgbInputMatList = denoisingOperator.getResult();
+        if(performDenoising) {
+            ProgressDialogHandler.getInstance().showProcessDialog("Denoising", "Performing denoising", 20.0f);
+
+            //perform denoising on original input list
+            DenoisingOperator denoisingOperator = new DenoisingOperator(rgbInputMatList);
+            denoisingOperator.perform();
+            MatMemory.releaseAll(rgbInputMatList, false);
+            rgbInputMatList = denoisingOperator.getResult();
+
+        }
+        else {
+            Log.d(TAG, "Denoising will be skipped!");
+        }
 
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing feature matching against first image", 30.0f);
-
-
         //perform feature matching of LR images against the first image as reference mat.
         Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
         for(int i = 1; i < rgbInputMatList.length; i++) {
@@ -159,26 +163,29 @@ public class ReleaseSRProcessor extends Thread{
     }
 
     private void interpolateFirstImage() {
-        //ProgressDialogHandler.getInstance().showUserDialog("Interpolating images", "Upsampling image using nearest-neighbor, bilinear and bicubic");
+        boolean outputComparisons = ParameterConfig.getPrefsBoolean(ParameterConfig.DEBUGGING_FLAG_KEY, false);
 
-        Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
+        if(outputComparisons) {
+            Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
-        Mat outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
-        FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
-        outputMat.release();
+            Mat outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
+            FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
+            outputMat.release();
 
         /*outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_LINEAR);
         FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG);
         outputMat.release();*/
 
-        outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
-        outputMat.release();
+            outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+            FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
+            outputMat.release();
 
-        inputMat.release();
-        System.gc();
-
-        //ProgressDialogHandler.getInstance().hideUserDialog();
+            inputMat.release();
+            System.gc();
+        }
+        else {
+            Log.d(TAG, "Debugging mode disabled. Will skip output interpolated images.");
+        }
     }
 
     private void performMeanFusion() {

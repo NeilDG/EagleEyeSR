@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
@@ -120,12 +121,13 @@ public class FeatureMatchingOperator {
         Log.d(TAG, "Reference size: " +this.referenceDescriptor.size().toString()+ " Comparing descriptor size: " +comparingDescriptor.size().toString());
         this.matcher.match(this.referenceDescriptor, comparingDescriptor, initialMatch);
 
+        float minDistance = ParameterConfig.getPrefsFloat(ParameterConfig.FEATURE_MINIMUM_DISTANCE_KEY, 999.0f);
         //only select good matches
         DMatch[] dMatchList = initialMatch.toArray();
         List<DMatch> goodMatchesList = new ArrayList<DMatch>();
         for(int i = 0; i < dMatchList.length; i++) {
             Log.d(TAG, "dMatch distance: " +dMatchList[i].distance);
-            /*if(dMatchList[i].distance < 15.0f)*/ {
+            if(dMatchList[i].distance < minDistance) {
                 goodMatchesList.add(dMatchList[i]);
             }
         }

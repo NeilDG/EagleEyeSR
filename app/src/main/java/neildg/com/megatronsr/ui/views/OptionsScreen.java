@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ToggleButton;
 
 import neildg.com.megatronsr.R;
@@ -29,7 +30,7 @@ public class OptionsScreen extends AScreen {
         closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                referenceView.setVisibility(View.INVISIBLE);
+                hide();
             }
         });
 
@@ -50,15 +51,46 @@ public class OptionsScreen extends AScreen {
                 Log.d(TAG, ParameterConfig.DENOISE_FLAG_KEY + " set to " +ParameterConfig.getPrefsBoolean(ParameterConfig.DENOISE_FLAG_KEY, false));
             }
         });
+
+        this.setDefaults();
     }
 
     public void setupResolutionButton(final ResolutionPickerDialog dialog) {
-        Button resolutionBtn = (Button) this.referenceView.findViewById(R.id.btn_image_resolution);
+       /*Button resolutionBtn = (Button) this.referenceView.findViewById(R.id.btn_image_resolution);
         resolutionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.show();
             }
-        });
+        });*/
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+
+        //update parameter config
+        EditText minDistText = (EditText) this.referenceView.findViewById(R.id.feature_dist_text);
+        String valueString = minDistText.getText().toString();
+
+        try {
+            float newValue = Float.parseFloat(valueString);
+            ParameterConfig.setPrefs(ParameterConfig.FEATURE_MINIMUM_DISTANCE_KEY, newValue);
+
+            Log.d(TAG, "New min distance threshold set: " +ParameterConfig.getPrefsFloat(ParameterConfig.FEATURE_MINIMUM_DISTANCE_KEY, 999.0f));
+        } catch(NumberFormatException e) {
+            Log.e(TAG, "Error in parsing min distance text. Not a valid value. Value: " +valueString);
+        }
+    }
+
+    /*
+         * Set some default settings here
+         */
+    private void setDefaults() {
+        ToggleButton debugBtn = (ToggleButton) this.referenceView.findViewById(R.id.debug_option_btn);
+        debugBtn.setChecked(true); //enable debug mode by default
+
+        ToggleButton denoiseBtn = (ToggleButton) this.referenceView.findViewById(R.id.denoise_option_btn);
+        denoiseBtn.setChecked(false); //disable denoising mode by default.
     }
 }

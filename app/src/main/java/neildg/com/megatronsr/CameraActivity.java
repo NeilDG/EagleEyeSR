@@ -205,9 +205,8 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
 
     @Override
     public void onBackPressed() {
-        View optionsOverlayView = this.findViewById(R.id.options_overlay_layout);
-        if(optionsOverlayView.getVisibility() == View.VISIBLE) {
-            optionsOverlayView.setVisibility(View.INVISIBLE);
+        if(this.optionsScreen != null && this.optionsScreen.isShown()) {
+            this.optionsScreen.hide();
         }
         else if(this.processingQueueScreen != null && this.processingQueueScreen.isShown()) {
             this.processingQueueScreen.hide();

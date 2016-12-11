@@ -22,6 +22,7 @@ public class ParameterConfig {
 
     public final static String DEBUGGING_FLAG_KEY = "DEBUGGING_FLAG_KEY";
     public final static String DENOISE_FLAG_KEY = "DENOISE_FLAG_KEY";
+    public final static String FEATURE_MINIMUM_DISTANCE_KEY = "FEATURE_MINIMUM_DISTANCE_KEY";
 
     private SRTechnique currentTechnique = SRTechnique.MULTIPLE;
 

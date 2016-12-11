@@ -9,16 +9,20 @@ import android.widget.TextView;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
+import neildg.com.megatronsr.model.multiple.ProcessingQueue;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
 import neildg.com.megatronsr.threads.ReleaseSRProcessor;
 import neildg.com.megatronsr.threads.SingleImageSRProcessor;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
+import neildg.com.megatronsr.ui.views.OptionsScreen;
 
 /*
  * Activity to use for release mode
  * By: NeilDG
  */
 public class ProcessingActivityRelease extends AppCompatActivity implements IProcessListener {
+
+    private OptionsScreen optionsScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +31,9 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
 
         ProgressDialogHandler.initialize(this);
 
+        this.initializeOverlayViews();
         this.initializeButtons();
+
     }
 
     @Override
@@ -65,6 +71,31 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
             }
         });
 
+        Button settinsBtn = (Button) this.findViewById(R.id.settings_btn);
+        settinsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProcessingActivityRelease.this.optionsScreen.show();
+            }
+        });
+
+    }
+
+    private void initializeOverlayViews() {
+        //create container for options view
+        this.optionsScreen = new OptionsScreen(this.findViewById(R.id.options_overlay_layout));
+        this.optionsScreen.initialize();
+        this.optionsScreen.hide();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(this.optionsScreen != null && this.optionsScreen.isShown()) {
+            this.optionsScreen.hide();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
 
