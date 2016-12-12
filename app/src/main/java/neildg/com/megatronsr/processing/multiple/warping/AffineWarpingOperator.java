@@ -40,7 +40,7 @@ public class AffineWarpingOperator implements IOperator {
     @Override
     public void perform() {
         for(int i = 0; i < inputMatList.length; i++) {
-            Log.e(TAG, "input size: " +this.inputMatList[i].size()+ " Reference mat size: " +this.referenceMat.size());
+            //Log.e(TAG, "input size: " +this.inputMatList[i].size()+ " Reference mat size: " +this.referenceMat.size());
             Mat affineMat = Video.estimateRigidTransform(this.inputMatList[i], this.referenceMat, true);
             this.warpedMatList[i] = new Mat();
 

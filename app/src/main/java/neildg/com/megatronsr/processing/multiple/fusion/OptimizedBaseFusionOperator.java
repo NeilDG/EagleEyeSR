@@ -60,16 +60,16 @@ public class OptimizedBaseFusionOperator implements IOperator {
 
             //perform interpolation
             initialMat = ImageOperator.performInterpolation(initialMat, scale, Imgproc.INTER_CUBIC); //perform cubic interpolation
-
             Core.add(sumMat, initialMat, sumMat, maskMat, CvType.CV_32FC(initialMat.channels()));
+
+            initialMat.release();
 
             //double value of initial sumMat so that division is still constant 2
             Core.bitwise_not(maskMat, maskMat);
-            Core.add(sumMat, sumMat, sumMat, maskMat, CvType.CV_32FC(initialMat.channels()));
+            Core.add(sumMat, sumMat, sumMat, maskMat, CvType.CV_32FC(sumMat.channels()));
 
             Core.divide(sumMat, Scalar.all(2), sumMat);
 
-            initialMat.release();
 
             Log.d(TAG, "sumMat size: " +sumMat.size().toString());
             sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));

@@ -78,7 +78,6 @@ public class YangFilterFusionOperator implements IOperator {
         //Core.divide(sumMat, divMat, this.outputMat);
 
         this.outputMat.convertTo(this.outputMat, CvType.CV_8UC(this.combineMatList[0].channels()));
-        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 
     public Mat getResult() {
