@@ -107,11 +107,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="MultipleImageSRProcessor.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="MultipleImageSRProcessor.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/threads/MultipleImageSRProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="239">
               <caret line="130" column="60" selection-start-line="130" selection-start-column="60" selection-end-line="130" selection-end-column="60" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BuildMode.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/constants/BuildMode.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="96">
+              <caret line="6" column="58" selection-start-line="6" selection-start-column="58" selection-end-line="6" selection-end-column="58" />
               <folding />
             </state>
           </provider>
@@ -172,35 +182,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ReleaseSRProcessor.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ReleaseSRProcessor.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/threads/ReleaseSRProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="445">
-              <caret line="96" column="64" selection-start-line="89" selection-start-column="8" selection-end-line="96" selection-end-column="64" />
+            <state relative-caret-position="335">
+              <caret line="78" column="41" selection-start-line="78" selection-start-column="41" selection-end-line="78" selection-end-column="41" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Video.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/openCVLibrary310/src/main/java/org/opencv/video/Video.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="139">
-              <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AffineWarpingOperator.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/warping/AffineWarpingOperator.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="139">
-              <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
-              <folding>
-                <element signature="e#1134#1135#0" expanded="true" />
-                <element signature="e#1175#1176#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -2729,7 +2716,6 @@
         <option value="$PROJECT_DIR$/app/src/main/res/layout/overlay_options_layout.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/ui/views/OptionsScreen.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/fusion/OptimizedEdgeFusionOperator.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/constants/BuildMode.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/debugging/MatSavingTest.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/debugging/ZeroFillingTest.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/imagetools/OpticalFlowTest.java" />
@@ -2751,7 +2737,6 @@
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/ui/ProgressDialogHandler.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/selection/TestImagesSelector.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/warping/FeatureMatchingOperator.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/filters/YangFilter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/warping/OpticalFlowZeroFillOperator.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/single/gaussian/ImageHRCreator.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/single/gaussian/InputImageAssociator.java" />
@@ -2768,6 +2753,8 @@
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/constants/FilenameConstants.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/warping/LRWarpingOperator.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/threads/MultipleImageSRProcessor.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/constants/BuildMode.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/filters/YangFilter.java" />
       </list>
     </option>
   </component>
@@ -3584,12 +3571,12 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="0" width="1932" height="1047" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19829424" sideWeight="0.5601852" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.49943757" sideWeight="0.50747865" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.49943757" sideWeight="0.49252138" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.49943757" sideWeight="0.49252138" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -3762,14 +3749,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/constants/BuildMode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="6" column="56" selection-start-line="6" selection-start-column="56" selection-end-line="6" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/fusion/OptimizedMeanFusionOperator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="358">
@@ -3896,14 +3875,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/filters/YangFilter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="236">
-          <caret line="76" column="103" selection-start-line="76" selection-start-column="103" selection-end-line="76" selection-end-column="103" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/warping/OpticalFlowZeroFillOperator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-36">
@@ -4000,14 +3971,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/threads/ReleaseSRProcessor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="445">
-          <caret line="96" column="64" selection-start-line="89" selection-start-column="8" selection-end-line="96" selection-end-column="64" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/io/FileImageReader.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="139">
@@ -4023,17 +3986,6 @@
           <folding>
             <element signature="e#2950#2951#0" expanded="true" />
             <element signature="e#2991#2992#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/warping/AffineWarpingOperator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
-          <folding>
-            <element signature="e#1134#1135#0" expanded="true" />
-            <element signature="e#1175#1176#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -4072,10 +4024,42 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/constants/BuildMode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="6" column="58" selection-start-line="6" selection-start-column="58" selection-end-line="6" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/threads/MultipleImageSRProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="239">
           <caret line="130" column="60" selection-start-line="130" selection-start-column="60" selection-end-line="130" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/multiple/warping/AffineWarpingOperator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="28" column="11" selection-start-line="28" selection-start-column="11" selection-end-line="28" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/processing/filters/YangFilter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="685">
+          <caret line="91" column="9" selection-start-line="91" selection-start-column="9" selection-end-line="91" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/megatronsr/threads/ReleaseSRProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="335">
+          <caret line="78" column="41" selection-start-line="78" selection-start-column="41" selection-end-line="78" selection-end-column="41" />
           <folding />
         </state>
       </provider>

@@ -90,7 +90,6 @@ public class YangFilter implements IOperator {
             Core.addWeighted(edgeMat, -0.35, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
             ImageWriter.getInstance().saveMatrixToImage(this.inputMatList[i], "YangEdges", "image_sharpen_"+i, ImageFileAttribute.FileType.JPEG);*/
         }
-        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 
     public Mat[] getEdgeMatList() {
