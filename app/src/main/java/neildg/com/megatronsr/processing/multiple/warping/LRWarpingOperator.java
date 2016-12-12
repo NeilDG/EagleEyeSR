@@ -23,6 +23,8 @@ import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
+import static neildg.com.megatronsr.constants.FilenameConstants.WARP_PREFIX;
+
 /**
  * Created by neil.dg on 3/10/16.
  */
@@ -54,7 +56,7 @@ public class LRWarpingOperator {
             Mat warpedMat = this.warpImage(this.goodMatchList[i], this.keyPointList[i], this.imagesToWarpList[i]);
             this.warpedMatList[i] = warpedMat;
 
-            FileImageWriter.getInstance().saveMatrixToImage(warpedMat, "warp_" +i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(warpedMat, WARP_PREFIX +i, ImageFileAttribute.FileType.JPEG);
 
             this.imagesToWarpList[i].release();
             //ProgressDialogHandler.getInstance().hideDialog();

@@ -14,8 +14,7 @@ public class FilenameConstants {
     public final static String HR_ZERO_FILL = "zerofill";
     public final static String HR_ITERATION_PREFIX_STRING = "hr_initial_";
 
-    public final static String PERSPECTIVE_WARP_PREFIX = "pers_warp_";
-    public final static String AFFINE_WARP_PREFIX = "affine_warp_";
+    public final static String WARP_PREFIX = "warp_";
 
     public final static String EDGE_DIRECTORY_PREFIX = "YangEdges";
     public final static String IMAGE_EDGE_PREFIX = "image_edge_";

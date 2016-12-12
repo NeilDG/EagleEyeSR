@@ -18,10 +18,8 @@ import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
-import neildg.com.megatronsr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.OptimizedBaseFusionOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
-import neildg.com.megatronsr.processing.multiple.resizing.DegradationOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.megatronsr.processing.multiple.selection.TestImagesSelector;
 import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
@@ -90,8 +88,8 @@ public class MultipleImageSRProcessor extends Thread {
         }
 
         //simulate degradation
-        DegradationOperator degradationOperator = new DegradationOperator();
-        degradationOperator.perform();
+        //DegradationOperator degradationOperator = new DegradationOperator();
+        //degradationOperator.perform();
 
         //reload images again. degradation has been imposed in input images.
         for(int i = 0; i < rgbInputMatList.length; i++) {
@@ -106,7 +104,20 @@ public class MultipleImageSRProcessor extends Thread {
         sharpnessResult = SharpnessMeasure.getSharedInstance().measureSharpness(testImagesSelector.getProposedEdgeList());
 
         //trim the input list from the measured sharpness mean
-        rgbInputMatList = SharpnessMeasure.getSharedInstance().trimMatList(rgbInputMatList, sharpnessResult, 0.0);
+        Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(rgbInputMatList.length, sharpnessResult, 0.0);
+
+        ArrayList<Mat> newInputMatList = new ArrayList<>();
+
+        //load RGB inputs
+        for(int i = 0; i < inputIndices.length; i++) {
+            if(FileImageReader.getInstance().doesImageExists(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG)) {
+                Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG);
+                newInputMatList.add(inputMat);
+            }
+        }
+
+        rgbInputMatList = newInputMatList.toArray(new Mat[newInputMatList.size()]);
+        Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length);
 
         boolean performDenoising = ParameterConfig.getPrefsBoolean(ParameterConfig.DENOISE_FLAG_KEY, false);
 
@@ -193,7 +204,7 @@ public class MultipleImageSRProcessor extends Thread {
         //add initial input HR image
         imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + 0);
         for(int i = 0; i < numImages; i++) {
-            imagePathList.add(FilenameConstants.AFFINE_WARP_PREFIX+i);
+            imagePathList.add(FilenameConstants.WARP_PREFIX +i);
         }
 
         OptimizedBaseFusionOperator fusionOperator = new OptimizedBaseFusionOperator(imagePathList.toArray(new String[imagePathList.size()]));

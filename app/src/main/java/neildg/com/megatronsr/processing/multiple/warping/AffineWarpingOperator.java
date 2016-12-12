@@ -1,5 +1,7 @@
 package neildg.com.megatronsr.processing.multiple.warping;
 
+import android.util.Log;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
@@ -12,7 +14,6 @@ import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.processing.IOperator;
-import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
  * Affine warping counterpart of perspective warping
@@ -39,6 +40,7 @@ public class AffineWarpingOperator implements IOperator {
     @Override
     public void perform() {
         for(int i = 0; i < inputMatList.length; i++) {
+            Log.e(TAG, "input size: " +this.inputMatList[i].size()+ " Reference mat size: " +this.referenceMat.size());
             Mat affineMat = Video.estimateRigidTransform(this.inputMatList[i], this.referenceMat, true);
             this.warpedMatList[i] = new Mat();
 
@@ -51,7 +53,7 @@ public class AffineWarpingOperator implements IOperator {
                 this.inputMatList[i].copyTo(this.warpedMatList[i]);
             }
 
-            FileImageWriter.getInstance().saveMatrixToImage(this.warpedMatList[i], FilenameConstants.AFFINE_WARP_PREFIX + i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(this.warpedMatList[i], FilenameConstants.WARP_PREFIX + i, ImageFileAttribute.FileType.JPEG);
         }
         AttributeHolder.getSharedInstance().putValue(AttributeNames.AFFINE_WARPED_IMAGES_LENGTH_KEY, this.warpedMatList.length);
     }

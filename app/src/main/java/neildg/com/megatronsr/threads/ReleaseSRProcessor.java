@@ -178,7 +178,7 @@ public class ReleaseSRProcessor extends Thread{
         String[] warpedImageNames = new String[numImages];
 
         for(int i = 0; i < numImages; i++) {
-            warpedImageNames[i] = FilenameConstants.AFFINE_WARP_PREFIX+i;
+            warpedImageNames[i] = FilenameConstants.WARP_PREFIX +i;
         }
 
         WarpResultEvaluator warpResultEvaluator = new WarpResultEvaluator(FilenameConstants.INPUT_PREFIX_STRING + 0, warpedImageNames);
@@ -225,7 +225,7 @@ public class ReleaseSRProcessor extends Thread{
         //add initial input HR image
         imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + 0);
          for(int i = 0; i < numImages; i++) {
-        imagePathList.add(FilenameConstants.AFFINE_WARP_PREFIX+i);
+        imagePathList.add(FilenameConstants.WARP_PREFIX +i);
         }
 
         OptimizedBaseFusionOperator fusionOperator = new OptimizedBaseFusionOperator(imagePathList.toArray(new String[imagePathList.size()]));
