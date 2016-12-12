@@ -5,6 +5,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import neildg.com.megatronsr.R;
@@ -52,6 +54,25 @@ public class OptionsScreen extends AScreen {
             }
         });
 
+        SeekBar thresholdBar = (SeekBar) this.referenceView.findViewById(R.id.fusion_seekbar);
+        final EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
+        thresholdBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                thresholdEditText.setText(Integer.toString(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         this.setDefaults();
     }
 
@@ -81,6 +102,18 @@ public class OptionsScreen extends AScreen {
         } catch(NumberFormatException e) {
             Log.e(TAG, "Error in parsing min distance text. Not a valid value. Value: " +valueString);
         }
+
+        EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
+        String thresholdString = thresholdEditText.getText().toString();
+
+        try {
+            int newValue = Integer.parseInt(thresholdString);
+            ParameterConfig.setPrefs(ParameterConfig.FUSION_THRESHOLD_KEY, newValue);
+
+            Log.d(TAG, "New fusion min threshold set: " +ParameterConfig.getPrefsInt(ParameterConfig.FUSION_THRESHOLD_KEY, ParameterConfig.MAX_FUSION_THRESHOLD));
+        } catch(NumberFormatException e) {
+            Log.e(TAG, "Error in parsing min fusion threshold text. Not a valid value. Value: " +valueString);
+        }
     }
 
     /*
@@ -92,5 +125,8 @@ public class OptionsScreen extends AScreen {
 
         ToggleButton denoiseBtn = (ToggleButton) this.referenceView.findViewById(R.id.denoise_option_btn);
         denoiseBtn.setChecked(false); //disable denoising mode by default.
+
+        SeekBar thresholdBar = (SeekBar) this.referenceView.findViewById(R.id.fusion_seekbar);
+        thresholdBar.setProgress(0); thresholdBar.setMax(ParameterConfig.MAX_FUSION_THRESHOLD);
     }
 }

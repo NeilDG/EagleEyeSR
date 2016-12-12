@@ -8,4 +8,5 @@
     <string name ="desc_debug_mode">Produce nearest-neighbor, bilinear and bicubic HR images if debugging mode is enabled.</string>
     <string name ="desc_denoise_mode">Enable image denoising. Recommended for low-light situations.</string>
     <string name ="desc_feature_match">Feature point minimum distance. Higher value is recommended for shaky captures.</string>
+    <string name ="desc_fusion_threshold">Image fusion noise threshold. 0 value means the images will be combined by averaging. Higher value will select regions with no extreme values.</string>
 </resources>

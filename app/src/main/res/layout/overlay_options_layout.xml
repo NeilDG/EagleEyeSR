@@ -102,6 +102,50 @@ android:background="#A6000000">
                 android:textAlignment="viewStart" />
         </LinearLayout>
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:layout_width="215dp">
+
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/fusion_seekbar"
+                    style="@android:style/Widget.Material.Light.SeekBar"
+                    android:max="100"
+                    android:progress="50" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:id="@+id/fusion_text_value"
+                    android:layout_weight="0.9"
+                    android:textColor="@android:color/white"
+                    android:text="0"
+                    android:enabled="false"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:text="@string/desc_fusion_threshold"
+                android:layout_weight="0.9"
+                android:background="#D4404040"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:layout_margin="10dp"
+                android:textColor="@android:color/white"
+                android:textAlignment="viewStart" />
+        </LinearLayout>
+
         <Button
             android:text="CLOSE"
             android:layout_width="300dp"

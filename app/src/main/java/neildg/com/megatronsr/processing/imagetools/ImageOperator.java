@@ -65,10 +65,7 @@ public class ImageOperator {
         return baseMaskMat;
     }
 
-    /*
-     * Zero values are labelled as 1, 0 for nonzero values
-     */
-    public static Mat produceOppositeMask(Mat inputMat) {
+    public static Mat produceMask(Mat inputMat, int threshold, int newValue) {
         Mat baseMaskMat = new Mat();
         inputMat.copyTo(baseMaskMat);
 
@@ -77,7 +74,24 @@ public class ImageOperator {
         }
 
         baseMaskMat.convertTo(baseMaskMat, CvType.CV_8UC1);
-        Imgproc.threshold(baseMaskMat, baseMaskMat, 1, 1, Imgproc.THRESH_BINARY_INV);
+        Imgproc.threshold(baseMaskMat, baseMaskMat, threshold, newValue, Imgproc.THRESH_BINARY);
+
+        return baseMaskMat;
+    }
+
+    /*
+     * Zero values are labelled as 1, 0 for nonzero values
+     */
+    public static Mat produceOppositeMask(Mat inputMat, int threshold, int newValue) {
+        Mat baseMaskMat = new Mat();
+        inputMat.copyTo(baseMaskMat);
+
+        if(inputMat.channels() == 3 || inputMat.channels() == 4) {
+            Imgproc.cvtColor(baseMaskMat, baseMaskMat, Imgproc.COLOR_BGR2GRAY);
+        }
+
+        baseMaskMat.convertTo(baseMaskMat, CvType.CV_8UC1);
+        Imgproc.threshold(baseMaskMat, baseMaskMat, threshold, newValue, Imgproc.THRESH_BINARY_INV);
 
         return baseMaskMat;
     }
