@@ -24,8 +24,10 @@ import neildg.com.megatronsr.processing.listeners.IProcessListener;
 import neildg.com.megatronsr.processing.multiple.fusion.OptimizedMeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.TransferToDirOperator;
+import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
+import neildg.com.megatronsr.processing.multiple.warping.WarpResultEvaluator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -110,7 +112,6 @@ public class ReleaseSRProcessor extends Thread{
             Log.d(TAG, "Denoising will be skipped!");
         }
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing feature matching against first image", 30.0f);
         //perform feature matching of LR images against the first image as reference mat.
         Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
         for(int i = 1; i < rgbInputMatList.length; i++) {
@@ -118,33 +119,16 @@ public class ReleaseSRProcessor extends Thread{
         }
 
         //perform affine warping
-        /*AffineWarpingOperator warpingOperator = new AffineWarpingOperator(rgbInputMatList[0], succeedingMatList);
-        warpingOperator.perform();
-
-        succeedingMatList = warpingOperator.getWarpedMatList();*/
+        this.performAffineWarping(rgbInputMatList, rgbInputMatList[0], succeedingMatList);
 
         //perform perspective warping
-
-        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(rgbInputMatList[0], succeedingMatList);
-        matchingOperator.perform();
-
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 60.0f);
-
-        LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), succeedingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
-        perspectiveWarpOperator.perform();
-
-        //release images
-        matchingOperator.getRefKeypoint().release();
-        MatMemory.releaseAll(matchingOperator.getdMatchesList(), false);
-        MatMemory.releaseAll(matchingOperator.getLrKeypointsList(), false);
-        MatMemory.releaseAll(succeedingMatList, false);
-        MatMemory.releaseAll(rgbInputMatList, false);
-
-        Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
-        MatMemory.releaseAll(warpedMatList, true);
+        //this.performPerspectiveWarping(rgbInputMatList, rgbInputMatList[0], succeedingMatList);
 
         //deallocate some classes
         SharpnessMeasure.destroy();
+
+        //ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Refining image warping results", 70.0f);
+        //this.assessImageWarpResults();
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 80.0f);
         this.performMeanFusion();
@@ -188,19 +172,65 @@ public class ReleaseSRProcessor extends Thread{
         }
     }
 
+    private void assessImageWarpResults() {
+
+        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.AFFINE_WARPED_IMAGES_LENGTH_KEY, 0);
+        String[] warpedImageNames = new String[numImages];
+
+        for(int i = 0; i < numImages; i++) {
+            warpedImageNames[i] = FilenameConstants.AFFINE_WARP_PREFIX+i;
+        }
+
+        WarpResultEvaluator warpResultEvaluator = new WarpResultEvaluator(FilenameConstants.INPUT_PREFIX_STRING + 0, warpedImageNames);
+        warpResultEvaluator.perform();
+    }
+
+    private void performAffineWarping(Mat[] rgbInputMatList, Mat referenceMat, Mat[] succeedingMatList) {
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 30.0f);
+
+        //perform affine warping
+        AffineWarpingOperator warpingOperator = new AffineWarpingOperator(referenceMat, succeedingMatList);
+        warpingOperator.perform();
+
+        MatMemory.releaseAll(succeedingMatList, false);
+        MatMemory.releaseAll(rgbInputMatList, false);
+        MatMemory.releaseAll(warpingOperator.getWarpedMatList(), true);
+    }
+
+    private void performPerspectiveWarping(Mat[] rgbInputMatList, Mat referenceMat, Mat[] succeedingMatList) {
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing feature matching against first image", 30.0f);
+        FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(referenceMat, succeedingMatList);
+        matchingOperator.perform();
+
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 60.0f);
+
+        LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), succeedingMatList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
+        perspectiveWarpOperator.perform();
+
+        //release images
+        matchingOperator.getRefKeypoint().release();
+        MatMemory.releaseAll(matchingOperator.getdMatchesList(), false);
+        MatMemory.releaseAll(matchingOperator.getLrKeypointsList(), false);
+        MatMemory.releaseAll(succeedingMatList, false);
+        MatMemory.releaseAll(rgbInputMatList, false);
+
+        Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
+        MatMemory.releaseAll(warpedMatList, true);
+    }
+
     private void performMeanFusion() {
-        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
+        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.AFFINE_WARPED_IMAGES_LENGTH_KEY, 0);
         ArrayList<String> imagePathList = new ArrayList<>();
 
         //add initial input HR image
         imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + 0);
-    for(int i = 0; i < numImages; i++) {
-        imagePathList.add("warp_"+i);
+         for(int i = 0; i < numImages; i++) {
+        imagePathList.add(FilenameConstants.AFFINE_WARP_PREFIX+i);
+        }
+
+        OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(imagePathList.toArray(new String[imagePathList.size()]), "Optimized fusing", "Fusing images using mean");
+        fusionOperator.perform();
+        FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+
     }
-
-    OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(imagePathList.toArray(new String[imagePathList.size()]), "Optimized fusing", "Fusing images using mean");
-    fusionOperator.perform();
-    FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
-
-}
 }

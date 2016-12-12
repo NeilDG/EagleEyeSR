@@ -40,7 +40,9 @@ public class ImageViewActivity extends AppCompatActivity {
         super.onResume();
         this.loadImageView();
         this.setupRadioButtons();
-        this.setImageViewType(ImageViewType.CUBIC);
+        RadioGroup radioGroup = (RadioGroup) this.findViewById(R.id.image_view_radio_group);
+        RadioButton cubicBtn = (RadioButton) radioGroup.findViewById(R.id.cubic_radio_btn);
+        cubicBtn.setChecked(true);
     }
 
     private void loadImageView() {

@@ -66,7 +66,7 @@ public class MeanFusionActivity extends AppCompatActivity {
     private void performMeanFusion() {
         /*ProgressDialogHandler.getInstance().showUserDialog("Processing", "Fusing images");
 
-        int numImages = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
+        int numImages = (int) AttributeHolder.getSharedInstance().getValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, 0);
         Mat[] warpedMatList = new Mat[numImages];
 
         for(int i = 0; i < numImages; i++) {

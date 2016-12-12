@@ -173,7 +173,7 @@ public class MultipleImageSRProcessor extends Thread {
     }
 
     private void performMeanFusion() {
-        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.IMAGE_LENGTH_KEY, 0);
+        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, 0);
         String[] imagePathList = new String[numImages];
         for(int i = 0; i < numImages; i++) {
             imagePathList[i] = "warp_"+i;

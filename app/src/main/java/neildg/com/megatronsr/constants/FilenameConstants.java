@@ -7,13 +7,16 @@ public class FilenameConstants {
     public final static  String GROUND_TRUTH_PREFIX_STRING = "groundtruth_";
     public final static String INPUT_PREFIX_STRING = "input_";
 
-
     public final static String HR_NEAREST = "nearest";
     public final static String HR_CUBIC = "cubic";
     public final static String HR_LINEAR = "linear";
     public final static String HR_SUPERRES = "result";
     public final static String HR_ZERO_FILL = "zerofill";
     public final static String HR_ITERATION_PREFIX_STRING = "hr_initial_";
+
+    public final static String PERSPECTIVE_WARP_PREFIX = "pers_warp_";
+    public final static String AFFINE_WARP_PREFIX = "affine_warp_";
+
 
     public final static String MATCHES_PREFIX_STRING = "refimage_matchto_";
     public final static String KEYPOINTS_STRING = "refimage_keypoint";

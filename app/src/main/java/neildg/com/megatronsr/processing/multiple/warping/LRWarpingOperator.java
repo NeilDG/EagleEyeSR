@@ -65,7 +65,7 @@ public class LRWarpingOperator {
     }
 
     private void finalizeResult() {
-        AttributeHolder.getSharedInstance().putValue(AttributeNames.IMAGE_LENGTH_KEY, this.imagesToWarpList.length);
+        AttributeHolder.getSharedInstance().putValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, this.imagesToWarpList.length);
 
         this.refKeypoint.release(); this.refKeypoint = null;
         for(MatOfDMatch dMatch: this.goodMatchList) {

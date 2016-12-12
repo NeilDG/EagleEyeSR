@@ -6,8 +6,11 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.Video;
 
+import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.FileImageWriter;
+import neildg.com.megatronsr.model.AttributeHolder;
+import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -49,10 +52,9 @@ public class AffineWarpingOperator implements IOperator {
                 this.inputMatList[i].copyTo(this.warpedMatList[i]);
             }
 
-
-            FileImageWriter.getInstance().saveMatrixToImage(this.warpedMatList[i], "affine_warp_"+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(this.warpedMatList[i], FilenameConstants.AFFINE_WARP_PREFIX + i, ImageFileAttribute.FileType.JPEG);
         }
         ProgressDialogHandler.getInstance().hideDialog();
-
+        AttributeHolder.getSharedInstance().putValue(AttributeNames.AFFINE_WARPED_IMAGES_LENGTH_KEY, this.warpedMatList.length);
     }
 }
