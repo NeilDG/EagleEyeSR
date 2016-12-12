@@ -17,6 +17,9 @@ public class FilenameConstants {
     public final static String PERSPECTIVE_WARP_PREFIX = "pers_warp_";
     public final static String AFFINE_WARP_PREFIX = "affine_warp_";
 
+    public final static String EDGE_DIRECTORY_PREFIX = "YangEdges";
+    public final static String IMAGE_EDGE_PREFIX = "image_edge_";
+
 
     public final static String MATCHES_PREFIX_STRING = "refimage_matchto_";
     public final static String KEYPOINTS_STRING = "refimage_keypoint";

@@ -91,7 +91,7 @@ public class OptionsScreen extends AScreen {
         super.hide();
 
         //update parameter config
-        EditText minDistText = (EditText) this.referenceView.findViewById(R.id.feature_dist_text);
+        /*EditText minDistText = (EditText) this.referenceView.findViewById(R.id.feature_dist_text);
         String valueString = minDistText.getText().toString();
 
         try {
@@ -101,7 +101,7 @@ public class OptionsScreen extends AScreen {
             Log.d(TAG, "New min distance threshold set: " +ParameterConfig.getPrefsFloat(ParameterConfig.FEATURE_MINIMUM_DISTANCE_KEY, 999.0f));
         } catch(NumberFormatException e) {
             Log.e(TAG, "Error in parsing min distance text. Not a valid value. Value: " +valueString);
-        }
+        }*/
 
         EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
         String thresholdString = thresholdEditText.getText().toString();
@@ -112,7 +112,7 @@ public class OptionsScreen extends AScreen {
 
             Log.d(TAG, "New fusion min threshold set: " +ParameterConfig.getPrefsInt(ParameterConfig.FUSION_THRESHOLD_KEY, ParameterConfig.MAX_FUSION_THRESHOLD));
         } catch(NumberFormatException e) {
-            Log.e(TAG, "Error in parsing min fusion threshold text. Not a valid value. Value: " +valueString);
+            Log.e(TAG, "Error in parsing min fusion threshold text. Not a valid value. Value: " +thresholdString);
         }
     }
 

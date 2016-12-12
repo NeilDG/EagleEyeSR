@@ -74,7 +74,7 @@ android:background="#A6000000">
                 android:textAlignment="viewStart" />
         </LinearLayout>
 
-        <LinearLayout
+        <!--<LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -100,7 +100,7 @@ android:background="#A6000000">
                 android:layout_margin="10dp"
                 android:textColor="@android:color/white"
                 android:textAlignment="viewStart" />
-        </LinearLayout>
+        </LinearLayout> -->
 
         <LinearLayout
             android:orientation="horizontal"
