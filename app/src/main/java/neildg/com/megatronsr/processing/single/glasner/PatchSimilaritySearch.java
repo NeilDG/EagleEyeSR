@@ -41,7 +41,7 @@ public class PatchSimilaritySearch implements IOperator {
         int upperX = divisionOfWork;
         int numThreadsCreated = 0;
 
-        ProgressDialogHandler.getInstance().showDialog("Comparing input image patches to its pyramid", "Running " +MAX_NUM_THREADS+ " threads.");
+        ProgressDialogHandler.getInstance().showProcessDialog("Comparing input image patches to its pyramid", "Running " +MAX_NUM_THREADS+ " threads.");
         this.semaphore = new Semaphore(0);
         while(lowerX <= patchesInLR) {
 
@@ -58,7 +58,7 @@ public class PatchSimilaritySearch implements IOperator {
             this.semaphore.acquire(numThreadsCreated);
             PatchRelationTable.getSharedInstance().sort();
             PatchRelationTable.getSharedInstance().saveMapToJSON();
-            ProgressDialogHandler.getInstance().hideDialog();
+            ProgressDialogHandler.getInstance().hideProcessDialog();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

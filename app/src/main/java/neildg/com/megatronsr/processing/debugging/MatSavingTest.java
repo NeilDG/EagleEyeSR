@@ -25,7 +25,7 @@ public class MatSavingTest implements ITest {
     @Override
     public void performTest() {
 
-        ProgressDialogHandler.getInstance().showDialog("Debug mode", "Performing mat saving test. Please wait...");
+        ProgressDialogHandler.getInstance().showProcessDialog("Debug mode", "Performing mat saving test. Please wait...", 0.0f);
 
         DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConfig.getScalingFactor(), BitmapURIRepository.getInstance().getNumImagesSelected());
         downsamplingOperator.perform();
@@ -36,6 +36,6 @@ public class MatSavingTest implements ITest {
             MatWriter.writeMat(imageMat, FilenameConstants.DEBUG_DIR, FilenameConstants.MAT_VALUE_PREFIX + i);
         }
 
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 }

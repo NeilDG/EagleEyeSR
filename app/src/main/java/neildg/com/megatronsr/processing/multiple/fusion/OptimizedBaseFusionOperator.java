@@ -28,20 +28,13 @@ public class OptimizedBaseFusionOperator implements IOperator {
     private String[] imageMatPathList;
     private Mat outputMat;
 
-    private String title;
-    private String message;
 
-
-    public OptimizedBaseFusionOperator(String[] imageMatPathList, String title, String message) {
+    public OptimizedBaseFusionOperator(String[] imageMatPathList) {
         this.imageMatPathList = imageMatPathList;
-
-        this.title = title;
-        this.message = message;
     }
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog(this.title, this.message);
 
         int scale = ParameterConfig.getScalingFactor();
         this.outputMat = new Mat();
@@ -86,7 +79,6 @@ public class OptimizedBaseFusionOperator implements IOperator {
         maskMat.release();
         sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
         sumMat.release();
-        ProgressDialogHandler.getInstance().hideDialog();
     }
 
 

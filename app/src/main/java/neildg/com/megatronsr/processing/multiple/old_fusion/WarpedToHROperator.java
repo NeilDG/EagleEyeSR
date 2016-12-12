@@ -42,7 +42,6 @@ public class WarpedToHROperator {
         this.groundTruthMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
 
         int scalingFactor = ParameterConfig.getScalingFactor();
-        ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warping base image");
         Mat baseWarpMat = this.warpedMatrixList[0];
         Mat baseHRWarpMat = Mat.zeros(baseWarpMat.rows() * scalingFactor, baseWarpMat.cols() *scalingFactor, baseWarpMat.type());
         ImageOperator.copyMat(baseWarpMat, baseHRWarpMat, scalingFactor, 0, 0);
@@ -68,7 +67,6 @@ public class WarpedToHROperator {
                 "candidate_median_filter_0", "Candidate_Vs_Median_RMSE");
 
         for(int i = 1; i < this.warpedMatrixList.length; i++) {
-            ProgressDialogHandler.getInstance().showDialog("Transforming warped images to HR", "Warping image " +i);
             baseWarpMat = this.warpedMatrixList[i];
             Mat.zeros(baseWarpMat.rows() * scalingFactor, baseWarpMat.cols() * scalingFactor, baseWarpMat.type());
             ImageOperator.copyMat(baseWarpMat, baseHRWarpMat, scalingFactor, 0, 0);
@@ -108,12 +106,9 @@ public class WarpedToHROperator {
         this.warpedMatrixList = null;
         this.baseMaskMat.release();
 
-        ProgressDialogHandler.getInstance().showDialog("Denoising", "Denoising final image.");
-
         System.gc();
 
         FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, "warped_to_hr_result", ImageFileAttribute.FileType.JPEG);
-        ProgressDialogHandler.getInstance().hideDialog();
     }
 
     public Mat getResult() {

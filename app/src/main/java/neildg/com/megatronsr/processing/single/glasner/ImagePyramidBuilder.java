@@ -23,7 +23,7 @@ public class ImagePyramidBuilder implements IOperator {
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Creating Image Pyramid", "Building downscale image pyramid");
+        ProgressDialogHandler.getInstance().showProcessDialog("Creating Image Pyramid", "Building downscale image pyramid");
         Bitmap originalBitmap = BitmapURIRepository.getInstance().getOriginalBitmap(0);
         FileImageWriter.getInstance().saveBitmapImage(originalBitmap, FilenameConstants.PYRAMID_DIR, FilenameConstants.PYRAMID_IMAGE_PREFIX + "0", ImageFileAttribute.FileType.JPEG);
 
@@ -33,6 +33,6 @@ public class ImagePyramidBuilder implements IOperator {
             FileImageWriter.getInstance().saveBitmapImage(bitmap, FilenameConstants.PYRAMID_DIR, FilenameConstants.PYRAMID_IMAGE_PREFIX + i, ImageFileAttribute.FileType.JPEG);
         }
 
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 }

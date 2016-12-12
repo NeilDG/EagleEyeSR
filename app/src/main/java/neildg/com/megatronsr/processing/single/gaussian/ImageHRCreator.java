@@ -41,7 +41,7 @@ public class ImageHRCreator implements IOperator, ThreadFinishedListener {
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Upsampling", "Upsampling image");
+        ProgressDialogHandler.getInstance().showProcessDialog("Upsampling", "Upsampling image");
         int scalingFactor = ParameterConfig.getScalingFactor();
 
         Mat originalMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_GAUSSIAN_DIR + "/" + FilenameConstants.INPUT_FILE_NAME, ImageFileAttribute.FileType.JPEG);
@@ -51,7 +51,7 @@ public class ImageHRCreator implements IOperator, ThreadFinishedListener {
 
         FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_CUBIC, ImageFileAttribute.FileType.JPEG);
 
-        ProgressDialogHandler.getInstance().showDialog("Replacing patches", "Searching for found patches in table and replacing them.");
+        ProgressDialogHandler.getInstance().showProcessDialog("Replacing patches", "Searching for found patches in table and replacing them.");
         this.createPatchPairs();
     }
 
@@ -80,7 +80,7 @@ public class ImageHRCreator implements IOperator, ThreadFinishedListener {
 
         try {
             this.semaphore.acquire(threadCreated);
-            ProgressDialogHandler.getInstance().hideDialog();
+            ProgressDialogHandler.getInstance().hideProcessDialog();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -40,8 +40,6 @@ public class HDRFusionOperator implements IOperator {
     @Override
     public void perform() {
 
-        ProgressDialogHandler.getInstance().showDialog("Resizing images", "Performing image resizing");
-
         this.processMatList.add(ImageOperator.performInterpolation(this.originalMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC));
         this.originalMat.release();
 
@@ -49,8 +47,6 @@ public class HDRFusionOperator implements IOperator {
             this.processMatList.add(ImageOperator.performInterpolation(this.warpedMatList[i], ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC));
             this.warpedMatList[i].release();
         }
-
-        ProgressDialogHandler.getInstance().showDialog("Fusing images", "Fusing images");
 
         AlignMTB aligner = Photo.createAlignMTB();
         aligner.process(this.processMatList, this.processMatList);
@@ -68,7 +64,5 @@ public class HDRFusionOperator implements IOperator {
 
         fusionMat.release();
         multMat.release();
-
-        ProgressDialogHandler.getInstance().hideDialog();
     }
 }

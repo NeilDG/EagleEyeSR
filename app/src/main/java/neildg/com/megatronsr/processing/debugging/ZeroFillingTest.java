@@ -22,7 +22,7 @@ public class ZeroFillingTest implements ITest {
 
     @Override
     public void performTest() {
-        ProgressDialogHandler.getInstance().showDialog("Debug mode", "Performing zero filling test. Please wait...");
+        ProgressDialogHandler.getInstance().showProcessDialog("Debug mode", "Performing zero filling test. Please wait...", 0.0f);
 
         DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConfig.getScalingFactor(), BitmapURIRepository.getInstance().getNumImagesSelected());
         downsamplingOperator.perform();
@@ -38,6 +38,6 @@ public class ZeroFillingTest implements ITest {
             imageMat.release();
         }
 
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 }

@@ -36,8 +36,6 @@ public class EdgeFusionOperator implements IOperator {
 
         this.outputMat = Mat.zeros(rows, cols, CvType.CV_32FC1);
 
-        ProgressDialogHandler.getInstance().showDialog("Performing edge fusion", "Performing edge fusion");
-
         //resize edge mat
         this.edgeMat = ImageOperator.performInterpolation(this.edgeMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         Mat edgeMaskMat = ImageOperator.produceMask(this.edgeMat); //produce mask by the edge mat provided. only add using that mask
@@ -62,8 +60,6 @@ public class EdgeFusionOperator implements IOperator {
 
         Core.divide(sumMat, divMat, this.outputMat);
         this.outputMat.convertTo(this.outputMat, CvType.CV_8UC1);
-
-        ProgressDialogHandler.getInstance().hideDialog();
     }
 
     public Mat getResult() {

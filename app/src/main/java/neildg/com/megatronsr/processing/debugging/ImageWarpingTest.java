@@ -28,7 +28,7 @@ public class ImageWarpingTest implements ITest {
 
     @Override
     public void performTest() {
-        ProgressDialogHandler.getInstance().showDialog("Debug mode", "Performing image warping test. Please wait...");
+        ProgressDialogHandler.getInstance().showProcessDialog("Debug mode", "Performing image warping test. Please wait...", 0.0f);
 
         //ProcessedImageRepo.initialize();
 
@@ -78,6 +78,6 @@ public class ImageWarpingTest implements ITest {
         FileImageWriter.getInstance().saveMatrixToImage(testOutputMat, "test", ImageFileAttribute.FileType.JPEG);
 
         //ProcessedImageRepo.destroy();
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 }

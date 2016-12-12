@@ -27,7 +27,7 @@ public class InputImageAssociator implements IOperator {
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Formulating blurred image", "Formulating blurred image");
+        ProgressDialogHandler.getInstance().showProcessDialog("Formulating blurred image", "Formulating blurred image");
 
         Bitmap originalBitmap = BitmapURIRepository.getInstance().getOriginalBitmap(0);
         FileImageWriter.getInstance().saveBitmapImage(originalBitmap, FilenameConstants.INPUT_GAUSSIAN_DIR, FilenameConstants.INPUT_FILE_NAME, ImageFileAttribute.FileType.JPEG);
@@ -37,6 +37,6 @@ public class InputImageAssociator implements IOperator {
         Imgproc.GaussianBlur(originalMat, blurredMat, new Size(3,3), 0.55, 0.55); //0.55 as stated by paper
 
         FileImageWriter.getInstance().saveMatrixToImage(blurredMat, FilenameConstants.INPUT_GAUSSIAN_DIR, FilenameConstants.INPUT_BLUR_FILENAME, ImageFileAttribute.FileType.JPEG);
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 }

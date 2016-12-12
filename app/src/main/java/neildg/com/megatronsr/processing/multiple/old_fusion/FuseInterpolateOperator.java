@@ -42,7 +42,6 @@ public class FuseInterpolateOperator implements IOperator {
     }
 
     private void loadImages() {
-        ProgressDialogHandler.getInstance().showDialog("Setting up fusion", "Setting up");
         this.groundTruthMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING, ImageFileAttribute.FileType.JPEG);
         this.fusedMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
@@ -53,8 +52,6 @@ public class FuseInterpolateOperator implements IOperator {
 
         MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_initial_hr", this.groundTruthMat, "GroundTruth", initialHRMat,
                 "InterCubicHR", "Ground truth vs Intercubic");
-
-        ProgressDialogHandler.getInstance().hideDialog();
     }
 
     public void fuseImages() {
@@ -64,7 +61,6 @@ public class FuseInterpolateOperator implements IOperator {
         blendMatList.add(this.fusedMat);
 
         for(int i = 0; i < this.warpedMatrixList.size(); i++) {
-            ProgressDialogHandler.getInstance().showDialog("Fusing images", "Fusing image " +i);
             Mat baseWarpMat = this.warpedMatrixList.get(i);
             Mat maskMat = ImageOperator.produceMask(baseWarpMat);
 
@@ -80,7 +76,6 @@ public class FuseInterpolateOperator implements IOperator {
 
         Imgproc.resize(this.fusedMat, this.outputMat, this.outputMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
-        ProgressDialogHandler.getInstance().hideDialog();
 
         /*MetricsLogger.getSharedInstance().takeMetrics("ground_truth_vs_result", this.groundTruthMat, "GroundTruth", this.fusedMat,
                 "FusedHR", "Ground truth vs Result");*/

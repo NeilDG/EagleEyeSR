@@ -46,6 +46,6 @@ public class SingleImageSRProcessor extends Thread {
         PostProcessImage postProcessImage = new PostProcessImage(imageHRCreator.getHrMat());
         postProcessImage.perform();
 
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 }

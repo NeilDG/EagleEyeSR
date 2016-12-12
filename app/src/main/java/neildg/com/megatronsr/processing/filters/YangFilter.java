@@ -74,7 +74,7 @@ public class YangFilter implements IOperator {
             combinedFilterList[2] = inputf3;
             combinedFilterList[3] = inputf4;
 
-            YangFilterFusionOperator fusionOperator = new YangFilterFusionOperator(combinedFilterList,  "Fusing edge features", "Fusing edge features in image " +i);
+            YangFilterFusionOperator fusionOperator = new YangFilterFusionOperator(combinedFilterList);
             fusionOperator.perform();
 
             FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.EDGE_DIRECTORY_PREFIX, FilenameConstants.IMAGE_EDGE_PREFIX+i, ImageFileAttribute.FileType.JPEG);
@@ -90,7 +90,7 @@ public class YangFilter implements IOperator {
             Core.addWeighted(edgeMat, -0.35, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
             ImageWriter.getInstance().saveMatrixToImage(this.inputMatList[i], "YangEdges", "image_sharpen_"+i, ImageFileAttribute.FileType.JPEG);*/
         }
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 
     public Mat[] getEdgeMatList() {

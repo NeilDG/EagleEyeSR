@@ -24,7 +24,7 @@ import neildg.com.megatronsr.ui.ProgressDialogHandler;
  */
 public class MultiplePatchFusionOperator implements IOperator {
 
-    private static String TAG = "MultiplePatchFusionOperator";
+    private static String TAG = "MPFusionOperator";
 
     private Mat originMat;
     private Mat[] warpedMatList;
@@ -53,8 +53,6 @@ public class MultiplePatchFusionOperator implements IOperator {
     public void perform() {
         int patchSize = 4;
 
-        ProgressDialogHandler.getInstance().showDialog("Forming HR", "Replacing image patches");
-
         for(int row = 0; row < this.originMat.rows(); row += patchSize) {
             for(int col = 0; col < this.originMat.cols(); col += patchSize) {
                 LoadedImagePatch  originPatch = new LoadedImagePatch(this.originMat, patchSize, col, row);
@@ -80,8 +78,6 @@ public class MultiplePatchFusionOperator implements IOperator {
             }
         }
 
-        ProgressDialogHandler.getInstance().showDialog("Forming HR", "Finalizing");
-
         FileImageWriter.getInstance().saveMatrixToImage(this.originMat, "initial_output", ImageFileAttribute.FileType.JPEG);
 
         Mat processedYMat = Mat.ones(this.originMat.rows() * ParameterConfig.getScalingFactor(), this.originMat.cols() * ParameterConfig.getScalingFactor(), this.originMat.type());
@@ -91,7 +87,6 @@ public class MultiplePatchFusionOperator implements IOperator {
         this.mergeResults(processedYMat);
         processedYMat.release();
 
-        ProgressDialogHandler.getInstance().hideDialog();
     }
 
     /*

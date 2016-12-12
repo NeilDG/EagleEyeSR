@@ -228,7 +228,7 @@ public class ReleaseSRProcessor extends Thread{
         imagePathList.add(FilenameConstants.AFFINE_WARP_PREFIX+i);
         }
 
-        OptimizedBaseFusionOperator fusionOperator = new OptimizedBaseFusionOperator(imagePathList.toArray(new String[imagePathList.size()]), "Optimized fusing", "Fusing images using mean");
+        OptimizedBaseFusionOperator fusionOperator = new OptimizedBaseFusionOperator(imagePathList.toArray(new String[imagePathList.size()]));
         fusionOperator.perform();
         FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
 

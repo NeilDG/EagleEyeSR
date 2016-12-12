@@ -48,7 +48,7 @@ public class ImagePatchMerging implements IOperator {
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Creating HR image", "Creating HR image");
+        ProgressDialogHandler.getInstance().showProcessDialog("Creating HR image", "Creating HR image");
 
 
         String fullImagePath = FilenameConstants.PYRAMID_DIR +"/"+ FilenameConstants.PYRAMID_IMAGE_PREFIX + "0";
@@ -58,7 +58,7 @@ public class ImagePatchMerging implements IOperator {
         FileImageWriter.getInstance().saveMatrixToImage(this.originalHRMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_CUBIC, ImageFileAttribute.FileType.JPEG);
 
 
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
 
         this.extractHRPatches();
         ImagePatchPool.getInstance().unloadAllPatches();
@@ -74,7 +74,7 @@ public class ImagePatchMerging implements IOperator {
     }
 
     private void extractHRPatches() {
-        ProgressDialogHandler.getInstance().showDialog("Extracting image patches", "Extracting image patches in upsampled image.");
+        ProgressDialogHandler.getInstance().showProcessDialog("Extracting image patches", "Extracting image patches in upsampled image.");
 
         int divisionOfWork = this.originalHRMat.rows() / MAX_NUM_THREADS;
         int lowerX = 0;
@@ -95,7 +95,7 @@ public class ImagePatchMerging implements IOperator {
 
         try {
             this.semaphore.acquire(threadsCreated);
-            ProgressDialogHandler.getInstance().hideDialog();
+            ProgressDialogHandler.getInstance().hideProcessDialog();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -103,7 +103,7 @@ public class ImagePatchMerging implements IOperator {
     }
 
     private void identifyPatchSimilarities() {
-        ProgressDialogHandler.getInstance().showDialog("Replacing patches", "Replacing patches with better ones.");
+        ProgressDialogHandler.getInstance().showProcessDialog("Replacing patches", "Replacing patches with better ones.");
 
         int numHRPatches = HRPatchAttributeTable.getInstance().getHRPatchCount();
         int divisionOfWork = numHRPatches / MAX_NUM_THREADS;
@@ -126,7 +126,7 @@ public class ImagePatchMerging implements IOperator {
 
         try {
             this.semaphore.acquire(threadCreated);
-            ProgressDialogHandler.getInstance().hideDialog();
+            ProgressDialogHandler.getInstance().hideProcessDialog();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

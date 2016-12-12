@@ -26,7 +26,7 @@ public class LRToHROperator implements IOperator {
     }
 
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Debugging", "Creating HR image by interpolation");
+        ProgressDialogHandler.getInstance().showProcessDialog("Debugging", "Creating HR image by interpolation", ProgressDialogHandler.getInstance().getProgress());
 
         //only interpolate the first reference image
         Mat hrMat = Mat.ones(this.lrMat.rows() * ParameterConfig.getScalingFactor(), this.lrMat.cols() * ParameterConfig.getScalingFactor(), this.lrMat.type());
@@ -42,6 +42,6 @@ public class LRToHROperator implements IOperator {
 
         hrMat.release();
 
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 }

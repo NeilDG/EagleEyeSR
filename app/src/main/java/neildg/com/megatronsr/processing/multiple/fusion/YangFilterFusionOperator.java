@@ -30,19 +30,12 @@ public class YangFilterFusionOperator implements IOperator {
     private Mat[] combineMatList;
     private Mat outputMat;
 
-    private String title;
-    private String message;
-
-    public YangFilterFusionOperator(Mat[] combineMatList, String title, String message) {
+    public YangFilterFusionOperator(Mat[] combineMatList) {
         this.combineMatList = combineMatList;
-
-        this.title = title;
-        this.message = message;
     }
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog(this.title, this.message);
 
         int rows = this.combineMatList[0].rows();
         int cols = this.combineMatList[0].cols();
@@ -85,7 +78,7 @@ public class YangFilterFusionOperator implements IOperator {
         //Core.divide(sumMat, divMat, this.outputMat);
 
         this.outputMat.convertTo(this.outputMat, CvType.CV_8UC(this.combineMatList[0].channels()));
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 
     public Mat getResult() {

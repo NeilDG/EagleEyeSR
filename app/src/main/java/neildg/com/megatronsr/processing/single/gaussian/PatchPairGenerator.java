@@ -30,7 +30,7 @@ public class PatchPairGenerator implements IOperator, ThreadFinishedListener{
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Associating LR-HR", "Generating pairwise patches");
+        ProgressDialogHandler.getInstance().showProcessDialog("Associating LR-HR", "Generating pairwise patches");
 
         GausianPatchTable.initialize();
 
@@ -61,7 +61,7 @@ public class PatchPairGenerator implements IOperator, ThreadFinishedListener{
 
         try {
             this.semaphore.acquire(threadCreated);
-            ProgressDialogHandler.getInstance().hideDialog();
+            ProgressDialogHandler.getInstance().hideProcessDialog();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

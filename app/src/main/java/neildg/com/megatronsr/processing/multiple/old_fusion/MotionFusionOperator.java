@@ -34,7 +34,6 @@ public class MotionFusionOperator implements IOperator {
     @Override
     public void perform() {
         for(int i = 0; i < this.zeroFilledMatSequences.length; i++) {
-            ProgressDialogHandler.getInstance().showDialog("Fusing", "Fusing image " +i);
             Mat mat = this.zeroFilledMatSequences[i];
             Mat mask = ImageOperator.produceMask(mat);
 
@@ -53,7 +52,5 @@ public class MotionFusionOperator implements IOperator {
         //deallocate memory
         this.outputMat.release();
         this.zeroFilledMatSequences = null;
-
-        ProgressDialogHandler.getInstance().hideDialog();
     }
 }

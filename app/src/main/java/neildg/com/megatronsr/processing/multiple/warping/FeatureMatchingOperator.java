@@ -66,15 +66,12 @@ public class FeatureMatchingOperator {
     }
 
     public void perform() {
-        ProgressDialogHandler.getInstance().hideDialog();
-        ProgressDialogHandler.getInstance().showDialog("Finding features", "Detecting features on images.");
 
         this.detectFeaturesInReference();
         for(int i = 0; i < this.comparingMatList.length; i++) {
             this.detectFeatures(this.comparingMatList[i], i);
         }
 
-        ProgressDialogHandler.getInstance().hideDialog();
 
         Mat matchesShower = new Mat();
 

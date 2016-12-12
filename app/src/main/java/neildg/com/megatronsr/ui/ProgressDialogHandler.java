@@ -54,7 +54,7 @@ public class ProgressDialogHandler {
 		sharedInstance = null;
 	}
 	
-	public void showDialog(final String title, final String message) {
+	/*public void showDialog(final String title, final String message) {
 		if(BuildMode.DEVELOPMENT_BUILD) {
 			this.activity.runOnUiThread(new Runnable() {
 
@@ -66,7 +66,7 @@ public class ProgressDialogHandler {
 				}
 			});
 		}
-	}
+	}*/
 
 	/*
 	 * Use this function for release-type user dialogs
@@ -76,7 +76,7 @@ public class ProgressDialogHandler {
 
 			@Override
 			public void run() {
-				sharedInstance.hideDialog();
+				//sharedInstance.hideDialog();
 				sharedInstance.progressDialog = ProgressDialog.show(sharedInstance.activity, title, message);
 				sharedInstance.progressDialog.setCancelable(false);
 			}
@@ -91,9 +91,23 @@ public class ProgressDialogHandler {
 
 			@Override
 			public void run() {
-				sharedInstance.hideDialog();
+				//sharedInstance.hideDialog();
 				sharedInstance.processingDialog.setup(title, message);
 				sharedInstance.processingDialog.updateProgress(progress);
+				sharedInstance.processingDialog.show();
+				sharedInstance.processingDialog.setCancelable(false);
+
+			}
+		});
+	}
+
+	public void showProcessDialog(final String title, final String message) {
+		this.activity.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				//sharedInstance.hideDialog();
+				sharedInstance.processingDialog.setup(title, message);
 				sharedInstance.processingDialog.show();
 				sharedInstance.processingDialog.setCancelable(false);
 
@@ -137,11 +151,11 @@ public class ProgressDialogHandler {
 		}
 	}
 	
-	public void hideDialog() {
+	/*public void hideDialog() {
 		if(BuildMode.DEVELOPMENT_BUILD) {
 			if (this.progressDialog != null) {
 				this.progressDialog.dismiss();
 			}
 		}
-	}
+	}*/
 }

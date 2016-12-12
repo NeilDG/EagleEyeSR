@@ -38,7 +38,6 @@ public class AffineWarpingOperator implements IOperator {
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Affine warping", "Performing affine warping on images.");
         for(int i = 0; i < inputMatList.length; i++) {
             Mat affineMat = Video.estimateRigidTransform(this.inputMatList[i], this.referenceMat, true);
             this.warpedMatList[i] = new Mat();
@@ -54,7 +53,6 @@ public class AffineWarpingOperator implements IOperator {
 
             FileImageWriter.getInstance().saveMatrixToImage(this.warpedMatList[i], FilenameConstants.AFFINE_WARP_PREFIX + i, ImageFileAttribute.FileType.JPEG);
         }
-        ProgressDialogHandler.getInstance().hideDialog();
         AttributeHolder.getSharedInstance().putValue(AttributeNames.AFFINE_WARPED_IMAGES_LENGTH_KEY, this.warpedMatList.length);
     }
 }

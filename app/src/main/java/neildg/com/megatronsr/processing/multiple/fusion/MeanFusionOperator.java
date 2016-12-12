@@ -42,7 +42,7 @@ public class MeanFusionOperator implements IOperator {
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog(this.title, this.message);
+        ProgressDialogHandler.getInstance().showProcessDialog(this.title, this.message, 0.0f);
 
 
         int scale = ParameterConfig.getScalingFactor();
@@ -89,7 +89,7 @@ public class MeanFusionOperator implements IOperator {
         //Core.divide(sumMat, divMat, this.outputMat);
 
         this.outputMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 
     public Mat getResult() {

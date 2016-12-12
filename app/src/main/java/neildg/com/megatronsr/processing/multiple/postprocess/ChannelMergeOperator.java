@@ -46,7 +46,7 @@ public class ChannelMergeOperator implements IOperator{
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Finalizing", "Converting YUV back to RGB");
+        ProgressDialogHandler.getInstance().showProcessDialog("Finalizing", "Converting YUV back to RGB", 90.0f);
 
         //perform bicubic interpolation on u and v mat
         int scaling = ParameterConfig.getScalingFactor();
@@ -66,6 +66,6 @@ public class ChannelMergeOperator implements IOperator{
         Imgproc.cvtColor(mergedMat, mergedMat, Imgproc.COLOR_YUV2BGR);
         FileImageWriter.getInstance().saveMatrixToImage(mergedMat, "rgb_merged", ImageFileAttribute.FileType.JPEG);
 
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 }

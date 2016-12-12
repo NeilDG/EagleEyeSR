@@ -47,13 +47,13 @@ public class PatchExtractCommander implements IOperator {
             extractor.start();
         }
 
-        ProgressDialogHandler.getInstance().showDialog("Extracting patches", "Extracting image patches from pyramid images.");
+        ProgressDialogHandler.getInstance().showProcessDialog("Extracting patches", "Extracting image patches from pyramid images.");
         try {
             this.semaphore.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 
     public synchronized void reportFinished() {

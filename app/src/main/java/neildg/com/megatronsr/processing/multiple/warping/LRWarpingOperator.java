@@ -46,7 +46,6 @@ public class LRWarpingOperator {
     }
 
     public void perform() {
-        ProgressDialogHandler.getInstance().hideDialog();
 
         for(int i = 0; i < this.imagesToWarpList.length; i++) {
             //ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + (i+1) + " to reference image.");

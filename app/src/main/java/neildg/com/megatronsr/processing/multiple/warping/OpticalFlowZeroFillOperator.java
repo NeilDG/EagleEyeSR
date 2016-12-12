@@ -40,7 +40,7 @@ public class OpticalFlowZeroFillOperator implements IOperator {
 
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Optical flow","Calculating optical flow of images");
+        ProgressDialogHandler.getInstance().showProcessDialog("Optical flow","Calculating optical flow of images");
 
         List<OpticalFlowWorker>  flowWorkerList = new LinkedList<>();
         for(int i = 0; i < this.matSequences.length; i++) {
@@ -62,7 +62,7 @@ public class OpticalFlowZeroFillOperator implements IOperator {
             }
 
             flowWorkerList.clear();
-            ProgressDialogHandler.getInstance().hideDialog();
+            ProgressDialogHandler.getInstance().hideProcessDialog();
 
         } catch (InterruptedException e) {
             e.printStackTrace();

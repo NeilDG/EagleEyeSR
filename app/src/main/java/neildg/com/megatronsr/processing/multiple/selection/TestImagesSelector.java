@@ -44,7 +44,7 @@ public class TestImagesSelector implements IOperator {
     @Override
     public void perform() {
         //get the best sharpness index and use it as ground-truth
-        ProgressDialogHandler.getInstance().showDialog("Assessment method", "Finding appropriate ground-truth");
+        ProgressDialogHandler.getInstance().showProcessDialog("Assessment method", "Finding appropriate ground-truth");
 
         int bestIndex = this.sharpnessResult.getBestIndex();
         Bitmap bitmap = BitmapURIRepository.getInstance().getOriginalBitmap(bestIndex);
@@ -67,7 +67,7 @@ public class TestImagesSelector implements IOperator {
         this.outputMatList = filteredMatList.toArray(new Mat[filteredMatList.size()]);
         this.edgeMatList = edgeFilteredList.toArray(new Mat[edgeFilteredList.size()]);
 
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 
     public Mat[] getProposedList() {

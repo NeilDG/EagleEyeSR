@@ -27,7 +27,7 @@ public class DegradationOperator implements IOperator{
     public void perform() {
         int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
 
-        ProgressDialogHandler.getInstance().showDialog("Debugging", "Imposing degradation operators");
+        ProgressDialogHandler.getInstance().showProcessDialog("Debugging", "Imposing degradation operators", ProgressDialogHandler.getInstance().getProgress());
 
         for(int i = 0; i < numImages; i++) {
             Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);

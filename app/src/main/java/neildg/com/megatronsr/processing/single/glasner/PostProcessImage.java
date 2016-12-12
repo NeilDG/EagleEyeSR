@@ -25,7 +25,7 @@ public class PostProcessImage implements IOperator {
     }
     @Override
     public void perform() {
-        ProgressDialogHandler.getInstance().showDialog("Postprocessing", "Smoothing and refining HR image");
+        ProgressDialogHandler.getInstance().showProcessDialog("Postprocessing", "Smoothing and refining HR image");
         this.performLaplace();
 
         FileImageWriter.getInstance().saveMatrixToImage(this.hrMat, FilenameConstants.RESULTS_DIR, FilenameConstants.RESULTS_GLASNER_SHARPEN, ImageFileAttribute.FileType.JPEG);

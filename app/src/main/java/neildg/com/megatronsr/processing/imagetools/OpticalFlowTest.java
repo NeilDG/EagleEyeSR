@@ -34,7 +34,7 @@ public class OpticalFlowTest implements ITest {
 
     @Override
     public void performTest() {
-        ProgressDialogHandler.getInstance().showDialog("Debug mode", "Performing optical flow test");
+        ProgressDialogHandler.getInstance().showProcessDialog("Debug mode", "Performing optical flow test", 0.0f);
 
         DownsamplingOperator downsamplingOperator = new DownsamplingOperator(ParameterConfig.getScalingFactor(), BitmapURIRepository.getInstance().getNumImagesSelected());
         downsamplingOperator.perform();
@@ -84,7 +84,7 @@ public class OpticalFlowTest implements ITest {
         Imgproc.remap(offsetMat, offsetMat, xPoints, yPoints, Imgproc.INTER_CUBIC, Core.BORDER_TRANSPARENT, Scalar.all(0));
         FileImageWriter.getInstance().saveMatrixToImage(offsetMat, "test_remap", ImageFileAttribute.FileType.JPEG);
 
-        ProgressDialogHandler.getInstance().showDialog("Debug mode", "Testing fusion");
+        ProgressDialogHandler.getInstance().showProcessDialog("Debug mode", "Testing fusion", 0.0f);
 
         List<Mat> toBlend = new LinkedList<>();
         Mat testMat = ImageOperator.performZeroFill(offsetMat, ParameterConfig.getScalingFactor(), xPoints, yPoints);
@@ -127,6 +127,6 @@ public class OpticalFlowTest implements ITest {
         outputMat = ImageOperator.blendImages(toBlend);
         ImageWriter.getInstance().saveMatrixToImage(outputMat, "test_blend", ImageFileAttribute.FileType.JPEG);*/
 
-        ProgressDialogHandler.getInstance().hideDialog();
+        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 }
