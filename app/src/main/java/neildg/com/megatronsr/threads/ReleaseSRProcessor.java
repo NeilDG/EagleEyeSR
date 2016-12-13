@@ -28,6 +28,7 @@ import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.warping.WarpResultEvaluator;
+import neildg.com.megatronsr.processing.multiple.warping.WarpingConstants;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
@@ -118,11 +119,17 @@ public class ReleaseSRProcessor extends Thread{
             succeedingMatList[i - 1] = rgbInputMatList[i];
         }
 
-        //perform affine warping
-        this.performAffineWarping(rgbInputMatList, rgbInputMatList[0], succeedingMatList);
 
-        //perform perspective warping
-        //this.performPerspectiveWarping(rgbInputMatList, rgbInputMatList[0], succeedingMatList);
+        int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
+
+        if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
+            //perform affine warping
+            this.performAffineWarping(rgbInputMatList, rgbInputMatList[0], succeedingMatList);
+        }
+        else {
+            //perform perspective warping
+            this.performPerspectiveWarping(rgbInputMatList, rgbInputMatList[0], succeedingMatList);
+        }
 
         //deallocate some classes
         SharpnessMeasure.destroy();

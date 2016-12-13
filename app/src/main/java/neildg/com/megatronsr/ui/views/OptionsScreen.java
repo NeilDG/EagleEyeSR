@@ -5,12 +5,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import neildg.com.megatronsr.R;
 import neildg.com.megatronsr.constants.ParameterConfig;
+import neildg.com.megatronsr.processing.multiple.warping.WarpingConstants;
 import neildg.com.megatronsr.ui.ResolutionPickerDialog;
 
 /**
@@ -73,6 +76,20 @@ public class OptionsScreen extends AScreen {
             }
         });
 
+        RadioGroup warpChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.warp_choice_radiogroup);
+        warpChoiceGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.affine_radio_btn) {
+                    ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
+                }
+                else if(checkedId == R.id.perspective_radio_btn) {
+                    ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.PERSPECTIVE_WARP);
+                }
+                Log.d(TAG, ParameterConfig.WARP_CHOICE_KEY + " set to " +ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP));
+            }
+        });
+
         this.setDefaults();
     }
 
@@ -128,5 +145,9 @@ public class OptionsScreen extends AScreen {
 
         SeekBar thresholdBar = (SeekBar) this.referenceView.findViewById(R.id.fusion_seekbar);
         thresholdBar.setProgress(0); thresholdBar.setMax(ParameterConfig.MAX_FUSION_THRESHOLD);
+
+        RadioGroup warpChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.warp_choice_radiogroup);
+        RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.affine_radio_btn);
+        warpChoiceBtn.setChecked(true);
     }
 }
