@@ -123,12 +123,12 @@ public class ReleaseSRProcessor extends Thread{
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
 
         if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
-            //perform affine warping
-            this.performAffineWarping(rgbInputMatList, rgbInputMatList[0], succeedingMatList);
-        }
-        else {
             //perform perspective warping
             this.performPerspectiveWarping(rgbInputMatList, rgbInputMatList[0], succeedingMatList);
+        }
+        else {
+            //perform affine warping
+            this.performAffineWarping(rgbInputMatList, rgbInputMatList[0], succeedingMatList);
         }
 
         //deallocate some classes
