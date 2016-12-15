@@ -179,6 +179,20 @@ public class ImageOperator {
         }
     }
 
+    public static Mat convertRGBToGray(Mat inputMat, boolean releaseOldMat) {
+        Mat outputMat = new Mat();
+        if(inputMat.channels() == 3 || inputMat.channels() == 4) {
+            Imgproc.cvtColor(inputMat, outputMat, Imgproc.COLOR_BGR2GRAY);
+        }
+
+        if(releaseOldMat) {
+            inputMat.release();
+        }
+
+        return outputMat;
+    }
+
+
     /*
      * Converts the given mat into a type. Returns the converted mat
      */

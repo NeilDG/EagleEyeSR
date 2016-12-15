@@ -168,12 +168,12 @@ public class MultipleImageSRProcessor extends Thread {
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 30.0f);
 
         //perform affine warping
-        AffineWarpingOperator warpingOperator = new AffineWarpingOperator(referenceMat, succeedingMatList);
-        warpingOperator.perform();
+        //AffineWarpingOperator warpingOperator = new AffineWarpingOperator(referenceMat, succeedingMatList);
+        //warpingOperator.perform();
 
         MatMemory.releaseAll(succeedingMatList, false);
         MatMemory.releaseAll(rgbInputMatList, false);
-        MatMemory.releaseAll(warpingOperator.getWarpedMatList(), true);
+        //MatMemory.releaseAll(warpingOperator.getWarpedMatList(), true);
     }
 
     private void performPerspectiveWarping(Mat[] rgbInputMatList, Mat referenceMat, Mat[] succeedingMatList) {

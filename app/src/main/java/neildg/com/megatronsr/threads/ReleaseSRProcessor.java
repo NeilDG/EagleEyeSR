@@ -5,6 +5,7 @@ import android.util.Log;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
@@ -113,6 +114,18 @@ public class ReleaseSRProcessor extends Thread{
             Log.d(TAG, "Denoising will be skipped!");
         }
 
+        //load yang edges for feature matching
+        Mat[] candidateMatList = new Mat[inputIndices.length - 1];
+        Mat referenceMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.EDGE_DIRECTORY_PREFIX + "/" + FilenameConstants.IMAGE_EDGE_PREFIX + 0,
+                ImageFileAttribute.FileType.JPEG);
+
+        for(int i = 1; i < inputIndices.length; i++) {
+            candidateMatList[i - 1] = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.EDGE_DIRECTORY_PREFIX + "/" + FilenameConstants.IMAGE_EDGE_PREFIX + (inputIndices[i]),
+                    ImageFileAttribute.FileType.JPEG);
+        }
+
+        Log.d(TAG, "CANDIDATE MAT INPUT LENGTH: "+candidateMatList.length);
+
         //perform feature matching of LR images against the first image as reference mat.
         Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
         for(int i = 1; i < rgbInputMatList.length; i++) {
@@ -128,7 +141,7 @@ public class ReleaseSRProcessor extends Thread{
         }
         else {
             //perform affine warping
-            this.performAffineWarping(rgbInputMatList, rgbInputMatList[0], succeedingMatList);
+            this.performAffineWarping(referenceMat, candidateMatList, succeedingMatList);
         }
 
         //deallocate some classes
@@ -192,15 +205,15 @@ public class ReleaseSRProcessor extends Thread{
         warpResultEvaluator.perform();
     }
 
-    private void performAffineWarping(Mat[] rgbInputMatList, Mat referenceMat, Mat[] succeedingMatList) {
+    private void performAffineWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList) {
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 30.0f);
 
         //perform affine warping
-        AffineWarpingOperator warpingOperator = new AffineWarpingOperator(referenceMat, succeedingMatList);
+        AffineWarpingOperator warpingOperator = new AffineWarpingOperator(referenceMat, candidateMatList, imagesToWarpList);
         warpingOperator.perform();
 
-        MatMemory.releaseAll(succeedingMatList, false);
-        MatMemory.releaseAll(rgbInputMatList, false);
+        MatMemory.releaseAll(candidateMatList, false);
+        MatMemory.releaseAll(imagesToWarpList, false);
         MatMemory.releaseAll(warpingOperator.getWarpedMatList(), true);
     }
 
