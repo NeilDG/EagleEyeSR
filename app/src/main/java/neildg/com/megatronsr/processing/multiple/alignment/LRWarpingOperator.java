@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.processing.multiple.warping;
+package neildg.com.megatronsr.processing.multiple.alignment;
 
 import android.util.Log;
 
@@ -129,9 +129,14 @@ public class LRWarpingOperator {
         pointList1.clear();
         pointList2.clear();
 
+        return performPerspectiveWarping(candidateMat, homography);
+
+    }
+
+    public static Mat performPerspectiveWarping(Mat inputMat, Mat homography) {
         if(homography.rows() == 3 && homography.cols() == 3) {
             Mat warpedMat = new Mat();
-            Imgproc.warpPerspective(candidateMat, warpedMat, homography, warpedMat.size(), Imgproc.INTER_LINEAR, Core.BORDER_REPLICATE, Scalar.all(0));
+            Imgproc.warpPerspective(inputMat, warpedMat, homography, warpedMat.size(), Imgproc.INTER_LINEAR, Core.BORDER_REPLICATE, Scalar.all(0));
 
             homography.release();
             return warpedMat;
@@ -139,11 +144,10 @@ public class LRWarpingOperator {
         else {
             //do nothing. not enough features for warping
             Mat warpedMat = new Mat();
-            candidateMat.copyTo(warpedMat);
+            inputMat.copyTo(warpedMat);
 
             homography.release();
             return warpedMat;
         }
-
     }
 }

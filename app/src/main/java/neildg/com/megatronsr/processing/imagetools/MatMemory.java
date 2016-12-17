@@ -10,8 +10,10 @@ import java.util.List;
 public class MatMemory {
     public static void releaseAll(Mat[] matList, boolean forceGC) {
         for(int i = 0; i < matList.length; i++) {
-            matList[i].release();
-            matList[i] = null;
+            if(matList[i] != null) {
+                matList[i].release();
+                matList[i] = null;
+            }
         }
 
         if(forceGC) {

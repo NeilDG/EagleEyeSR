@@ -1,17 +1,15 @@
-package neildg.com.megatronsr.processing.multiple.warping;
+package neildg.com.megatronsr.processing.multiple.alignment;
 
 import android.util.Log;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.AlignMTB;
 import org.opencv.photo.Photo;
 import org.opencv.video.Video;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,7 +19,6 @@ import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.processing.IOperator;
-import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 
 /**
  * Affine warping counterpart of perspective warping
@@ -36,8 +33,6 @@ public class AffineWarpingOperator implements IOperator {
     private Mat[] imagesToWarpList;
     private Mat[] warpedMatList;
 
-    private AlignMTB mtbAligner;
-
     /*
      * The target reference mat, the matrices to be used for feature matching and identifying affine transformation from reference mat,
      * the actual images to apply affine transformation. Candidate mat list and images to warp list should be of equal length and 1:1 correspondence.
@@ -46,8 +41,6 @@ public class AffineWarpingOperator implements IOperator {
         this.referenceMat = referenceMat;
         this.candidateMatList = candidateMatList;
         this.imagesToWarpList = imagesToWarpList;
-
-        this.mtbAligner = Photo.createAlignMTB();
 
         this.warpedMatList = new Mat[this.candidateMatList.length];
     }
@@ -76,17 +69,7 @@ public class AffineWarpingOperator implements IOperator {
             //FileImageWriter.getInstance().saveMatrixToImage(this.warpedMatList[i], FilenameConstants.WARP_PREFIX + i, ImageFileAttribute.FileType.JPEG);
         }
 
-        AttributeHolder.getSharedInstance().putValue(AttributeNames.AFFINE_WARPED_IMAGES_LENGTH_KEY, this.warpedMatList.length);
-        this.testAlignMTB(Arrays.asList(this.warpedMatList));
-        this.mtbAligner = null;
-    }
-
-    private void testAlignMTB(List<Mat> testAlignMat) {
-        this.mtbAligner.process(testAlignMat, testAlignMat);
-
-        for(int i = 0; i < testAlignMat.size(); i++) {
-            FileImageWriter.getInstance().saveMatrixToImage(this.warpedMatList[i], FilenameConstants.WARP_PREFIX + i, ImageFileAttribute.FileType.JPEG);
-        }
+        AttributeHolder.getSharedInstance().putValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, this.warpedMatList.length);
     }
 
     /*

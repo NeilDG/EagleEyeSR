@@ -8,12 +8,11 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import neildg.com.megatronsr.R;
 import neildg.com.megatronsr.constants.ParameterConfig;
-import neildg.com.megatronsr.processing.multiple.warping.WarpingConstants;
+import neildg.com.megatronsr.processing.multiple.alignment.WarpingConstants;
 import neildg.com.megatronsr.ui.ResolutionPickerDialog;
 
 /**
@@ -147,7 +146,7 @@ public class OptionsScreen extends AScreen {
         thresholdBar.setProgress(0); thresholdBar.setMax(ParameterConfig.MAX_FUSION_THRESHOLD);
 
         RadioGroup warpChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.warp_choice_radiogroup);
-        RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.affine_radio_btn);
+        RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.perspective_radio_btn);
         warpChoiceBtn.setChecked(true);
     }
 }

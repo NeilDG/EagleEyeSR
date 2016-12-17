@@ -57,20 +57,20 @@ public class OptimizedMeanFusionOperator implements IOperator {
 
             //perform interpolation
             initialMat = ImageOperator.performInterpolation(initialMat, scale, Imgproc.INTER_CUBIC); //perform cubic interpolation
-            //Mat maskMat = ImageOperator.produceMask(initialMat);
+            Mat maskMat = ImageOperator.produceMask(initialMat);
 
             //load previous HR image for comparison, then measure absolute difference. remove extreme values from addition.
-            Mat comparisonMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.HR_ITERATION_PREFIX_STRING + (i-1), ImageFileAttribute.FileType.JPEG);
+            /*Mat comparisonMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.HR_ITERATION_PREFIX_STRING + (i-1), ImageFileAttribute.FileType.JPEG);
             Core.absdiff(initialMat, comparisonMat, comparisonMat);
             Mat maskMat = ImageOperator.produceOppositeMask(comparisonMat, threshold, 255);
             comparisonMat.release();
-            FileImageWriter.getInstance().saveMatrixToImage(maskMat, "abs_diff_"+i, ImageFileAttribute.FileType.JPEG); //TODO: testing only
+            FileImageWriter.getInstance().saveMatrixToImage(maskMat, "abs_diff_"+i, ImageFileAttribute.FileType.JPEG); //TODO: testing only*/
 
             Core.add(sumMat, initialMat, sumMat, maskMat, CvType.CV_32FC(initialMat.channels()));
 
             //double value of initial sumMat so that division is still constant 2
-            Core.bitwise_not(maskMat, maskMat);
-            Core.add(sumMat, sumMat, sumMat, maskMat, CvType.CV_32FC(initialMat.channels()));
+            //Core.bitwise_not(maskMat, maskMat);
+            //Core.add(sumMat, sumMat, sumMat, maskMat, CvType.CV_32FC(initialMat.channels()));
             Core.divide(sumMat, Scalar.all(2), sumMat);
 
             Log.d(TAG, "sumMat size: " +sumMat.size().toString());

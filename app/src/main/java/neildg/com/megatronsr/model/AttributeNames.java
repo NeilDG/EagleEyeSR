@@ -9,5 +9,4 @@ public class AttributeNames {
     public final static String PATCH_SIZE_KEY = "PATCH_SIZE_KEY";
 
     public final static String WARPED_IMAGES_LENGTH_KEY = "WARPED_IMAGES_LENGTH_KEY";
-    public final static String AFFINE_WARPED_IMAGES_LENGTH_KEY = "AFFINE_WARPED_IMAGES_LENGTH_KEY";
 }

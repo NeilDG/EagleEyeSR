@@ -16,8 +16,8 @@ import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.processing.ITest;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
-import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
-import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
+import neildg.com.megatronsr.processing.multiple.alignment.FeatureMatchingOperator;
+import neildg.com.megatronsr.processing.multiple.alignment.LRWarpingOperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**

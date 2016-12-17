@@ -22,9 +22,8 @@ import neildg.com.megatronsr.processing.multiple.fusion.OptimizedBaseFusionOpera
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.megatronsr.processing.multiple.selection.TestImagesSelector;
-import neildg.com.megatronsr.processing.multiple.warping.AffineWarpingOperator;
-import neildg.com.megatronsr.processing.multiple.warping.FeatureMatchingOperator;
-import neildg.com.megatronsr.processing.multiple.warping.LRWarpingOperator;
+import neildg.com.megatronsr.processing.multiple.alignment.FeatureMatchingOperator;
+import neildg.com.megatronsr.processing.multiple.alignment.LRWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.LRToHROperator;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -198,7 +197,7 @@ public class MultipleImageSRProcessor extends Thread {
     }
 
     private void performMeanFusion() {
-        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.AFFINE_WARPED_IMAGES_LENGTH_KEY, 0);
+        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, 0);
         ArrayList<String> imagePathList = new ArrayList<>();
 
         //add initial input HR image
