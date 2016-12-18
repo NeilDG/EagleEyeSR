@@ -132,6 +132,23 @@ public class FileImageWriter {
 		File imageFile = new File(dirFile.getPath(), fileName + ImageFileAttribute.getFileExtension(fileType));
 		imageFile.delete();
 	}
+
+	public synchronized void recreateDirectory() {
+		File dirFile = new File(this.proposedPath);
+		deleteRecursive(dirFile);
+
+		if(dirFile.mkdirs() == false) {
+			dirFile.mkdir();
+		}
+	}
+
+	private void deleteRecursive(File fileOrDirectory) {
+		if (fileOrDirectory.isDirectory())
+			for (File child : fileOrDirectory.listFiles())
+				deleteRecursive(child);
+
+		fileOrDirectory.delete();
+	}
 	
 	public String getFilePath() {
 		return this.proposedPath;

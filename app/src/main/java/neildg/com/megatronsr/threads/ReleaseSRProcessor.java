@@ -125,7 +125,7 @@ public class ReleaseSRProcessor extends Thread{
 
         if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
             //load yang edges for feature matching
-            Mat[] candidateMatList = new Mat[inputIndices.length - 1];
+            /*Mat[] candidateMatList = new Mat[inputIndices.length - 1];
             Mat referenceMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.EDGE_DIRECTORY_PREFIX + "/" + FilenameConstants.IMAGE_EDGE_PREFIX + inputIndices[0],
                     ImageFileAttribute.FileType.JPEG);
 
@@ -134,7 +134,7 @@ public class ReleaseSRProcessor extends Thread{
                         ImageFileAttribute.FileType.JPEG);
             }
 
-            Log.d(TAG, "CANDIDATE MAT INPUT LENGTH: "+candidateMatList.length);
+            Log.d(TAG, "CANDIDATE MAT INPUT LENGTH: "+candidateMatList.length);*/
 
             //perform perspective warping
             Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
@@ -142,8 +142,8 @@ public class ReleaseSRProcessor extends Thread{
                 succeedingMatList[i - 1] = rgbInputMatList[i];
             }
 
-           // this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
-            this.performPerspectiveWarping(referenceMat, candidateMatList, succeedingMatList);
+            this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
+            //this.performPerspectiveWarping(referenceMat, candidateMatList, succeedingMatList);
         }
         else if(warpChoice == WarpingConstants.AFFINE_WARP) {
             Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
@@ -155,17 +155,17 @@ public class ReleaseSRProcessor extends Thread{
             this.performAffineWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
         }
         else {
-           this.performExposureAlignment(rgbInputMatList);
+           this.performExposureAlignment(rgbInputMatList, inputIndices[0]);
         }
 
         //deallocate some classes
         SharpnessMeasure.destroy();
 
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Refining image warping results", 70.0f);
-        this.assessImageWarpResults(sharpnessResult.getTrimmedIndexes()[0]);
+        this.assessImageWarpResults(inputIndices[0]);
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 80.0f);
-        this.performMeanFusion(sharpnessResult.getTrimmedIndexes()[0]);
+        this.performMeanFusion(inputIndices[0]);
 
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 100.0f);
@@ -255,10 +255,10 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.releaseAll(warpedMatList, true);
     }
 
-    private void performExposureAlignment(Mat[] imagesToAlignList) {
+    private void performExposureAlignment(Mat[] imagesToAlignList, int inputIndex) {
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing exposure alignment", 30.0f);
         //perform exposure alignment
-        ExposureAlignmentOperator exposureAlignmentOperator = new ExposureAlignmentOperator(imagesToAlignList);
+        ExposureAlignmentOperator exposureAlignmentOperator = new ExposureAlignmentOperator(imagesToAlignList, inputIndex);
         exposureAlignmentOperator.perform();
 
         MatMemory.releaseAll(imagesToAlignList, true);

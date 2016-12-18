@@ -66,7 +66,7 @@ public class WarpResultEvaluator implements IOperator {
 
             FileImageWriter.getInstance().saveMatrixToImage(warpedMat, "sobel_grad_"+i, ImageFileAttribute.FileType.JPEG);
             //Core.absdiff(this.referenceMat, warpedMat, warpedMat);
-            warpedMat = ImageOperator.produceMask(warpedMat, threshold);
+            warpedMat = ImageOperator.produceMask(warpedMat);
             compareResultList[i] = Core.countNonZero(warpedMat);
 
 

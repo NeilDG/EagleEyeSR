@@ -24,6 +24,7 @@ public class TransferToDirOperator implements IOperator {
     @Override
     public void perform() {
         FileImageWriter imageWriter = FileImageWriter.getInstance();
+        imageWriter.recreateDirectory();
         BitmapURIRepository bitmapURIRepository = BitmapURIRepository.getInstance();
 
         for(int i = 0; i < numImagesSelected; i++) {
