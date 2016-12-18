@@ -8,6 +8,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.processing.IOperator;
@@ -24,7 +25,6 @@ public class WarpResultEvaluator implements IOperator {
     private final static String TAG = "WarpResultEvaluator";
 
     private Mat referenceMat;
-    private Mat[] warpedMatList;
 
     String referenceImageName;
     String[] warpedMatNames;
@@ -37,37 +37,41 @@ public class WarpResultEvaluator implements IOperator {
     @Override
     public void perform() {
         this.referenceMat = FileImageReader.getInstance().imReadOpenCV(referenceImageName, ImageFileAttribute.FileType.JPEG);
-        this.warpedMatList = new Mat[this.warpedMatNames.length];
 
-        this.referenceMat.convertTo(this.referenceMat,  CvType.CV_8UC(this.referenceMat.channels()));
+        this.referenceMat.convertTo(this.referenceMat,  CvType.CV_16UC(this.referenceMat.channels()));
 
         int[] compareResultList = new int[this.warpedMatNames.length];
-
-        Mat fuseMat = new Mat();
-        Mat diffMat = new Mat();
+        int threshold = ParameterConfig.getPrefsInt(ParameterConfig.FUSION_THRESHOLD_KEY, 0);
         for(int i = 0; i < this.warpedMatNames.length; i++) {
-            this.warpedMatList[i] = FileImageReader.getInstance().imReadOpenCV(this.warpedMatNames[i], ImageFileAttribute.FileType.JPEG);
+            Mat warpedMat = FileImageReader.getInstance().imReadOpenCV(this.warpedMatNames[i], ImageFileAttribute.FileType.JPEG);
 
-            Mat maskMat = ImageOperator.produceMask(this.warpedMatList[i]);
-            this.warpedMatList[i].convertTo(this.warpedMatList[i], CvType.CV_32FC(this.warpedMatList[i].channels()));
-            Core.add(this.referenceMat, this.warpedMatList[i], fuseMat, maskMat, CvType.CV_32FC(this.warpedMatList[i].channels()));
-
-            Core.divide(fuseMat, Scalar.all(2), fuseMat, CvType.CV_8UC(this.warpedMatList[i].channels()));
+            Mat maskMat = ImageOperator.produceMask(warpedMat);
+            warpedMat.convertTo(warpedMat, CvType.CV_16UC(warpedMat.channels()));
+            Core.add(this.referenceMat, warpedMat, warpedMat);
 
             maskMat.release();
-            //measure extreme values
-            fuseMat.convertTo(fuseMat,  CvType.CV_8UC(this.warpedMatList[i].channels()));
-            Core.absdiff(this.referenceMat, fuseMat, diffMat);
-            fuseMat.release();
+            Log.e(TAG, "Reference mat type: " +CvType.typeToString(this.referenceMat.type()) + " Warped mat type: " +CvType.typeToString(warpedMat.type()));
+            Core.absdiff(this.referenceMat, warpedMat, warpedMat);
 
-            diffMat = ImageOperator.produceMask(diffMat, 175);
-            Log.d(TAG, "Non zero elems in difference mat for "+this.warpedMatNames[i]+ " : " +Core.countNonZero(diffMat));
+            warpedMat = ImageOperator.produceMask(warpedMat, threshold);
+            compareResultList[i] = Core.countNonZero(warpedMat);
 
-            diffMat.release();
 
+            warpedMat.release();
         }
 
         this.referenceMat.release();
-        MatMemory.releaseAll(this.warpedMatList, true);
+        assessWarpedImages(compareResultList, this.warpedMatNames);
+    }
+
+    private static void assessWarpedImages(int[] warpedResults, String[] warpedMatNames) {
+        float average = 0.0f; int sum = 0;
+        for(int i = 0; i < warpedResults.length; i++) {
+            Log.d(TAG, "Non zero elems in difference mat for "+warpedMatNames[i]+ " : " +warpedResults[i]);
+            sum += warpedResults[i];
+        }
+
+        average = (sum * 1.0f) / warpedResults.length;
+        Log.d(TAG, "Average non zero difference: " +average);
     }
 }

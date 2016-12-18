@@ -38,9 +38,9 @@ public class OptimizedMeanFusionOperator implements IOperator {
 
         int scale = ParameterConfig.getScalingFactor();
         this.outputMat = new Mat();
-
         Mat initialMat = FileImageReader.getInstance().imReadOpenCV(this.imageMatPathList[0], ImageFileAttribute.FileType.JPEG);
-        initialMat.convertTo(initialMat, CvType.CV_32FC(initialMat.channels())); //convert to CV_32F
+        initialMat.convertTo(initialMat, CvType.CV_16UC(initialMat.channels())); //convert to CV_32F
+        Log.d(TAG, "Initial image for fusion: "+this.imageMatPathList[0]+ " Size:" +initialMat.size());
 
         Mat sumMat = ImageOperator.performInterpolation(initialMat, scale, Imgproc.INTER_CUBIC); //perform cubic interpolation for initial HR
         sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
@@ -48,7 +48,7 @@ public class OptimizedMeanFusionOperator implements IOperator {
         initialMat.release();
         this.outputMat.release();
 
-        int threshold = 255 - ParameterConfig.getPrefsInt(ParameterConfig.FUSION_THRESHOLD_KEY, 0);
+        //int threshold = 255 - ParameterConfig.getPrefsInt(ParameterConfig.FUSION_THRESHOLD_KEY, 0);
         for(int i = 1; i < this.imageMatPathList.length; i++) {
             //load second mat
             initialMat = FileImageReader.getInstance().imReadOpenCV(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
@@ -66,7 +66,7 @@ public class OptimizedMeanFusionOperator implements IOperator {
             comparisonMat.release();
             FileImageWriter.getInstance().saveMatrixToImage(maskMat, "abs_diff_"+i, ImageFileAttribute.FileType.JPEG); //TODO: testing only*/
 
-            Core.add(sumMat, initialMat, sumMat, maskMat, CvType.CV_32FC(initialMat.channels()));
+            Core.add(sumMat, initialMat, sumMat, maskMat, CvType.CV_16UC(initialMat.channels()));
 
             //double value of initial sumMat so that division is still constant 2
             //Core.bitwise_not(maskMat, maskMat);

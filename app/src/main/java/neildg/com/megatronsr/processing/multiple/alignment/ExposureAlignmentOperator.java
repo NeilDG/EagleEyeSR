@@ -12,6 +12,7 @@ import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.processing.IOperator;
+import neildg.com.megatronsr.processing.imagetools.MatMemory;
 
 /**
  * Performs MTB exposure alignment.
@@ -36,5 +37,6 @@ public class ExposureAlignmentOperator implements IOperator {
         for(int i = 0; i < processMatList.size(); i++) {
             FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(i), FilenameConstants.WARP_PREFIX + i, ImageFileAttribute.FileType.JPEG);
         }
+
     }
 }

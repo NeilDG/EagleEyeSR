@@ -118,7 +118,7 @@ public class ReleaseSRProcessor extends Thread{
         }
 
         //load yang edges for feature matching
-        Mat[] candidateMatList = new Mat[inputIndices.length - 1];
+        /*Mat[] candidateMatList = new Mat[inputIndices.length - 1];
         Mat referenceMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.EDGE_DIRECTORY_PREFIX + "/" + FilenameConstants.IMAGE_EDGE_PREFIX + 0,
                 ImageFileAttribute.FileType.JPEG);
 
@@ -127,7 +127,7 @@ public class ReleaseSRProcessor extends Thread{
                     ImageFileAttribute.FileType.JPEG);
         }
 
-        Log.d(TAG, "CANDIDATE MAT INPUT LENGTH: "+candidateMatList.length);
+        Log.d(TAG, "CANDIDATE MAT INPUT LENGTH: "+candidateMatList.length);*/
 
         //perform feature matching of LR images against the first image as reference mat.
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
@@ -141,14 +141,17 @@ public class ReleaseSRProcessor extends Thread{
 
             this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
         }
-        else {
+        else if(warpChoice == WarpingConstants.AFFINE_WARP) {
             Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
             for(int i = 1; i < rgbInputMatList.length; i++) {
                 succeedingMatList[i - 1] = rgbInputMatList[i];
             }
 
             //perform affine warping
-            this.performAffineWarping(referenceMat, candidateMatList, succeedingMatList);
+            this.performAffineWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
+        }
+        else {
+           this.performExposureAlignment(rgbInputMatList);
         }
 
         //deallocate some classes
@@ -210,6 +213,8 @@ public class ReleaseSRProcessor extends Thread{
 
         WarpResultEvaluator warpResultEvaluator = new WarpResultEvaluator(FilenameConstants.INPUT_PREFIX_STRING + index, warpedImageNames);
         warpResultEvaluator.perform();
+
+        MatMemory.releaseAll(warpedImageNames, true);
     }
 
     private void performAffineWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList) {
@@ -218,10 +223,6 @@ public class ReleaseSRProcessor extends Thread{
         //perform affine warping
         AffineWarpingOperator warpingOperator = new AffineWarpingOperator(referenceMat, candidateMatList, imagesToWarpList);
         warpingOperator.perform();
-
-        //perform exposure alignment
-        ExposureAlignmentOperator exposureAlignmentOperator = new ExposureAlignmentOperator(warpingOperator.getWarpedMatList());
-        exposureAlignmentOperator.perform();
 
         MatMemory.releaseAll(candidateMatList, false);
         MatMemory.releaseAll(imagesToWarpList, false);
@@ -238,10 +239,6 @@ public class ReleaseSRProcessor extends Thread{
         LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), imagesToWarpList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         perspectiveWarpOperator.perform();
 
-        //perform exposure alignment
-        ExposureAlignmentOperator exposureAlignmentOperator = new ExposureAlignmentOperator(perspectiveWarpOperator.getWarpedMatList());
-        exposureAlignmentOperator.perform();
-
         //release images
         matchingOperator.getRefKeypoint().release();
         MatMemory.releaseAll(matchingOperator.getdMatchesList(), false);
@@ -251,6 +248,15 @@ public class ReleaseSRProcessor extends Thread{
 
         Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
         MatMemory.releaseAll(warpedMatList, true);
+    }
+
+    private void performExposureAlignment(Mat[] imagesToAlignList) {
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing exposure alignment", 30.0f);
+        //perform exposure alignment
+        ExposureAlignmentOperator exposureAlignmentOperator = new ExposureAlignmentOperator(imagesToAlignList);
+        exposureAlignmentOperator.perform();
+
+        MatMemory.releaseAll(imagesToAlignList, true);
     }
 
     private void performMeanFusion(int index) {

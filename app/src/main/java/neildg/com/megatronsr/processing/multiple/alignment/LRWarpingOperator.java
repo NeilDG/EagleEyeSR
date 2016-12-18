@@ -54,7 +54,9 @@ public class LRWarpingOperator {
             ProgressDialogHandler.getInstance().updateProgress(ProgressDialogHandler.getInstance().getProgress() + 5.0f);
 
             Mat warpedMat = this.warpImage(this.goodMatchList[i], this.keyPointList[i], this.imagesToWarpList[i]);
-            this.warpedMatList[i] = warpedMat;
+            /*Mat warpedMat = new Mat();
+            this.imagesToWarpList[i].copyTo(warpedMat); //TODO: testing only
+            this.warpedMatList[i] = warpedMat;*/
 
             FileImageWriter.getInstance().saveMatrixToImage(warpedMat, WARP_PREFIX +i, ImageFileAttribute.FileType.JPEG);
 
@@ -147,6 +149,8 @@ public class LRWarpingOperator {
             inputMat.copyTo(warpedMat);
 
             homography.release();
+
+            Log.e(TAG, "No homography was found for warp perspective. Returning original mat.");
             return warpedMat;
         }
     }

@@ -26,7 +26,7 @@ public class ParameterConfig {
     public final static String FUSION_THRESHOLD_KEY = "FUSION_THRESHOLD_KEY";
     public final static String WARP_CHOICE_KEY = "WARP_CHOICE_KEY";
 
-    public final static int MAX_FUSION_THRESHOLD = 200;
+    public final static int MAX_FUSION_THRESHOLD = 255;
 
     private SRTechnique currentTechnique = SRTechnique.MULTIPLE;
 

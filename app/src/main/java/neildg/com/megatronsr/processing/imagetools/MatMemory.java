@@ -8,6 +8,19 @@ import java.util.List;
  * Created by NeilDG on 9/12/2016.
  */
 public class MatMemory {
+
+    public static void releaseAll(String[] matNames, boolean forceGC) {
+        for(int i = 0; i < matNames.length; i++) {
+            if(matNames[i] != null) {
+                matNames[i] = null;
+            }
+        }
+
+        if(forceGC) {
+            System.gc();
+            System.runFinalization();
+        }
+    }
     public static void releaseAll(Mat[] matList, boolean forceGC) {
         for(int i = 0; i < matList.length; i++) {
             if(matList[i] != null) {
@@ -33,5 +46,10 @@ public class MatMemory {
             System.gc();
             System.runFinalization();
         }
+    }
+
+    public static void cleanMemory() {
+        System.gc();
+        System.runFinalization();
     }
 }

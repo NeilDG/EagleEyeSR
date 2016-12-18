@@ -85,6 +85,9 @@ public class OptionsScreen extends AScreen {
                 else if(checkedId == R.id.perspective_radio_btn) {
                     ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.PERSPECTIVE_WARP);
                 }
+                else if(checkedId == R.id.exposure_align_btn) {
+                    ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.EXPOSURE_ALIGNMENT);
+                }
                 Log.d(TAG, ParameterConfig.WARP_CHOICE_KEY + " set to " +ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP));
             }
         });
@@ -105,19 +108,6 @@ public class OptionsScreen extends AScreen {
     @Override
     public void hide() {
         super.hide();
-
-        //update parameter config
-        /*EditText minDistText = (EditText) this.referenceView.findViewById(R.id.feature_dist_text);
-        String valueString = minDistText.getText().toString();
-
-        try {
-            float newValue = Float.parseFloat(valueString);
-            ParameterConfig.setPrefs(ParameterConfig.FEATURE_MINIMUM_DISTANCE_KEY, newValue);
-
-            Log.d(TAG, "New min distance threshold set: " +ParameterConfig.getPrefsFloat(ParameterConfig.FEATURE_MINIMUM_DISTANCE_KEY, 999.0f));
-        } catch(NumberFormatException e) {
-            Log.e(TAG, "Error in parsing min distance text. Not a valid value. Value: " +valueString);
-        }*/
 
         EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
         String thresholdString = thresholdEditText.getText().toString();
@@ -143,7 +133,9 @@ public class OptionsScreen extends AScreen {
         denoiseBtn.setChecked(false); //disable denoising mode by default.
 
         SeekBar thresholdBar = (SeekBar) this.referenceView.findViewById(R.id.fusion_seekbar);
-        thresholdBar.setProgress(0); thresholdBar.setMax(ParameterConfig.MAX_FUSION_THRESHOLD);
+        thresholdBar.setProgress(200); thresholdBar.setMax(ParameterConfig.MAX_FUSION_THRESHOLD);
+        EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
+        thresholdEditText.setText(Integer.toString(thresholdBar.getProgress()));
 
         RadioGroup warpChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.warp_choice_radiogroup);
         RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.perspective_radio_btn);

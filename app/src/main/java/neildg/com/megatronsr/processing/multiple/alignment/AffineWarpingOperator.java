@@ -66,7 +66,7 @@ public class AffineWarpingOperator implements IOperator {
                 this.imagesToWarpList[i].copyTo(this.warpedMatList[i]);
             }
 
-            //FileImageWriter.getInstance().saveMatrixToImage(this.warpedMatList[i], FilenameConstants.WARP_PREFIX + i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(this.warpedMatList[i], FilenameConstants.WARP_PREFIX + i, ImageFileAttribute.FileType.JPEG);
         }
 
         AttributeHolder.getSharedInstance().putValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, this.warpedMatList.length);
