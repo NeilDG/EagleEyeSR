@@ -53,6 +53,12 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -64,4 +70,5 @@ dependencies {
     //open-source libraries start
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.6.0'
     compile 'com.akexorcist:RoundCornerProgressBar:2.0.3'
+    compile 'com.github.darsh2:MultipleImageSelect:v0.0.4'
 }

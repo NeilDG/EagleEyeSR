@@ -117,29 +117,33 @@ public class ReleaseSRProcessor extends Thread{
             Log.d(TAG, "Denoising will be skipped!");
         }
 
-        //load yang edges for feature matching
-        /*Mat[] candidateMatList = new Mat[inputIndices.length - 1];
-        Mat referenceMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.EDGE_DIRECTORY_PREFIX + "/" + FilenameConstants.IMAGE_EDGE_PREFIX + 0,
-                ImageFileAttribute.FileType.JPEG);
 
-        for(int i = 1; i < inputIndices.length; i++) {
-            candidateMatList[i - 1] = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.EDGE_DIRECTORY_PREFIX + "/" + FilenameConstants.IMAGE_EDGE_PREFIX + (inputIndices[i]),
-                    ImageFileAttribute.FileType.JPEG);
-        }
 
-        Log.d(TAG, "CANDIDATE MAT INPUT LENGTH: "+candidateMatList.length);*/
 
         //perform feature matching of LR images against the first image as reference mat.
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
 
         if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
+            //load yang edges for feature matching
+            Mat[] candidateMatList = new Mat[inputIndices.length - 1];
+            Mat referenceMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.EDGE_DIRECTORY_PREFIX + "/" + FilenameConstants.IMAGE_EDGE_PREFIX + inputIndices[0],
+                    ImageFileAttribute.FileType.JPEG);
+
+            for(int i = 1; i < inputIndices.length; i++) {
+                candidateMatList[i - 1] = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.EDGE_DIRECTORY_PREFIX + "/" + FilenameConstants.IMAGE_EDGE_PREFIX + (inputIndices[i]),
+                        ImageFileAttribute.FileType.JPEG);
+            }
+
+            Log.d(TAG, "CANDIDATE MAT INPUT LENGTH: "+candidateMatList.length);
+
             //perform perspective warping
             Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
             for(int i = 1; i < rgbInputMatList.length; i++) {
                 succeedingMatList[i - 1] = rgbInputMatList[i];
             }
 
-            this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
+           // this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
+            this.performPerspectiveWarping(referenceMat, candidateMatList, succeedingMatList);
         }
         else if(warpChoice == WarpingConstants.AFFINE_WARP) {
             Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
@@ -162,6 +166,7 @@ public class ReleaseSRProcessor extends Thread{
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 80.0f);
         this.performMeanFusion(sharpnessResult.getTrimmedIndexes()[0]);
+
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 100.0f);
         try {

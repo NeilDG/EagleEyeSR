@@ -6,10 +6,12 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageReader;
+import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
@@ -47,12 +49,23 @@ public class WarpResultEvaluator implements IOperator {
 
             Mat maskMat = ImageOperator.produceMask(warpedMat);
             warpedMat.convertTo(warpedMat, CvType.CV_16UC(warpedMat.channels()));
+
+            Log.e(TAG, "Reference mat type: " +CvType.typeToString(this.referenceMat.type()) + " Warped mat type: " +CvType.typeToString(warpedMat.type())
+            + " Reference mat name: " +this.referenceImageName+ " Warped mat name: " +this.warpedMatNames[i]);
             Core.add(this.referenceMat, warpedMat, warpedMat);
 
             maskMat.release();
-            Log.e(TAG, "Reference mat type: " +CvType.typeToString(this.referenceMat.type()) + " Warped mat type: " +CvType.typeToString(warpedMat.type()));
-            Core.absdiff(this.referenceMat, warpedMat, warpedMat);
+            Imgproc.blur(warpedMat, warpedMat, new Size(3,3));
+            Mat gradX = new Mat(); Mat gradY = new Mat();
 
+            Imgproc.Sobel(warpedMat, gradX, CvType.CV_16S, 1, 0, 3, 1, 0, Core.BORDER_DEFAULT);
+            Imgproc.Sobel(warpedMat, gradY, CvType.CV_16S, 0, 1, 3, 1, 0, Core.BORDER_DEFAULT);
+
+            gradX.convertTo(gradX, CvType.CV_8UC(gradX.channels())); gradY.convertTo(gradY, CvType.CV_8UC(gradX.channels()));
+            Core.addWeighted(gradX, 0.5, gradY, 0.5, 0, warpedMat);
+
+            FileImageWriter.getInstance().saveMatrixToImage(warpedMat, "sobel_grad_"+i, ImageFileAttribute.FileType.JPEG);
+            //Core.absdiff(this.referenceMat, warpedMat, warpedMat);
             warpedMat = ImageOperator.produceMask(warpedMat, threshold);
             compareResultList[i] = Core.countNonZero(warpedMat);
 

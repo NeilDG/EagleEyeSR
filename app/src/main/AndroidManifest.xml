@@ -53,6 +53,13 @@
         <activity android:name=".ImageViewActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             android:screenOrientation="sensorLandscape"></activity>
+        <activity
+            android:name="com.darsh.multipleimageselect.activities.AlbumSelectActivity"
+            android:theme="@style/MultipleImageSelectTheme">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

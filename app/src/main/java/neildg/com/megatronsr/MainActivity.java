@@ -14,8 +14,13 @@ import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.darsh.multipleimageselect.activities.AlbumSelectActivity;
+import com.darsh.multipleimageselect.helpers.Constants;
+import com.darsh.multipleimageselect.models.Image;
+
 import org.opencv.android.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,11 +131,15 @@ public class MainActivity extends AppCompatActivity{
         pickImagesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
+                /*Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
+                startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);*/
+
+                Intent intent = new Intent(MainActivity.this, AlbumSelectActivity.class);
+                intent.putExtra(Constants.INTENT_EXTRA_LIMIT, 10);
+                startActivityForResult(intent, Constants.REQUEST_CODE);
             }
         });
 
@@ -175,81 +184,25 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        try {
-            // When an Image is picked
-            if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK
-                    && null != data) {
-                // Get the Image from data
+        if (requestCode == Constants.REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            //The array list has the image paths of the selected images
+            ArrayList<Image> images = data.getParcelableArrayListExtra(Constants.INTENT_EXTRA_IMAGES);
+            ArrayList<Uri> imageURIList = new ArrayList<>();
+            for(int i = 0; i < images.size(); i++) {
+                imageURIList.add(Uri.fromFile(new File(images.get(i).path)));
+            }
 
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-                imagesEncodedList = new ArrayList<String>();
-                if(data.getData()!=null){
-
-                    Uri mImageUri=data.getData();
-
-                    // Get the cursor
-                    Cursor cursor = getContentResolver().query(mImageUri,
-                            filePathColumn, null, null, null);
-                    // Move to first row
-                    cursor.moveToFirst();
-
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    imageEncoded  = cursor.getString(columnIndex);
-                    cursor.close();
-
-                    if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE) {
-                        Toast.makeText(this, "Technique needs multiple images. Tap and hold to pick multiple images.",
-                                Toast.LENGTH_LONG).show();
-                    }
-                    else {
-                        ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
-                        mArrayUri.add(mImageUri);
-                        BitmapURIRepository.getInstance().setImageURIList(mArrayUri);
-                        this.moveToProcessingActivity();
-                    }
-
-
-                }else {
-                    if (data.getClipData() != null) {
-                        ClipData mClipData = data.getClipData();
-                        ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
-                        for (int i = 0; i < mClipData.getItemCount(); i++) {
-
-                            ClipData.Item item = mClipData.getItemAt(i);
-                            Uri uri = item.getUri();
-                            mArrayUri.add(uri);
-                            // Get the cursor
-                            Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
-                            // Move to first row
-                            cursor.moveToFirst();
-
-                            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                            imageEncoded  = cursor.getString(columnIndex);
-                            imagesEncodedList.add(imageEncoded);
-                            cursor.close();
-
-                        }
-
-                        if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE) {
-                            Log.v("LOG_TAG", "Selected Images " + mArrayUri.size());
-                            BitmapURIRepository.getInstance().setImageURIList(mArrayUri);
-                            this.moveToProcessingActivity();
-                        }
-                        else {
-                            Toast.makeText(this, "Technique only requires a single image. Click an image to select.",
-                                    Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }
-            } else {
-                Toast.makeText(this, "You haven't picked Image",
+            if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE && imageURIList.size() > 1) {
+                Log.v("LOG_TAG", "Selected Images " + imageURIList.size());
+                BitmapURIRepository.getInstance().setImageURIList(imageURIList);
+                this.moveToProcessingActivity();
+            }
+            else if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE && imageURIList.size() < 1) {
+                Toast.makeText(this, "You haven't picked enough images. Pick multiple similar images.",
                         Toast.LENGTH_LONG).show();
             }
-        } catch (Exception e) {
-            Toast.makeText(this, "Something went wrong. Error: " +e.getLocalizedMessage(), Toast.LENGTH_LONG)
-                    .show();
         }
+
 
         super.onActivityResult(requestCode, resultCode, data);
     }

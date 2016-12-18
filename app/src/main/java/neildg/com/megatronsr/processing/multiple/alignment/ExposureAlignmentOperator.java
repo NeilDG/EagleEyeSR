@@ -34,8 +34,10 @@ public class ExposureAlignmentOperator implements IOperator {
         List<Mat> processMatList = Arrays.asList(this.imageSequenceList);
         mtbAligner.process(processMatList, processMatList);
 
-        for(int i = 0; i < processMatList.size(); i++) {
-            FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(i), FilenameConstants.WARP_PREFIX + i, ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(0), FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
+
+        for(int i = 1; i < processMatList.size(); i++) {
+            FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(i), FilenameConstants.WARP_PREFIX + (i-1), ImageFileAttribute.FileType.JPEG);
         }
 
     }
