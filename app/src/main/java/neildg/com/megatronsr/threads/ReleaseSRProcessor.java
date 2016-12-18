@@ -165,7 +165,7 @@ public class ReleaseSRProcessor extends Thread{
         this.assessImageWarpResults(inputIndices[0]);
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 80.0f);
-        this.performMeanFusion(inputIndices[0]);
+        this.performMeanFusion(inputIndices[0], sharpnessResult.getBestIndex());
 
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 100.0f);
@@ -264,15 +264,21 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.releaseAll(imagesToAlignList, true);
     }
 
-    private void performMeanFusion(int index) {
+    private void performMeanFusion(int index, int bestIndex) {
         int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, 0);
         ArrayList<String> imagePathList = new ArrayList<>();
 
-        //add initial input HR image
-        imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + index);
-         for(int i = 0; i < numImages; i++) {
-        imagePathList.add(FilenameConstants.WARP_PREFIX +i);
+        if(numImages == 1) {
+            imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + bestIndex); //no need to perform image fusion, just use the best image.
         }
+        else {
+            //add initial input HR image
+            imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + index);
+            for(int i = 0; i < numImages; i++) {
+                imagePathList.add(FilenameConstants.WARP_PREFIX +i);
+            }
+        }
+
 
         OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(imagePathList.toArray(new String[imagePathList.size()]));
         fusionOperator.perform();
