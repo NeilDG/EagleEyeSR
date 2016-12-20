@@ -15,6 +15,7 @@ import java.util.HashMap;
 import neildg.com.megatronsr.model.single_glasner.PatchAttribute;
 import neildg.com.megatronsr.model.single_glasner.PatchRelation;
 import neildg.com.megatronsr.model.single_glasner.PatchRelationTable;
+import neildg.com.megatronsr.processing.multiple.alignment.WarpingConstants;
 
 /**
  * Created by NeilDG on 5/14/2016.
@@ -99,5 +100,56 @@ public class JSONSaver {
         }
 
         return object;
+    }
+
+
+    /*
+     * Writes the edge consistency measure in a file for further comparison.
+     */
+    public static void debugWriteEdgeConsistencyMeasure(int warpMethod, int[] warpedResults, int[] warpResultDifferences, String[] warpedMatNames) {
+        String fileName = "no_warp_specified";
+        if(warpMethod == WarpingConstants.AFFINE_WARP) {
+            fileName = "affine_warp_result";
+        }
+        else if(warpMethod == WarpingConstants.PERSPECTIVE_WARP) {
+            fileName = "perspective_warp_result";
+        }
+        else if(warpMethod == WarpingConstants.EXPOSURE_ALIGNMENT) {
+            fileName = "exposure_alignment_result";
+        }
+
+        File jsonFile = new File(DirectoryStorage.getSharedInstance().getProposedPath(), fileName + ".json");
+        try {
+            FileOutputStream out = new FileOutputStream(jsonFile);
+            JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(out));
+            jsonWriter.setIndent("  ");
+
+            jsonWriter.beginArray();
+            for(int i = 0; i < warpedMatNames.length; i++) {
+                jsonWriter.beginObject();
+
+                jsonWriter.name(warpedMatNames[i]).value(warpedResults[i]);
+
+                jsonWriter.endObject();
+            }
+
+            for(int i = 0; i < warpedMatNames.length; i++) {
+                jsonWriter.beginObject();
+
+                jsonWriter.name(warpedMatNames[i] + " difference from reference").value(warpResultDifferences[i]);
+
+                jsonWriter.endObject();
+            }
+
+            jsonWriter.endArray();
+            jsonWriter.flush();
+            jsonWriter.close();
+        } catch(FileNotFoundException e) {
+            e.printStackTrace();
+        } catch(IOException e) {
+            e.printStackTrace();
+        } finally {
+
+        }
     }
 }

@@ -12,6 +12,7 @@ public class DirectoryStorage {
     private final static String TAG = "DirectoryStorage";
 
     public final static String ALBUM_NAME_PREFIX = "/SR";
+    public final static String DEBUG_FILE_PREFIX = "/DEBUG";
 
     private static DirectoryStorage sharedInstance = null;
 
@@ -62,6 +63,10 @@ public class DirectoryStorage {
 
     public String getProposedPath() {
         return this.proposedPath;
+    }
+
+    public String getDebugFilePath() {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + DEBUG_FILE_PREFIX;
     }
 
 }

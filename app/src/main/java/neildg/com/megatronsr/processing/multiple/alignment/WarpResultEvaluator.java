@@ -13,6 +13,7 @@ import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
+import neildg.com.megatronsr.io.JSONSaver;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
@@ -41,9 +42,9 @@ public class WarpResultEvaluator implements IOperator {
         this.referenceMat = FileImageReader.getInstance().imReadOpenCV(referenceImageName, ImageFileAttribute.FileType.JPEG);
 
         this.referenceMat.convertTo(this.referenceMat,  CvType.CV_16UC(this.referenceMat.channels()));
+        int sobelReferenceMeasure = ImageOperator.edgeSobelMeasure(this.referenceMat, true);
 
         int[] compareResultList = new int[this.warpedMatNames.length];
-        int threshold = ParameterConfig.getPrefsInt(ParameterConfig.FUSION_THRESHOLD_KEY, 0);
         for(int i = 0; i < this.warpedMatNames.length; i++) {
             Mat warpedMat = FileImageReader.getInstance().imReadOpenCV(this.warpedMatNames[i], ImageFileAttribute.FileType.JPEG);
 
@@ -55,36 +56,33 @@ public class WarpResultEvaluator implements IOperator {
             Core.add(this.referenceMat, warpedMat, warpedMat);
 
             maskMat.release();
-            Imgproc.blur(warpedMat, warpedMat, new Size(3,3));
-            Mat gradX = new Mat(); Mat gradY = new Mat();
 
-            Imgproc.Sobel(warpedMat, gradX, CvType.CV_16S, 1, 0, 3, 1, 0, Core.BORDER_DEFAULT);
-            Imgproc.Sobel(warpedMat, gradY, CvType.CV_16S, 0, 1, 3, 1, 0, Core.BORDER_DEFAULT);
-
-            gradX.convertTo(gradX, CvType.CV_8UC(gradX.channels())); gradY.convertTo(gradY, CvType.CV_8UC(gradX.channels()));
-            Core.addWeighted(gradX, 0.5, gradY, 0.5, 0, warpedMat);
-
-            FileImageWriter.getInstance().saveMatrixToImage(warpedMat, "sobel_grad_"+i, ImageFileAttribute.FileType.JPEG);
-            //Core.absdiff(this.referenceMat, warpedMat, warpedMat);
-            warpedMat = ImageOperator.produceMask(warpedMat);
-            compareResultList[i] = Core.countNonZero(warpedMat);
-
+            compareResultList[i] = ImageOperator.edgeSobelMeasure(warpedMat, true, "sobel_grad_"+i);
 
             warpedMat.release();
         }
 
         this.referenceMat.release();
-        assessWarpedImages(compareResultList, this.warpedMatNames);
+        assessWarpedImages(sobelReferenceMeasure, compareResultList, this.warpedMatNames);
     }
 
-    private static void assessWarpedImages(int[] warpedResults, String[] warpedMatNames) {
+    private static void assessWarpedImages(int referenceSobelMeasure, int[] warpedResults, String[] warpedMatNames) {
         float average = 0.0f; int sum = 0;
         for(int i = 0; i < warpedResults.length; i++) {
-            Log.d(TAG, "Non zero elems in difference mat for "+warpedMatNames[i]+ " : " +warpedResults[i]);
+            Log.d(TAG, "Non zero elems in edge sobel mat for "+warpedMatNames[i]+ " : " +warpedResults[i]);
             sum += warpedResults[i];
         }
 
         average = (sum * 1.0f) / warpedResults.length;
         Log.d(TAG, "Average non zero difference: " +average);
+
+        int[] sobelReferenceDifferences = new int[warpedResults.length]; //difference from the reference sobel measure
+        for(int i = 0; i < warpedResults.length; i++) {
+            sobelReferenceDifferences[i] = warpedResults[i] - referenceSobelMeasure;
+            Log.d(TAG, "Non zero elems in difference mat for "+warpedMatNames[i]+ " : " +sobelReferenceDifferences[i]);
+        }
+
+        int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.PERSPECTIVE_WARP);
+        JSONSaver.debugWriteEdgeConsistencyMeasure(warpChoice, warpedResults, sobelReferenceDifferences, warpedMatNames);
     }
 }

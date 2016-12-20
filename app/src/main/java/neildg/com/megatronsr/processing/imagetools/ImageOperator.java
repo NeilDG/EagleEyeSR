@@ -96,6 +96,68 @@ public class ImageOperator {
         return baseMaskMat;
     }
 
+    /*
+     * Performs an edge sobel measure by counting the non-zero elements produced by getting the sobel derivatives of an image in X and  Y axis.
+     * Creates a copy of the input mat for temporary processing.
+     */
+    public static int edgeSobelMeasure(Mat inputMat, boolean applyBlur) {
+        Mat referenceMat = new Mat(); inputMat.copyTo(referenceMat);
+        Mat gradX = new Mat(); Mat gradY = new Mat();
+        Mat referenceSobelMat = new Mat();
+
+        if(applyBlur) {
+            Imgproc.blur(referenceMat, referenceMat, new Size(3,3));
+        }
+
+        Imgproc.Sobel(referenceMat, gradX, CvType.CV_16S, 1, 0, 3, 1, 0, Core.BORDER_DEFAULT);
+        Imgproc.Sobel(referenceMat, gradY, CvType.CV_16S, 0, 1, 3, 1, 0, Core.BORDER_DEFAULT);
+
+        gradX.convertTo(gradX, CvType.CV_8UC(gradX.channels())); gradY.convertTo(gradY, CvType.CV_8UC(gradX.channels()));
+        Core.addWeighted(gradX, 0.5, gradY, 0.5, 0, referenceSobelMat);
+        referenceSobelMat = ImageOperator.produceMask(referenceSobelMat);
+
+        int sobelReferenceMeasure = Core.countNonZero(referenceSobelMat);
+
+        referenceSobelMat.release();
+        referenceMat.release();
+        gradX.release();
+        gradY.release();
+
+        return sobelReferenceMeasure;
+    }
+
+    /*
+    * Performs an edge sobel measure by counting the non-zero elements produced by getting the sobel derivatives of an image in X and  Y axis.
+    * Creates a copy of the input mat for temporary processing. Can be used for debugging to save the sobel edge result.
+    */
+    public static int edgeSobelMeasure(Mat inputMat, boolean applyBlur, String debugFileName) {
+        Mat referenceMat = new Mat(); inputMat.copyTo(referenceMat);
+        Mat gradX = new Mat(); Mat gradY = new Mat();
+        Mat referenceSobelMat = new Mat();
+
+        if(applyBlur) {
+            Imgproc.blur(referenceMat, referenceMat, new Size(3,3));
+        }
+
+        Imgproc.Sobel(referenceMat, gradX, CvType.CV_16S, 1, 0, 3, 1, 0, Core.BORDER_DEFAULT);
+        Imgproc.Sobel(referenceMat, gradY, CvType.CV_16S, 0, 1, 3, 1, 0, Core.BORDER_DEFAULT);
+
+        gradX.convertTo(gradX, CvType.CV_8UC(gradX.channels())); gradY.convertTo(gradY, CvType.CV_8UC(gradX.channels()));
+        Core.addWeighted(gradX, 0.5, gradY, 0.5, 0, referenceSobelMat);
+
+        FileImageWriter.getInstance().saveMatrixToImage(referenceSobelMat, debugFileName, ImageFileAttribute.FileType.JPEG);
+
+        referenceSobelMat = ImageOperator.produceMask(referenceSobelMat);
+        int sobelReferenceMeasure = Core.countNonZero(referenceSobelMat);
+
+        referenceSobelMat.release();
+        referenceMat.release();
+        gradX.release();
+        gradY.release();
+
+        return sobelReferenceMeasure;
+    }
+
     public static Mat blendImages(List<Mat> matList) {
         Mat matInput = matList.get(0);
         Mat mergedMat = new Mat(matInput.size(), matInput.type(), new Scalar(0));
