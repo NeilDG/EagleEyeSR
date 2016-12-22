@@ -1,6 +1,7 @@
 package neildg.com.megatronsr.constants;
 
 /**
+ * Filename constants
  * Created by NeilDG on 3/5/2016.
  */
 public class FilenameConstants {
@@ -15,6 +16,7 @@ public class FilenameConstants {
     public final static String HR_ITERATION_PREFIX_STRING = "hr_initial_";
 
     public final static String WARP_PREFIX = "warp_";
+    public final static String MEDIAN_ALIGNMENT_PREFIX = "median_align_";
 
     public final static String EDGE_DIRECTORY_PREFIX = "YangEdges";
     public final static String IMAGE_EDGE_PREFIX = "image_edge_";
@@ -25,9 +27,9 @@ public class FilenameConstants {
 
     public final static String METRICS_NAME_STRING = "psnr_metrics";
 
-    public final static String OPTICAL_FLOW_DIR = "optical_flow";
-    public final static String OPTICAL_FLOW_IMAGE_ORIG = "default_";
-    public final static String OPTICAL_FLOW_IMAGE_PREFIX = "flow_";
+    //public final static String OPTICAL_FLOW_DIR = "optical_flow";
+    //public final static String OPTICAL_FLOW_IMAGE_ORIG = "default_";
+    //public final static String OPTICAL_FLOW_IMAGE_PREFIX = "flow_";
 
     //for single image SR
     public final static String PYRAMID_DIR = "pyramid";

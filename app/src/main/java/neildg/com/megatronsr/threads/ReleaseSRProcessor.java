@@ -6,8 +6,6 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
@@ -23,8 +21,7 @@ import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
-import neildg.com.megatronsr.processing.multiple.alignment.ExposureAlignmentOperator;
-import neildg.com.megatronsr.processing.multiple.fusion.OptimizedBaseFusionOperator;
+import neildg.com.megatronsr.processing.multiple.alignment.MedianAlignmentOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.OptimizedMeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.TransferToDirOperator;
@@ -124,26 +121,14 @@ public class ReleaseSRProcessor extends Thread{
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
 
         if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
-            //load yang edges for feature matching
-            /*Mat[] candidateMatList = new Mat[inputIndices.length - 1];
-            Mat referenceMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.EDGE_DIRECTORY_PREFIX + "/" + FilenameConstants.IMAGE_EDGE_PREFIX + inputIndices[0],
-                    ImageFileAttribute.FileType.JPEG);
-
-            for(int i = 1; i < inputIndices.length; i++) {
-                candidateMatList[i - 1] = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.EDGE_DIRECTORY_PREFIX + "/" + FilenameConstants.IMAGE_EDGE_PREFIX + (inputIndices[i]),
-                        ImageFileAttribute.FileType.JPEG);
-            }
-
-            Log.d(TAG, "CANDIDATE MAT INPUT LENGTH: "+candidateMatList.length);*/
-
-            //perform perspective warping
+            //perform perspective warping and alignment
             Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
             for(int i = 1; i < rgbInputMatList.length; i++) {
                 succeedingMatList[i - 1] = rgbInputMatList[i];
             }
 
-            this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
-            //this.performPerspectiveWarping(referenceMat, candidateMatList, succeedingMatList);
+            this.performMedianAlignment(rgbInputMatList, inputIndices[0]);
+            this.performPerspectiveWarping(rgbInputMatList[sharpnessResult.getBestIndex()], succeedingMatList, succeedingMatList);
         }
         else if(warpChoice == WarpingConstants.AFFINE_WARP) {
             Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
@@ -155,17 +140,20 @@ public class ReleaseSRProcessor extends Thread{
             this.performAffineWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
         }
         else {
-           this.performExposureAlignment(rgbInputMatList, inputIndices[0]);
+           this.performMedianAlignment(rgbInputMatList, inputIndices[0]);
         }
+
+
 
         //deallocate some classes
         SharpnessMeasure.destroy();
 
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Refining image warping results", 70.0f);
-        this.assessImageWarpResults(inputIndices[0]);
+        String[] alignedImageNames = this.assessImageWarpResults(inputIndices[0], (warpChoice == WarpingConstants.MEDIAN_ALIGNMENT));
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 80.0f);
-        this.performMeanFusion(inputIndices[0], sharpnessResult.getBestIndex());
+        //this.performMeanFusion(inputIndices[0], sharpnessResult.getBestIndex(), alignedImageNames);
+        this.performMeanFusion(sharpnessResult.getBestIndex(), sharpnessResult.getBestIndex(), alignedImageNames);
 
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 100.0f);
@@ -207,19 +195,25 @@ public class ReleaseSRProcessor extends Thread{
         }
     }
 
-    private void assessImageWarpResults(int index) {
+    private String[] assessImageWarpResults(int index, boolean medianAlignOnly) {
 
         int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, 0);
         String[] warpedImageNames = new String[numImages];
+        String[] medianAlignedNames = new String[numImages];
 
         for(int i = 0; i < numImages; i++) {
             warpedImageNames[i] = FilenameConstants.WARP_PREFIX +i;
+            medianAlignedNames[i] = FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + i;
         }
 
-        WarpResultEvaluator warpResultEvaluator = new WarpResultEvaluator(FilenameConstants.INPUT_PREFIX_STRING + index, warpedImageNames);
-        warpResultEvaluator.perform();
-
-        MatMemory.releaseAll(warpedImageNames, true);
+        if(medianAlignOnly) {
+            return medianAlignedNames;
+        }
+        else {
+            WarpResultEvaluator warpResultEvaluator = new WarpResultEvaluator(FilenameConstants.INPUT_PREFIX_STRING + index, warpedImageNames, medianAlignedNames);
+            warpResultEvaluator.perform();
+            return warpResultEvaluator.getChosenAlignedNames();
+        }
     }
 
     private void performAffineWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList) {
@@ -239,7 +233,7 @@ public class ReleaseSRProcessor extends Thread{
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(referenceMat, candidateMatList);
         matchingOperator.perform();
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 60.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 40.0f);
 
         LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), imagesToWarpList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         perspectiveWarpOperator.perform();
@@ -255,27 +249,26 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.releaseAll(warpedMatList, true);
     }
 
-    private void performExposureAlignment(Mat[] imagesToAlignList, int inputIndex) {
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing exposure alignment", 30.0f);
+    private void performMedianAlignment(Mat[] imagesToAlignList, int inputIndex) {
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing exposure alignment", 50.0f);
         //perform exposure alignment
-        ExposureAlignmentOperator exposureAlignmentOperator = new ExposureAlignmentOperator(imagesToAlignList, inputIndex);
-        exposureAlignmentOperator.perform();
+        MedianAlignmentOperator medianAlignmentOperator = new MedianAlignmentOperator(imagesToAlignList, inputIndex);
+        medianAlignmentOperator.perform();
 
-        MatMemory.releaseAll(imagesToAlignList, true);
+        //MatMemory.releaseAll(imagesToAlignList, true);
     }
 
-    private void performMeanFusion(int index, int bestIndex) {
-        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, 0);
+    private void performMeanFusion(int index, int bestIndex, String[] alignedImageNames) {
         ArrayList<String> imagePathList = new ArrayList<>();
 
-        if(numImages == 1) {
+        if(alignedImageNames.length == 1) {
             imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + bestIndex); //no need to perform image fusion, just use the best image.
         }
         else {
             //add initial input HR image
             imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + index);
-            for(int i = 0; i < numImages; i++) {
-                imagePathList.add(FilenameConstants.WARP_PREFIX +i);
+            for(int i = 0; i < alignedImageNames.length; i++) {
+                imagePathList.add(alignedImageNames[i]);
             }
         }
 

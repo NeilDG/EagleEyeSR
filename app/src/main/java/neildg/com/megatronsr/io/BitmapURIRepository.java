@@ -34,9 +34,9 @@ public class BitmapURIRepository {
     public void setImageURIList(List<Uri> selectedUriList) {
         this.selectedUriList = selectedUriList;
 
-        /*for(int i = 0; i < selectedUriList.size(); i++) {
+        for(int i = 0; i < selectedUriList.size(); i++) {
             Log.d(TAG, "Image URI :  " + selectedUriList.get(i).getPath());
-        }*/
+        }
     }
 
     public int getNumImagesSelected() {

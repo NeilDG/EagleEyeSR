@@ -9,5 +9,5 @@
     <string name ="desc_denoise_mode">Enable image denoising. Recommended for low-light situations.</string>
     <string name ="desc_feature_match">Feature point minimum distance. Higher value is recommended for shaky captures.</string>
     <string name ="desc_fusion_threshold">Image fusion noise threshold. Used for assessing image alignment techniques.</string>
-    <string name ="desc_warp_choice">Choice of image alignment technique. Affine (simple translation, rotation, scaling) or perspective warping (full nonlinear motion), or exposure alignment.</string>
+    <string name ="desc_warp_choice">Choice of image alignment technique. Perspective warping (full nonlinear motion), or median alignment method.</string>
 </resources>
