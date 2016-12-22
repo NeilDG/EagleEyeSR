@@ -66,8 +66,6 @@ public class TestImagesSelector implements IOperator {
         }
         this.outputMatList = filteredMatList.toArray(new Mat[filteredMatList.size()]);
         this.edgeMatList = edgeFilteredList.toArray(new Mat[edgeFilteredList.size()]);
-
-        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 
     public Mat[] getProposedList() {

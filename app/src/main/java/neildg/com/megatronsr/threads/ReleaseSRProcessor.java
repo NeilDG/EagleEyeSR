@@ -91,13 +91,22 @@ public class ReleaseSRProcessor extends Thread{
         Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(BitmapURIRepository.getInstance().getNumImagesSelected(), sharpnessResult, 0.0);
         Mat[] rgbInputMatList = new Mat[inputIndices.length];
 
+        int bestIndex = 0;
         //load RGB inputs
         for(int i = 0; i < inputIndices.length; i++) {
             rgbInputMatList[i] = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG);
+            if(sharpnessResult.getBestIndex() == inputIndices[i]) {
+                bestIndex = i;
+            }
         }
 
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length);
 
+        this.performActualSuperres(rgbInputMatList, inputIndices, bestIndex, sharpnessResult);
+        this.processListener.onProcessCompleted();
+    }
+
+    public void performActualSuperres(Mat[] rgbInputMatList, Integer[] inputIndices, int bestIndex, SharpnessMeasure.SharpnessResult sharpnessResult) {
         boolean performDenoising = ParameterConfig.getPrefsBoolean(ParameterConfig.DENOISE_FLAG_KEY, false);
 
         if(performDenoising) {
@@ -115,8 +124,6 @@ public class ReleaseSRProcessor extends Thread{
         }
 
 
-
-
         //perform feature matching of LR images against the first image as reference mat.
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
 
@@ -128,7 +135,7 @@ public class ReleaseSRProcessor extends Thread{
             }
 
             this.performMedianAlignment(rgbInputMatList, inputIndices[0]);
-            this.performPerspectiveWarping(rgbInputMatList[sharpnessResult.getBestIndex()], succeedingMatList, succeedingMatList);
+            this.performPerspectiveWarping(rgbInputMatList[bestIndex], succeedingMatList, succeedingMatList);
         }
         else if(warpChoice == WarpingConstants.AFFINE_WARP) {
             Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
@@ -140,7 +147,7 @@ public class ReleaseSRProcessor extends Thread{
             this.performAffineWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
         }
         else {
-           this.performMedianAlignment(rgbInputMatList, inputIndices[0]);
+            this.performMedianAlignment(rgbInputMatList, inputIndices[0]);
         }
 
 
@@ -165,8 +172,6 @@ public class ReleaseSRProcessor extends Thread{
         ProgressDialogHandler.getInstance().hideProcessDialog();
 
         System.gc();
-
-        this.processListener.onProcessCompleted();
     }
 
     private void interpolateFirstImage() {

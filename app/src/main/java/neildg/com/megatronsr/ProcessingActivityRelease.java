@@ -7,10 +7,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import neildg.com.megatronsr.constants.BuildMode;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.model.multiple.ProcessingQueue;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
+import neildg.com.megatronsr.threads.DebugSRProcessor;
 import neildg.com.megatronsr.threads.ReleaseSRProcessor;
 import neildg.com.megatronsr.threads.SingleImageSRProcessor;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
@@ -101,8 +103,16 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
 
     private void executeSRProcessor() {
         if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE) {
-            ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor(this);
-            releaseSRProcessor.start();
+
+            if(BuildMode.DEVELOPMENT_BUILD == true) {
+                DebugSRProcessor debugSRProcessor = new DebugSRProcessor(this);
+                debugSRProcessor.start();
+            }
+            else {
+                ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor(this);
+                releaseSRProcessor.start();
+            }
+
         }
         else {
             new SingleImageSRProcessor().start();

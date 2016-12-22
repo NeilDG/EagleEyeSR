@@ -34,6 +34,9 @@ public class LRToHROperator implements IOperator {
         Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
         FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
 
+        Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_LINEAR);
+        FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG);
+
         Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
 
