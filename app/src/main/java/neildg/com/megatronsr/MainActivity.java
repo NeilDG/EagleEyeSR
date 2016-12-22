@@ -209,15 +209,16 @@ public class MainActivity extends AppCompatActivity{
 
     private void moveToProcessingActivity() {
 
-        if(BuildMode.DEVELOPMENT_BUILD == true) {
+        /*if(BuildMode.DEVELOPMENT_BUILD == true) {
             Intent processingIntent = new Intent(MainActivity.this, ProcessingActivityDebug.class);
             this.startActivity(processingIntent);
         }
         else {
             Intent processingIntent = new Intent(MainActivity.this, ProcessingActivityRelease.class);
             this.startActivity(processingIntent);
-        }
-
+        }*/
+        Intent processingIntent = new Intent(MainActivity.this, ProcessingActivityRelease.class);
+        this.startActivity(processingIntent);
     }
 
 }

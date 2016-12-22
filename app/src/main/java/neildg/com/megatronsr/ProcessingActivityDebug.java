@@ -9,13 +9,11 @@ import android.widget.TextView;
 import neildg.com.megatronsr.constants.BuildMode;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
-import neildg.com.megatronsr.processing.ITest;
 import neildg.com.megatronsr.processing.debugging.ImageWarpingTest;
 import neildg.com.megatronsr.processing.debugging.MatSavingTest;
 import neildg.com.megatronsr.processing.debugging.ZeroFillingTest;
 import neildg.com.megatronsr.processing.imagetools.OpticalFlowTest;
-import neildg.com.megatronsr.threads.DebuggingProcessor;
-import neildg.com.megatronsr.threads.MultipleImageSRProcessor;
+import neildg.com.megatronsr.threads.DebugSRProcessor;
 import neildg.com.megatronsr.threads.SingleImageSRProcessor;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
@@ -64,7 +62,7 @@ public class ProcessingActivityDebug extends AppCompatActivity {
             }
         });
 
-        Button debugSaveBtn = (Button) this.findViewById(R.id.save_mat_btn);
+        /*Button debugSaveBtn = (Button) this.findViewById(R.id.save_mat_btn);
         debugSaveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,20 +96,16 @@ public class ProcessingActivityDebug extends AppCompatActivity {
                 OpticalFlowTest opticalFlowTest = new OpticalFlowTest();
                 ProcessingActivityDebug.this.executeDebugAction(opticalFlowTest);
             }
-        });
+        });*/
     }
 
     private void executeSRProcessor() {
-        if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE) {
-            new MultipleImageSRProcessor().start();
+        /*if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE) {
+            new DebugSRProcessor().start();
         }
         else {
             new SingleImageSRProcessor().start();
-        }
-    }
-
-    private void executeDebugAction(ITest test) {
-        new DebuggingProcessor(test).start();
+        }*/
     }
 
 }
