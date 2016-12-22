@@ -4,10 +4,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.SeekBar;
 import android.widget.ToggleButton;
 
 import neildg.com.megatronsr.R;
@@ -56,7 +54,7 @@ public class OptionsScreen extends AScreen {
             }
         });
 
-        SeekBar thresholdBar = (SeekBar) this.referenceView.findViewById(R.id.fusion_seekbar);
+        /*SeekBar thresholdBar = (SeekBar) this.referenceView.findViewById(R.id.fusion_seekbar);
         final EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
         thresholdBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -73,20 +71,21 @@ public class OptionsScreen extends AScreen {
             public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
-        });
+        }); */
 
         RadioGroup warpChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.warp_choice_radiogroup);
         warpChoiceGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == R.id.affine_radio_btn) {
+                /*if(checkedId == R.id.affine_radio_btn) {
                     ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
                 }
-                else if(checkedId == R.id.perspective_radio_btn) {
+                else*/
+                if(checkedId == R.id.perspective_radio_btn) {
                     ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.PERSPECTIVE_WARP);
                 }
                 else if(checkedId == R.id.exposure_align_btn) {
-                    ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.EXPOSURE_ALIGNMENT);
+                    ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.MEDIAN_ALIGNMENT);
                 }
                 Log.d(TAG, ParameterConfig.WARP_CHOICE_KEY + " set to " +ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP));
             }
@@ -109,7 +108,7 @@ public class OptionsScreen extends AScreen {
     public void hide() {
         super.hide();
 
-        EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
+        /*EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
         String thresholdString = thresholdEditText.getText().toString();
 
         try {
@@ -119,7 +118,7 @@ public class OptionsScreen extends AScreen {
             Log.d(TAG, "New fusion min threshold set: " +ParameterConfig.getPrefsInt(ParameterConfig.FUSION_THRESHOLD_KEY, ParameterConfig.MAX_FUSION_THRESHOLD));
         } catch(NumberFormatException e) {
             Log.e(TAG, "Error in parsing min fusion threshold text. Not a valid value. Value: " +thresholdString);
-        }
+        }*/
     }
 
     /*
@@ -132,10 +131,10 @@ public class OptionsScreen extends AScreen {
         ToggleButton denoiseBtn = (ToggleButton) this.referenceView.findViewById(R.id.denoise_option_btn);
         denoiseBtn.setChecked(false); //disable denoising mode by default.
 
-        SeekBar thresholdBar = (SeekBar) this.referenceView.findViewById(R.id.fusion_seekbar);
+        /*SeekBar thresholdBar = (SeekBar) this.referenceView.findViewById(R.id.fusion_seekbar);
         thresholdBar.setProgress(200); thresholdBar.setMax(ParameterConfig.MAX_FUSION_THRESHOLD);
         EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
-        thresholdEditText.setText(Integer.toString(thresholdBar.getProgress()));
+        thresholdEditText.setText(Integer.toString(thresholdBar.getProgress()));*/
 
         RadioGroup warpChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.warp_choice_radiogroup);
         RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.perspective_radio_btn);

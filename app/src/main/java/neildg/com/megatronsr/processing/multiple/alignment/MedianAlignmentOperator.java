@@ -17,16 +17,16 @@ import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 
 /**
- * Performs MTB exposure alignment.
+ * Performs MTB median alignment. Converts the images into median threshold bitmaps (1 for above median luminance threshold, 0 otherwise). It is aligned by BIT operations.
  * Created by NeilDG on 12/17/2016.
  */
 
-public class ExposureAlignmentOperator implements IOperator {
+public class MedianAlignmentOperator implements IOperator {
     private final static String TAG = "ExposureAlignmentOperator";
 
     private Mat[] imageSequenceList;
     private int inputIndex;
-    public ExposureAlignmentOperator(Mat[] imageSequenceList, int inputIndex) {
+    public MedianAlignmentOperator(Mat[] imageSequenceList, int inputIndex) {
         this.imageSequenceList = imageSequenceList;
         this.inputIndex = inputIndex;
     }
@@ -38,13 +38,13 @@ public class ExposureAlignmentOperator implements IOperator {
         List<Mat> processMatList = Arrays.asList(this.imageSequenceList);
         mtbAligner.process(processMatList, processMatList);
 
-        FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(0), FilenameConstants.INPUT_PREFIX_STRING + this.inputIndex, ImageFileAttribute.FileType.JPEG);
+        //FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(0), FilenameConstants.INPUT_PREFIX_STRING + this.inputIndex, ImageFileAttribute.FileType.JPEG);
 
         for(int i = 1; i < processMatList.size(); i++) {
-            FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(i), FilenameConstants.WARP_PREFIX + (i-1), ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(i), FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + (i-1), ImageFileAttribute.FileType.JPEG);
         }
 
-        AttributeHolder.getSharedInstance().putValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, processMatList.size() - 1);
+        //AttributeHolder.getSharedInstance().putValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, processMatList.size() - 1);
 
     }
 }

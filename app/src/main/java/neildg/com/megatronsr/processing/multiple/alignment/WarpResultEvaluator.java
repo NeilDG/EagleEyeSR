@@ -29,12 +29,17 @@ public class WarpResultEvaluator implements IOperator {
 
     private Mat referenceMat;
 
-    String referenceImageName;
-    String[] warpedMatNames;
+    private String referenceImageName;
+    private String[] warpedMatNames;
+    private String[] medianAlignedNames;
 
-    public WarpResultEvaluator(String referenceImageName, String[] warpedMatNames) {
+    private String[] chosenAlignedNames; //output the chosen aligned names for mean fusion here
+
+    public WarpResultEvaluator(String referenceImageName, String[] warpedMatNames, String[] medianAlignedNames) {
         this.referenceImageName = referenceImageName;
         this.warpedMatNames = warpedMatNames;
+        this.medianAlignedNames = medianAlignedNames;
+        this.chosenAlignedNames = new String[this.warpedMatNames.length];
     }
 
     @Override
@@ -44,26 +49,36 @@ public class WarpResultEvaluator implements IOperator {
         this.referenceMat.convertTo(this.referenceMat,  CvType.CV_16UC(this.referenceMat.channels()));
         int sobelReferenceMeasure = ImageOperator.edgeSobelMeasure(this.referenceMat, true);
 
-        int[] compareResultList = new int[this.warpedMatNames.length];
-        for(int i = 0; i < this.warpedMatNames.length; i++) {
-            Mat warpedMat = FileImageReader.getInstance().imReadOpenCV(this.warpedMatNames[i], ImageFileAttribute.FileType.JPEG);
+        int[] warpedDifferenceList = this.measureDifference(this.referenceMat, sobelReferenceMeasure, this.warpedMatNames);
+        int[] medianDifferenceList = this.measureDifference(this.referenceMat, sobelReferenceMeasure, this.medianAlignedNames);
+
+        this.referenceMat.release();
+        //assessWarpedImages(sobelReferenceMeasure, warpedDifferenceList, this.warpedMatNames);
+        this.chooseAlignedImages(warpedDifferenceList, medianDifferenceList, this.warpedMatNames, this.medianAlignedNames);
+
+    }
+
+    private int[] measureDifference(Mat referenceMat, int referenceSobelMeasure, String[] compareNames) {
+        int[] warpedDifferenceList = new int[compareNames.length];
+        for(int i = 0; i < compareNames.length; i++) {
+            Mat warpedMat = FileImageReader.getInstance().imReadOpenCV(compareNames[i], ImageFileAttribute.FileType.JPEG);
 
             Mat maskMat = ImageOperator.produceMask(warpedMat);
             warpedMat.convertTo(warpedMat, CvType.CV_16UC(warpedMat.channels()));
 
             Log.e(TAG, "Reference mat type: " +CvType.typeToString(this.referenceMat.type()) + " Warped mat type: " +CvType.typeToString(warpedMat.type())
-            + " Reference mat name: " +this.referenceImageName+ " Warped mat name: " +this.warpedMatNames[i]);
-            Core.add(this.referenceMat, warpedMat, warpedMat);
+                    + " Reference mat name: " +this.referenceImageName+ " Warped mat name: " +compareNames[i]);
+            Core.add(referenceMat, warpedMat, warpedMat);
 
             maskMat.release();
 
-            compareResultList[i] = ImageOperator.edgeSobelMeasure(warpedMat, true, "sobel_grad_"+i);
+            warpedDifferenceList[i] = ImageOperator.edgeSobelMeasure(warpedMat, true) - referenceSobelMeasure;
+            Log.d(TAG, "Non zero elems in difference mat for "+compareNames[i]+ " : " +warpedDifferenceList[i]);
 
             warpedMat.release();
         }
 
-        this.referenceMat.release();
-        assessWarpedImages(sobelReferenceMeasure, compareResultList, this.warpedMatNames);
+        return warpedDifferenceList;
     }
 
     private static void assessWarpedImages(int referenceSobelMeasure, int[] warpedResults, String[] warpedMatNames) {
@@ -84,5 +99,22 @@ public class WarpResultEvaluator implements IOperator {
 
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.PERSPECTIVE_WARP);
         JSONSaver.debugWriteEdgeConsistencyMeasure(warpChoice, warpedResults, sobelReferenceDifferences, warpedMatNames);
+    }
+
+
+    private void chooseAlignedImages(int[] warpedResults, int[] medianAlignedResults, String[] warpedMatNames, String[] medianAlignedNames) {
+        for(int i = 0; i < this.chosenAlignedNames.length; i++) {
+            if(warpedResults[i] < medianAlignedResults[i]) {
+                this.chosenAlignedNames[i] = warpedMatNames[i];
+            }
+            else {
+                this.chosenAlignedNames[i] = medianAlignedNames[i];
+            }
+            Log.d(TAG, "Chosen image name: " +this.chosenAlignedNames[i]);
+        }
+    }
+
+    public String[] getChosenAlignedNames() {
+        return this.chosenAlignedNames;
     }
 }
