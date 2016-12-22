@@ -76,10 +76,16 @@ public class SharpnessMeasure {
 
         //get best
         double bestSharpness = 0;
+        double leastSharpness = 99999.0f;
         for(int i = 0; i < sharpnessResult.sharpnessValues.length; i++) {
             if(sharpnessResult.sharpnessValues[i] >= bestSharpness) {
                 sharpnessResult.bestIndex = i;
                 bestSharpness = sharpnessResult.sharpnessValues[i];
+            }
+
+            if(sharpnessResult.sharpnessValues[i] <= leastSharpness) {
+                sharpnessResult.leastIndex = i;
+                leastSharpness = sharpnessResult.sharpnessValues[i];
             }
         }
 
@@ -159,6 +165,7 @@ public class SharpnessMeasure {
         private double mean;
 
         private int bestIndex;
+        private int leastIndex;
         //private int bestIndexTrimmed;
 
         /*public double[] getSharpnessValues() {
@@ -172,6 +179,7 @@ public class SharpnessMeasure {
         public int getBestIndex() {
             return this.bestIndex;
         }
+        public int getLeastIndex() {return this.leastIndex;}
 
         /*public int getBestIndexTrimmed() {
             return this.bestIndexTrimmed;

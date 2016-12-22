@@ -50,18 +50,10 @@ public class LRWarpingOperator {
     public void perform() {
 
         for(int i = 0; i < this.imagesToWarpList.length; i++) {
-            //ProgressDialogHandler.getInstance().showDialog("Image warping", "Warping image " + (i+1) + " to reference image.");
-            ProgressDialogHandler.getInstance().updateProgress(ProgressDialogHandler.getInstance().getProgress() + 5.0f);
-
             Mat warpedMat = this.warpImage(this.goodMatchList[i], this.keyPointList[i], this.imagesToWarpList[i]);
-            /*Mat warpedMat = new Mat();
-            this.imagesToWarpList[i].copyTo(warpedMat); //TODO: testing only
-            this.warpedMatList[i] = warpedMat;*/
-
             FileImageWriter.getInstance().saveMatrixToImage(warpedMat, WARP_PREFIX +i, ImageFileAttribute.FileType.JPEG);
 
             this.imagesToWarpList[i].release();
-            //ProgressDialogHandler.getInstance().hideDialog();
         }
 
        this.finalizeResult();

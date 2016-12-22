@@ -78,13 +78,15 @@ public class DebugSRProcessor extends Thread {
         testImagesSelector.perform();
         rgbInputMatList = testImagesSelector.getProposedList();
 
-        int index = 0;
+        /*int index = 0;
         for(int i = 0; i < BitmapURIRepository.getInstance().getNumImagesSelected(); i++) {
             index = i;
             if(FileImageReader.getInstance().doesImageExists(FilenameConstants.INPUT_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG)) {
                 break;
             }
-        }
+        }*/
+
+        int index = sharpnessResult.getLeastIndex();
 
         //simulate degradation
         /*DegradationOperator degradationOperator = new DegradationOperator();
@@ -95,7 +97,7 @@ public class DebugSRProcessor extends Thread {
             rgbInputMatList[i] = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
         }*/
 
-        Log.d(TAG, "First index: " +index);
+        Log.d(TAG, "Index for interpolation: " +index);
         LRToHROperator lrToHROperator = new LRToHROperator(FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (index), ImageFileAttribute.FileType.JPEG), index);
         lrToHROperator.perform();
 
@@ -111,10 +113,10 @@ public class DebugSRProcessor extends Thread {
             if(FileImageReader.getInstance().doesImageExists(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG)) {
                 Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG);
                 newInputMatList.add(inputMat);
-            }
 
-            if(sharpnessResult.getBestIndex() == inputIndices[i]) {
-                bestIndex = i;
+                if(sharpnessResult.getBestIndex() == inputIndices[i]) {
+                    bestIndex = newInputMatList.size() - 1;
+                }
             }
         }
 

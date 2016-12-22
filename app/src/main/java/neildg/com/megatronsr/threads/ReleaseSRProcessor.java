@@ -159,8 +159,8 @@ public class ReleaseSRProcessor extends Thread{
         String[] alignedImageNames = this.assessImageWarpResults(inputIndices[0], (warpChoice == WarpingConstants.MEDIAN_ALIGNMENT));
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 80.0f);
-        //this.performMeanFusion(inputIndices[0], sharpnessResult.getBestIndex(), alignedImageNames);
-        this.performMeanFusion(sharpnessResult.getBestIndex(), sharpnessResult.getBestIndex(), alignedImageNames);
+        this.performMeanFusion(inputIndices[0], sharpnessResult.getBestIndex(), alignedImageNames);
+        //this.performMeanFusion(sharpnessResult.getBestIndex(), sharpnessResult.getBestIndex(), alignedImageNames);
 
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 100.0f);
@@ -234,11 +234,11 @@ public class ReleaseSRProcessor extends Thread{
     }
 
     private void performPerspectiveWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList) {
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing feature matching against first image", 30.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing feature matching against first image", 40.0f);
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(referenceMat, candidateMatList);
         matchingOperator.perform();
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 40.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 50.0f);
 
         LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), imagesToWarpList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         perspectiveWarpOperator.perform();
@@ -255,7 +255,7 @@ public class ReleaseSRProcessor extends Thread{
     }
 
     private void performMedianAlignment(Mat[] imagesToAlignList, int inputIndex) {
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing exposure alignment", 50.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing exposure alignment", 30.0f);
         //perform exposure alignment
         MedianAlignmentOperator medianAlignmentOperator = new MedianAlignmentOperator(imagesToAlignList, inputIndex);
         medianAlignmentOperator.perform();

@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity{
         });
 
         RadioGroup scaleRadioGroup = (RadioGroup) this.findViewById(R.id.scale_radio_group);
-        scaleRadioGroup.check(R.id.scale_2_btn); ParameterConfig.setScalingFactor(2);
+
         scaleRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+        scaleRadioGroup.check(R.id.scale_4_btn); ParameterConfig.setScalingFactor(4);
     }
 
     @Override
