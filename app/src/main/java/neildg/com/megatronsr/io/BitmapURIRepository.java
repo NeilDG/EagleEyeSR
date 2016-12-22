@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,6 +33,10 @@ public class BitmapURIRepository {
 
     public void setImageURIList(List<Uri> selectedUriList) {
         this.selectedUriList = selectedUriList;
+
+        /*for(int i = 0; i < selectedUriList.size(); i++) {
+            Log.d(TAG, "Image URI :  " + selectedUriList.get(i).getPath());
+        }*/
     }
 
     public int getNumImagesSelected() {
