@@ -127,7 +127,7 @@ public class ReleaseSRProcessor extends Thread{
         //perform feature matching of LR images against the first image as reference mat.
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
 
-        if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
+        if(warpChoice == WarpingConstants.BEST_ALIGNMENT) {
             //perform perspective warping and alignment
             Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
             for(int i = 1; i < rgbInputMatList.length; i++) {
@@ -137,14 +137,14 @@ public class ReleaseSRProcessor extends Thread{
             this.performMedianAlignment(rgbInputMatList, inputIndices[0]);
             this.performPerspectiveWarping(rgbInputMatList[bestIndex], succeedingMatList, succeedingMatList);
         }
-        else if(warpChoice == WarpingConstants.AFFINE_WARP) {
+        else if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
             Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
             for(int i = 1; i < rgbInputMatList.length; i++) {
                 succeedingMatList[i - 1] = rgbInputMatList[i];
             }
 
-            //perform affine warping
-            this.performAffineWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
+            //perform perspective warping
+            this.performPerspectiveWarping(rgbInputMatList[bestIndex], succeedingMatList, succeedingMatList);
         }
         else {
             this.performMedianAlignment(rgbInputMatList, inputIndices[0]);
@@ -156,7 +156,7 @@ public class ReleaseSRProcessor extends Thread{
         SharpnessMeasure.destroy();
 
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Refining image warping results", 70.0f);
-        String[] alignedImageNames = this.assessImageWarpResults(inputIndices[0], (warpChoice == WarpingConstants.MEDIAN_ALIGNMENT));
+        String[] alignedImageNames = this.assessImageWarpResults(inputIndices[0], warpChoice);
 
         MatMemory.cleanMemory();
 
@@ -200,7 +200,7 @@ public class ReleaseSRProcessor extends Thread{
         }
     }
 
-    private String[] assessImageWarpResults(int index, boolean medianAlignOnly) {
+    private String[] assessImageWarpResults(int index, int alignmentUsed) {
 
         int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, 0);
         String[] warpedImageNames = new String[numImages];
@@ -211,13 +211,16 @@ public class ReleaseSRProcessor extends Thread{
             medianAlignedNames[i] = FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + i;
         }
 
-        if(medianAlignOnly) {
-            return medianAlignedNames;
-        }
-        else {
+        if(alignmentUsed == WarpingConstants.BEST_ALIGNMENT) {
             WarpResultEvaluator warpResultEvaluator = new WarpResultEvaluator(FilenameConstants.INPUT_PREFIX_STRING + index, warpedImageNames, medianAlignedNames);
             warpResultEvaluator.perform();
             return warpResultEvaluator.getChosenAlignedNames();
+        }
+        else if(alignmentUsed == WarpingConstants.MEDIAN_ALIGNMENT) {
+            return medianAlignedNames;
+        }
+        else {
+            return warpedImageNames;
         }
     }
 

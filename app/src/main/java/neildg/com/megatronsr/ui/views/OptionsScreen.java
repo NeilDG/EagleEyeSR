@@ -81,11 +81,14 @@ public class OptionsScreen extends AScreen {
                     ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
                 }
                 else*/
-                if(checkedId == R.id.perspective_radio_btn) {
-                    ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.PERSPECTIVE_WARP);
+                if(checkedId == R.id.best_alignment_btn) {
+                    ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.BEST_ALIGNMENT);
                 }
                 else if(checkedId == R.id.exposure_align_btn) {
                     ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.MEDIAN_ALIGNMENT);
+                }
+                else if(checkedId == R.id.perspective_warp_btn) {
+                    ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.PERSPECTIVE_WARP);
                 }
                 Log.d(TAG, ParameterConfig.WARP_CHOICE_KEY + " set to " +ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP));
             }
@@ -137,7 +140,7 @@ public class OptionsScreen extends AScreen {
         thresholdEditText.setText(Integer.toString(thresholdBar.getProgress()));*/
 
         RadioGroup warpChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.warp_choice_radiogroup);
-        RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.perspective_radio_btn);
+        RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.best_alignment_btn);
         warpChoiceBtn.setChecked(true);
     }
 }

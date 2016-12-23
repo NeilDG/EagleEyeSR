@@ -111,7 +111,7 @@ public class JSONSaver {
         if(warpMethod == WarpingConstants.AFFINE_WARP) {
             fileName = "affine_warp_result";
         }
-        else if(warpMethod == WarpingConstants.PERSPECTIVE_WARP) {
+        else if(warpMethod == WarpingConstants.BEST_ALIGNMENT) {
             fileName = "perspective_warp_result";
         }
         else if(warpMethod == WarpingConstants.MEDIAN_ALIGNMENT) {

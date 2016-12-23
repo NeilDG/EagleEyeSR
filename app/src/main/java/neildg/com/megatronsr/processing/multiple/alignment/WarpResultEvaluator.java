@@ -5,18 +5,13 @@ import android.util.Log;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageReader;
-import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.JSONSaver;
 import neildg.com.megatronsr.processing.IOperator;
 import neildg.com.megatronsr.processing.imagetools.ImageOperator;
-import neildg.com.megatronsr.processing.imagetools.MatMemory;
 
 /**
  * Operator that verifies the quality of warped images by measuring its norm against the first reference  LR image.
@@ -26,7 +21,7 @@ import neildg.com.megatronsr.processing.imagetools.MatMemory;
 
 public class WarpResultEvaluator implements IOperator {
     private final static String TAG = "WarpResultEvaluator";
-    private final static int MAX_THRESHOLD = 300000;
+    private final static int MAX_THRESHOLD = 200000;
 
     private Mat referenceMat;
 
@@ -98,7 +93,7 @@ public class WarpResultEvaluator implements IOperator {
             Log.d(TAG, "Non zero elems in difference mat for "+warpedMatNames[i]+ " : " +sobelReferenceDifferences[i]);
         }
 
-        int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.PERSPECTIVE_WARP);
+        int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.BEST_ALIGNMENT);
         JSONSaver.debugWriteEdgeConsistencyMeasure(warpChoice, warpedResults, sobelReferenceDifferences, warpedMatNames);
     }
 
@@ -115,6 +110,7 @@ public class WarpResultEvaluator implements IOperator {
 
         for(int i = 0; i < this.chosenAlignedNames.length; i++) {
             float absDiffFromMean = Math.abs(warpedResults[i] - warpedMean);
+            float medianAlignDiff = Math.abs(medianAlignedResults[i] - warpedMean);
             if(warpedResults[i] < medianAlignedResults[i] && absDiffFromMean < MAX_THRESHOLD) {
                 this.chosenAlignedNames[i] = warpedMatNames[i];
             }
