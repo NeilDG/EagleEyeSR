@@ -20,6 +20,7 @@ public class ImageDetailElement{
 
     private Bitmap thumbnailBmp;
     private String imageName;
+    private String pipelineStage;
 
     public ImageDetailElement() {
 
@@ -31,6 +32,10 @@ public class ImageDetailElement{
         this.thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(this.imageName, ImageFileAttribute.FileType.JPEG, 70, 70);
         Log.d(TAG, "Queue: Thumbnail bmp details: " +this.imageName);
 
+    }
+
+    public void updatePipelineStage(String pipelineStage) {
+        this.pipelineStage = pipelineStage;
     }
 
     public void destroy() {
@@ -45,6 +50,9 @@ public class ImageDetailElement{
     }
     public Bitmap getThumbnail() {
         return this.thumbnailBmp;
+    }
+    public String getPipelineStage() {
+        return this.pipelineStage;
     }
 
 

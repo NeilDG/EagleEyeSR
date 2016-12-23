@@ -22,6 +22,7 @@ import neildg.com.megatronsr.R;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.model.multiple.ProcessingQueue;
+import neildg.com.megatronsr.pipeline.PipelineManager;
 import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.notifications.NotificationListener;
 import neildg.com.megatronsr.platformtools.notifications.Notifications;
@@ -60,6 +61,9 @@ public class ProcessingQueueScreen extends AViewStubScreen implements Notificati
 
         NotificationCenter.getInstance().removeObserver(Notifications.ON_IMAGE_DEQUEUED, this); //remove first before adding to avoid duplication
         NotificationCenter.getInstance().addObserver(Notifications.ON_IMAGE_DEQUEUED, this);
+
+        NotificationCenter.getInstance().removeObserver(Notifications.ON_IMAGE_STAGE_UPDATED, this); //remove first before adding to avoid duplication
+        NotificationCenter.getInstance().addObserver(Notifications.ON_IMAGE_STAGE_UPDATED, this);
     }
 
     @Override
@@ -83,6 +87,7 @@ public class ProcessingQueueScreen extends AViewStubScreen implements Notificati
     public void addImageToProcess(String fileName) {
         ImageDetailElement imageDetailElement = new ImageDetailElement();
         imageDetailElement.setup(fileName);
+        imageDetailElement.updatePipelineStage(PipelineManager.PROCESSING_QUEUE_STAGE);
 
         this.arrayAdapter.add(imageDetailElement);
 
@@ -92,6 +97,18 @@ public class ProcessingQueueScreen extends AViewStubScreen implements Notificati
         }
 
         Log.d(TAG, "Image element added for processing of " +fileName);
+    }
+
+    public void updateImageStage(String imageName, String pipelineStage) {
+        for(int i = 0; i < this.arrayAdapter.getCount(); i++) {
+            ImageDetailElement imageDetailElement = this.arrayAdapter.getItem(i);
+            if(imageDetailElement.getImageName() == imageName) {
+                imageDetailElement.updatePipelineStage(pipelineStage);
+                break;
+            }
+        }
+
+        this.arrayAdapter.notifyDataSetChanged();
     }
 
     public void removeImageElement(String fileName) {
@@ -133,7 +150,17 @@ public class ProcessingQueueScreen extends AViewStubScreen implements Notificati
             this.activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    ProcessingQueueScreen.this.removeImageElement(params.getStringExtra(ProcessingQueue.IMAGE_NAME_KEY, ""));
+                    ProcessingQueueScreen.this.removeImageElement(params.getStringExtra(PipelineManager.IMAGE_NAME_KEY, ""));
+                }
+            });
+        }
+        else if(notificationString == Notifications.ON_IMAGE_STAGE_UPDATED) {
+            this.activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String imageName = params.getStringExtra(PipelineManager.IMAGE_NAME_KEY, "");
+                    String pipelineStage = params.getStringExtra(PipelineManager.PIPELINE_STAGE_KEY, PipelineManager.PROCESSING_QUEUE_STAGE);
+                    ProcessingQueueScreen.this.updateImageStage(imageName,pipelineStage);
                 }
             });
         }

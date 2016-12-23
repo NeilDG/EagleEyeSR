@@ -14,7 +14,6 @@ import neildg.com.megatronsr.platformtools.notifications.Parameters;
 
 public class ProcessingQueue {
     private final static String TAG = "ProcessingQueue";
-    public final static String IMAGE_NAME_KEY = "IMAGE_NAME_KEY";
 
     private static ProcessingQueue sharedInstance = null;
     public static ProcessingQueue getInstance() {

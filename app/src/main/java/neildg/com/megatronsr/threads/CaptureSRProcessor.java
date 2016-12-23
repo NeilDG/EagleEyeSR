@@ -5,7 +5,6 @@ import android.util.Log;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
-import java.nio.channels.Pipe;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,13 +28,15 @@ import neildg.com.megatronsr.processing.imagetools.ImageOperator;
  */
 
 public class CaptureSRProcessor extends Thread implements NotificationListener {
-    private final static String TAG = "CaptureSRProcessor";
+    private final static String TAG = "CaptureSR_Pipeline";
 
     private Lock processLock = new ReentrantLock();
+
     private final Condition hasImage = processLock.newCondition();
+    private final Condition pipelineManagerFlag = processLock.newCondition();
+
     private boolean firstImage = true;
     private boolean active = false;
-    private boolean processing = false;
 
     public CaptureSRProcessor() {
 
@@ -43,6 +44,7 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
     public void startBackgroundThread() {
         if(this.active == false) {
             NotificationCenter.getInstance().addObserver(Notifications.ON_SR_AWAKE, this);
+            NotificationCenter.getInstance().addObserver(Notifications.ON_PIPELINE_REQUEST_NEW_IMAGE, this);
             this.active = true;
             this.start();
             PipelineManager.initialize();
@@ -54,6 +56,7 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
         if(this.active) {
             this.active = false;
             NotificationCenter.getInstance().removeObserver(Notifications.ON_SR_AWAKE, this);
+            NotificationCenter.getInstance().removeObserver(Notifications.ON_PIPELINE_REQUEST_NEW_IMAGE, this);
             this.interrupt();
             PipelineManager.destroy();
         }
@@ -70,16 +73,14 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
             while(true) {
                 while (ProcessingQueue.getInstance().getInputLength() == 0) {
                     Log.d(TAG, "No images to process yet. Awaiting images.");
-                    this.processing = false;
                     this.hasImage.await();
                 }
 
-                this.processing = true;
-
                 //perform code here
                 if(this.firstImage) {
-                    String imageName = ProcessingQueue.getInstance().dequeueImageName();
+                    String imageName = ProcessingQueue.getInstance().getLatestImageName();
                     Log.d(TAG, "Interpolating as initial HR "+imageName);
+                    PipelineManager.broadcastPipelineUpdate(imageName, PipelineManager.INITIAL_HR_CREATION);
                     this.produceInitialHRImage(imageName);
                     this.firstImage = false;
 
@@ -87,9 +88,13 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
                     PipelineManager.getInstance().addImageEntry(imageName);
                 }
                 else {
-                    PipelineManager.getInstance().addImageEntry(ProcessingQueue.getInstance().dequeueImageName());
+                    Log.d(TAG, "Adding image entry  " +ProcessingQueue.getInstance().getLatestImageName());
+                    PipelineManager.getInstance().addImageEntry(ProcessingQueue.getInstance().getLatestImageName());
                 }
 
+                Log.d(TAG, "Awaiting for signal from pipeline manager");
+                this.pipelineManagerFlag.await(); //await for signal from pipeline manager.
+                Log.d(TAG, "CaptureSR awaked!");
 
             }
 
@@ -132,13 +137,15 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
 
     @Override
     public void onNotify(String notificationString, Parameters params) {
-        if(notificationString == Notifications.ON_SR_AWAKE && this.processing == false) {
+        if(notificationString == Notifications.ON_SR_AWAKE) {
             this.processLock.lock();
             this.hasImage.signal();
             this.processLock.unlock();
         }
-        else {
-            Log.d(TAG, "Thread is already processing.");
+        else if(notificationString == Notifications.ON_PIPELINE_REQUEST_NEW_IMAGE) {
+            this.processLock.lock();
+            this.pipelineManagerFlag.signal();
+            this.processLock.unlock();
         }
     }
 }
