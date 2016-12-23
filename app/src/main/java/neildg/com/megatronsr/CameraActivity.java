@@ -344,6 +344,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     }
 
     protected void takePicture() {
+        ParameterConfig.setPrefs("capture_start", System.currentTimeMillis());
         this.captureProcessor.clearSurfaces();
         this.captureProcessor.performCapture();
     }

@@ -23,6 +23,7 @@ import neildg.com.megatronsr.camera2.CameraUserSettings;
 import neildg.com.megatronsr.camera2.capture_requests.BasicCaptureRequest;
 import neildg.com.megatronsr.constants.DialogConstants;
 import neildg.com.megatronsr.constants.FilenameConstants;
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.model.multiple.ProcessingQueue;
@@ -75,8 +76,7 @@ public class CaptureProcessor{
             this.sensorRotation = sensorRotation;
         }
 
-        String formattedString = FilenameConstants.INPUT_PREFIX_STRING + ProcessingQueue.getInstance().getCounter();
-        CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), formattedString, ImageFileAttribute.FileType.JPEG);
+        CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), ImageFileAttribute.FileType.JPEG);
         this.imageReader = ImageReader.newInstance(this.imageResolution.getWidth(), this.imageResolution.getHeight(), ImageFormat.JPEG, 10);
         this.imageReader.setOnImageAvailableListener(capturedImageSaver, this.backgroundTheadHandler);
         this.setupCalled = true;
@@ -106,8 +106,9 @@ public class CaptureProcessor{
                 @Override
                 public void onConfigured(CameraCaptureSession session) {
                     try {
-                        CaptureProcessor.this.soundPlayer.play(MediaActionSound.SHUTTER_CLICK);
                         session.capture(basicCaptureRequest.getCaptureRequest(), captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
+                        //List<CaptureRequest> captureRequests = CaptureProcessor.this.assembleCaptureRequests();
+                        //session.captureBurst(captureRequests, captureCompletedHandler, CaptureProcessor.this.backgroundTheadHandler);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     }

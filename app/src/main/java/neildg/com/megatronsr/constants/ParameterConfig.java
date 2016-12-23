@@ -74,6 +74,11 @@ public class ParameterConfig {
         sharedInstance.editorPrefs.commit();
     }
 
+    public static void setPrefs(String key, long value) {
+        sharedInstance.editorPrefs.putLong(key, value);
+        sharedInstance.editorPrefs.commit();
+    }
+
     public static void setPrefs(String key, float value) {
         sharedInstance.editorPrefs.putFloat(key, value);
         sharedInstance.editorPrefs.commit();
@@ -85,6 +90,10 @@ public class ParameterConfig {
 
     public static int getPrefsInt(String key, int defaultValue) {
         return sharedInstance.sharedPrefs.getInt(key, defaultValue);
+    }
+
+    public static long getPrefsLong(String key, long defaultValue) {
+        return sharedInstance.sharedPrefs.getLong(key, defaultValue);
     }
 
     public static float getPrefsFloat(String key, float defaultValue) {

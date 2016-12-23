@@ -31,9 +31,6 @@ public class BasicCaptureRequest extends ACaptureRequestWrapper {
     protected void createCaptureRequest() throws CameraAccessException {
         CaptureRequest.Builder captureRequestBuilder = this.cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
         captureRequestBuilder.addTarget(this.imageReader.getSurface());
-        /*captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_OFF);
-        captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_OFF);
-        captureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, Long.valueOf(50000));*/
         captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, this.jpegOrientation);
         captureRequestBuilder.set(CaptureRequest.JPEG_THUMBNAIL_SIZE, this.thumbnailSize);
 

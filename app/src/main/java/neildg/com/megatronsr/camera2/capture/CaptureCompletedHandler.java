@@ -4,6 +4,7 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
+import android.media.MediaActionSound;
 import android.util.Log;
 
 import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
@@ -19,6 +20,7 @@ public class CaptureCompletedHandler extends CameraCaptureSession.CaptureCallbac
     private final static String TAG = "CaptureCompletedHandler";
 
     private float progressIncrement = 0.0f;
+    private MediaActionSound soundPlayer = new MediaActionSound();
 
     @Override
     public void onCaptureProgressed(CameraCaptureSession session, CaptureRequest request, CaptureResult partialResult) {
@@ -30,8 +32,10 @@ public class CaptureCompletedHandler extends CameraCaptureSession.CaptureCallbac
 
     @Override
     public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
+        this.soundPlayer.play(MediaActionSound.SHUTTER_CLICK);
         super.onCaptureCompleted(session, request, result);
         Log.d(TAG, "Capture completed!");
+
         NotificationCenter.getInstance().postNotification(Notifications.ON_CAPTURE_COMPLETED);
         NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_ENQUEUED);
         NotificationCenter.getInstance().postNotification(Notifications.ON_SR_AWAKE);

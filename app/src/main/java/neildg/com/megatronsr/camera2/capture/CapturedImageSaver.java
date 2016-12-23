@@ -2,6 +2,7 @@ package neildg.com.megatronsr.camera2.capture;
 
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaActionSound;
 import android.util.Log;
 
 import java.io.File;
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+import neildg.com.megatronsr.constants.FilenameConstants;
+import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.model.multiple.ProcessingQueue;
@@ -27,19 +30,18 @@ public class CapturedImageSaver implements ImageReader.OnImageAvailableListener 
 
     private File file;
     private String filePath;
-    private String name;
     private ImageFileAttribute.FileType fileType;
 
-    public CapturedImageSaver(String filePath, String name, ImageFileAttribute.FileType fileType) {
+    public CapturedImageSaver(String filePath, ImageFileAttribute.FileType fileType) {
         this.filePath = filePath;
-        this.name = name;
         this.fileType = fileType;
     }
 
     @Override
     public void onImageAvailable(ImageReader reader) {
-        this.file = new File(this.filePath + "/" + this.name+ ImageFileAttribute.getFileExtension(this.fileType));
-        Log.d(TAG, "On image available: " +this.file.getPath() + " Time = " + System.currentTimeMillis());
+        String formattedString = FilenameConstants.INPUT_PREFIX_STRING + ProcessingQueue.getInstance().getCounter();
+        this.file = new File(this.filePath + "/" + formattedString+ ImageFileAttribute.getFileExtension(this.fileType));
+        Log.d(TAG, "On image available: " +this.file.getPath());
         Image image = null;
         try {
             image = reader.acquireNextImage();
@@ -47,7 +49,7 @@ public class CapturedImageSaver implements ImageReader.OnImageAvailableListener 
             byte[] bytes = new byte[buffer.capacity()];
             buffer.get(bytes);
             save(bytes);
-            ProcessingQueue.getInstance().enqueueImageName(this.name);
+            ProcessingQueue.getInstance().enqueueImageName(formattedString);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -57,6 +59,10 @@ public class CapturedImageSaver implements ImageReader.OnImageAvailableListener 
             if (image != null) {
                 image.close();
                 //reader.close();
+
+                long timeStart = ParameterConfig.getPrefsLong("capture_start", 0);
+                long timeEnd = System.currentTimeMillis();
+                Log.d(TAG, "Time for image saved: " +((timeEnd - timeStart) / 1000.0f)+"s");
             }
         }
     }
