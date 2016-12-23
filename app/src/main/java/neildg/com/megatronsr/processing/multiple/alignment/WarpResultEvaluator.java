@@ -26,6 +26,7 @@ import neildg.com.megatronsr.processing.imagetools.MatMemory;
 
 public class WarpResultEvaluator implements IOperator {
     private final static String TAG = "WarpResultEvaluator";
+    private final static int MAX_THRESHOLD = 300000;
 
     private Mat referenceMat;
 
@@ -103,8 +104,18 @@ public class WarpResultEvaluator implements IOperator {
 
 
     private void chooseAlignedImages(int[] warpedResults, int[] medianAlignedResults, String[] warpedMatNames, String[] medianAlignedNames) {
+
+        float warpedMean = 0.0f;
+
+        for(int i = 0; i < warpedResults.length; i++) {
+            warpedMean += warpedResults[i];
+        }
+
+        warpedMean = (warpedMean * 1.0f) / warpedResults.length;
+
         for(int i = 0; i < this.chosenAlignedNames.length; i++) {
-            if(warpedResults[i] < medianAlignedResults[i]) {
+            float absDiffFromMean = Math.abs(warpedResults[i] - warpedMean);
+            if(warpedResults[i] < medianAlignedResults[i] && absDiffFromMean < MAX_THRESHOLD) {
                 this.chosenAlignedNames[i] = warpedMatNames[i];
             }
             else {

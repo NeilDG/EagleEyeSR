@@ -39,8 +39,8 @@ public class OptimizedMeanFusionOperator implements IOperator {
         int scale = ParameterConfig.getScalingFactor();
         this.outputMat = new Mat();
         Mat initialMat = FileImageReader.getInstance().imReadOpenCV(this.imageMatPathList[0], ImageFileAttribute.FileType.JPEG);
-        initialMat.convertTo(initialMat, CvType.CV_16UC(initialMat.channels())); //convert to CV_32F
-        Log.d(TAG, "Initial image for fusion: "+this.imageMatPathList[0]+ " Size:" +initialMat.size());
+        initialMat.convertTo(initialMat, CvType.CV_16UC(initialMat.channels())); //convert to CV_16UC
+        Log.d(TAG, "Initial image for fusion: "+this.imageMatPathList[0]+ " Size:" +initialMat.size() + " Scale: " +scale);
 
         Mat sumMat = ImageOperator.performInterpolation(initialMat, scale, Imgproc.INTER_CUBIC); //perform cubic interpolation for initial HR
         sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));

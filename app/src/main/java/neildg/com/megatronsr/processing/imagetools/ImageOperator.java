@@ -272,13 +272,13 @@ public class ImageOperator {
     /*
      * Performs interpolation using an existing interpolation algo by OPENCV
      */
-    public static Mat performInterpolation(Mat fromMat, int scaling, int interpolationType) {
+    public static Mat performInterpolation(Mat fromMat, float scaling, int interpolationType) {
 
-        int newRows = fromMat.rows() * scaling;
-        int newCols = fromMat.cols() * scaling;
+        int newRows = Math.round(fromMat.rows() * scaling);
+        int newCols = Math.round(fromMat.cols() * scaling);
 
         Log.d(TAG, "Orig size: " +fromMat.rows() + " X " +fromMat.cols()+ " New size: " +newRows+ " X " +newCols);
-        Mat hrMat = Mat.zeros(fromMat.rows() * scaling, fromMat.cols() * scaling, fromMat.type());
+        Mat hrMat = Mat.zeros(newRows, newCols, fromMat.type());
 
         Imgproc.resize(fromMat, hrMat, hrMat.size(), scaling, scaling, interpolationType);
 

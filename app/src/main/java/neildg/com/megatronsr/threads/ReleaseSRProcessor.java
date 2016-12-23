@@ -158,10 +158,10 @@ public class ReleaseSRProcessor extends Thread{
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Refining image warping results", 70.0f);
         String[] alignedImageNames = this.assessImageWarpResults(inputIndices[0], (warpChoice == WarpingConstants.MEDIAN_ALIGNMENT));
 
+        MatMemory.cleanMemory();
+
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 80.0f);
         this.performMeanFusion(inputIndices[0], bestIndex, alignedImageNames);
-        //this.performMeanFusion(sharpnessResult.getBestIndex(), sharpnessResult.getBestIndex(), alignedImageNames);
-
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 100.0f);
         try {
@@ -171,7 +171,7 @@ public class ReleaseSRProcessor extends Thread{
         }
         ProgressDialogHandler.getInstance().hideProcessDialog();
 
-        System.gc();
+        MatMemory.cleanMemory();
     }
 
     private void interpolateFirstImage() {
@@ -251,7 +251,7 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.releaseAll(imagesToWarpList, false);
 
         Mat[] warpedMatList = perspectiveWarpOperator.getWarpedMatList();
-        MatMemory.releaseAll(warpedMatList, true);
+        MatMemory.releaseAll(warpedMatList, false);
     }
 
     private void performMedianAlignment(Mat[] imagesToAlignList, int inputIndex) {
