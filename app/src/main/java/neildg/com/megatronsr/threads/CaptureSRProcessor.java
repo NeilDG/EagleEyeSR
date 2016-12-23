@@ -78,7 +78,7 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
 
                 //perform code here
                 if(this.firstImage) {
-                    String imageName = ProcessingQueue.getInstance().getLatestImageName();
+                    String imageName = ProcessingQueue.getInstance().peekImageName();
                     Log.d(TAG, "Interpolating as initial HR "+imageName);
                     PipelineManager.broadcastPipelineUpdate(imageName, PipelineManager.INITIAL_HR_CREATION);
                     this.produceInitialHRImage(imageName);
@@ -88,8 +88,9 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
                     PipelineManager.getInstance().addImageEntry(imageName);
                 }
                 else {
-                    Log.d(TAG, "Adding image entry  " +ProcessingQueue.getInstance().getLatestImageName());
-                    PipelineManager.getInstance().addImageEntry(ProcessingQueue.getInstance().getLatestImageName());
+                    String imageName = ProcessingQueue.getInstance().peekImageName();
+                    Log.d(TAG, "Adding image entry  " +imageName);
+                    PipelineManager.getInstance().addImageEntry(imageName);
                 }
 
                 Log.d(TAG, "Awaiting for signal from pipeline manager");
