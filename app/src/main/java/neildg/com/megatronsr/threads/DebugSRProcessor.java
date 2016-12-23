@@ -107,24 +107,31 @@ public class DebugSRProcessor extends Thread {
         //trim the input list from the measured sharpness mean
         Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(rgbInputMatList.length, sharpnessResult, 0.0);
         ArrayList<Mat> newInputMatList = new ArrayList<>();
+        ArrayList<Integer> inputIndexList = new ArrayList<>();
         int bestIndex = 0;
-        //load RGB inputs
+        //refine input indices and remove ground-truth (if any).
         for(int i = 0; i < inputIndices.length; i++) {
             if(FileImageReader.getInstance().doesImageExists(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG)) {
-                Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG);
-                newInputMatList.add(inputMat);
+               inputIndexList.add(inputIndices[i]);
+            }
+        }
 
-                if(sharpnessResult.getBestIndex() == inputIndices[i]) {
-                    bestIndex = newInputMatList.size() - 1;
-                }
+        inputIndices = inputIndexList.toArray(new Integer[inputIndexList.size()]);
+        //load RGB inputs
+        for(int i = 0; i < inputIndices.length; i++) {
+            Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG);
+            newInputMatList.add(inputMat);
+
+            if(sharpnessResult.getBestIndex() == inputIndices[i]) {
+                bestIndex = newInputMatList.size() - 1;
             }
         }
 
         rgbInputMatList = newInputMatList.toArray(new Mat[newInputMatList.size()]);
-        Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length);
+        Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length + " Best index: " +bestIndex);
 
         ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor(this.processListener);
-        releaseSRProcessor.performActualSuperres(rgbInputMatList, inputIndices, bestIndex, sharpnessResult);
+        releaseSRProcessor.performActualSuperres(rgbInputMatList, inputIndices, bestIndex);
         this.processListener.onProcessCompleted();
 
         ProgressDialogHandler.getInstance().hideProcessDialog();

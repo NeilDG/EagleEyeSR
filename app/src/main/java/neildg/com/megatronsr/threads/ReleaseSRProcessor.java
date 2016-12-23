@@ -102,11 +102,11 @@ public class ReleaseSRProcessor extends Thread{
 
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length);
 
-        this.performActualSuperres(rgbInputMatList, inputIndices, bestIndex, sharpnessResult);
+        this.performActualSuperres(rgbInputMatList, inputIndices, bestIndex);
         this.processListener.onProcessCompleted();
     }
 
-    public void performActualSuperres(Mat[] rgbInputMatList, Integer[] inputIndices, int bestIndex, SharpnessMeasure.SharpnessResult sharpnessResult) {
+    public void performActualSuperres(Mat[] rgbInputMatList, Integer[] inputIndices, int bestIndex) {
         boolean performDenoising = ParameterConfig.getPrefsBoolean(ParameterConfig.DENOISE_FLAG_KEY, false);
 
         if(performDenoising) {
@@ -159,7 +159,7 @@ public class ReleaseSRProcessor extends Thread{
         String[] alignedImageNames = this.assessImageWarpResults(inputIndices[0], (warpChoice == WarpingConstants.MEDIAN_ALIGNMENT));
 
         ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 80.0f);
-        this.performMeanFusion(inputIndices[0], sharpnessResult.getBestIndex(), alignedImageNames);
+        this.performMeanFusion(inputIndices[0], bestIndex, alignedImageNames);
         //this.performMeanFusion(sharpnessResult.getBestIndex(), sharpnessResult.getBestIndex(), alignedImageNames);
 
 
@@ -267,6 +267,7 @@ public class ReleaseSRProcessor extends Thread{
         ArrayList<String> imagePathList = new ArrayList<>();
 
         if(alignedImageNames.length == 1) {
+            Log.d(TAG, "Best index selected for image HR: " +bestIndex);
             imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + bestIndex); //no need to perform image fusion, just use the best image.
         }
         else {
