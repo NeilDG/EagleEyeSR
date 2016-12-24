@@ -154,6 +154,7 @@ public class ReleaseSRProcessor extends Thread{
 
         //deallocate some classes
         SharpnessMeasure.destroy();
+        MatMemory.cleanMemory();
 
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Refining image warping results", 70.0f);
         String[] alignedImageNames = this.assessImageWarpResults(inputIndices[0], warpChoice);
