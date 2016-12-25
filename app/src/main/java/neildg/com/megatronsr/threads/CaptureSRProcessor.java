@@ -64,16 +64,15 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
 
     @Override
     public void run() {
-
-        this.processLock.lock();
-
         try {
 
             //thread is always alive
             while(true) {
                 while (ProcessingQueue.getInstance().getInputLength() == 0) {
                     Log.d(TAG, "No images to process yet. Awaiting images.");
+                    this.processLock.lock();
                     this.hasImage.await();
+                    this.processLock.unlock();
                 }
 
                 //perform code here
@@ -88,13 +87,15 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
                     PipelineManager.getInstance().addImageEntry(imageName);
                 }
                 else {
-                    String imageName = ProcessingQueue.getInstance().peekImageName();
+                    String imageName = ProcessingQueue.getInstance().getLatestImageName();
                     Log.d(TAG, "Adding image entry  " +imageName);
                     PipelineManager.getInstance().addImageEntry(imageName);
                 }
 
                 Log.d(TAG, "Awaiting for signal from pipeline manager");
+                this.processLock.lock();
                 this.pipelineManagerFlag.await(); //await for signal from pipeline manager.
+                this.processLock.unlock();
                 Log.d(TAG, "CaptureSR awaked!");
 
             }

@@ -41,6 +41,7 @@ public class CapturedImageSaver implements ImageReader.OnImageAvailableListener 
     public void onImageAvailable(ImageReader reader) {
         String formattedString = FilenameConstants.INPUT_PREFIX_STRING + ProcessingQueue.getInstance().getCounter();
         this.file = new File(this.filePath + "/" + formattedString+ ImageFileAttribute.getFileExtension(this.fileType));
+        long timeStart = ParameterConfig.getPrefsLong("capture_start", 0);
         Log.d(TAG, "On image available: " +this.file.getPath());
         Image image = null;
         try {
@@ -48,6 +49,9 @@ public class CapturedImageSaver implements ImageReader.OnImageAvailableListener 
             ByteBuffer buffer = image.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[buffer.capacity()];
             buffer.get(bytes);
+            long timeEnd = System.currentTimeMillis();
+            Log.d(TAG, "Time spent before image save: " +((timeEnd - timeStart) / 1000.0f)+"s");
+
             save(bytes);
             ProcessingQueue.getInstance().enqueueImageName(formattedString);
 
@@ -59,10 +63,8 @@ public class CapturedImageSaver implements ImageReader.OnImageAvailableListener 
             if (image != null) {
                 image.close();
                 //reader.close();
-
-                long timeStart = ParameterConfig.getPrefsLong("capture_start", 0);
                 long timeEnd = System.currentTimeMillis();
-                Log.d(TAG, "Time for image saved: " +((timeEnd - timeStart) / 1000.0f)+"s");
+                Log.d(TAG, "Time spent after image saved: " +((timeEnd - timeStart) / 1000.0f)+"s");
             }
         }
     }

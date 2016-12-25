@@ -25,10 +25,8 @@ public class MedianAlignmentOperator implements IOperator {
     private final static String TAG = "ExposureAlignmentOperator";
 
     private Mat[] imageSequenceList;
-    private int inputIndex;
-    public MedianAlignmentOperator(Mat[] imageSequenceList, int inputIndex) {
+    public MedianAlignmentOperator(Mat[] imageSequenceList) {
         this.imageSequenceList = imageSequenceList;
-        this.inputIndex = inputIndex;
     }
 
     @Override

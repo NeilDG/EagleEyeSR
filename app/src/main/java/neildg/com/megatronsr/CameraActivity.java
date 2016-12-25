@@ -17,6 +17,8 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -77,8 +79,11 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     private SensorManager sensorManager;
     private int sensorRotation = 0;
 
+    private Handler backgroundTheadHandler;
+    private HandlerThread backgroundThread;
+
     private FocusProcessor focusProcessor = new FocusProcessor(); //thread that handles auto-focus algorithm
-    private CaptureProcessor captureProcessor = new CaptureProcessor(this); //thread that handles capturing and saving of photos
+    private CaptureProcessor captureProcessor = new CaptureProcessor(this, this.backgroundTheadHandler); //thread that handles capturing and saving of photos
     private CaptureSRProcessor srProcessor = new CaptureSRProcessor(); //thread that performs super-resolution.
 
     //overlay views
@@ -101,7 +106,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     protected void onResume() {
         super.onResume();
         Log.e(TAG, "onResume");
-        this.captureProcessor.startBackgroundThread();
+        this.startBackgroundThread();
         this.focusProcessor.startBackgroundThread();
         this.srProcessor.startBackgroundThread();
 
@@ -120,6 +125,7 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
     public void onPause() {
         super.onPause();
         this.cameraModule.closeCamera();
+        this.stopBackgroundThread();
         this.captureProcessor.cleanup();
         this.focusProcessor.cleanup();
 
@@ -139,6 +145,27 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         CameraUserSettings.destroy();
         this.srProcessor.stopBackgroundThread();
         ProcessingQueue.destroy();
+    }
+
+    public void startBackgroundThread() {
+        this.backgroundThread = new HandlerThread("Camera Background");
+        this.backgroundThread.start();
+        this.backgroundTheadHandler = new Handler(this.backgroundThread.getLooper());
+    }
+
+    public void stopBackgroundThread() {
+        if(this.backgroundThread == null) {
+            return;
+        }
+
+        this.backgroundThread.quitSafely();
+        try {
+            this.backgroundThread.join();
+            this.backgroundThread = null;
+            this.backgroundTheadHandler = null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initializeCameraModule() {

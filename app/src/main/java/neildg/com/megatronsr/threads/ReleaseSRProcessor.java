@@ -66,7 +66,7 @@ public class ReleaseSRProcessor extends Thread{
             inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
             inputMat = ImageOperator.downsample(inputMat, 0.125f); //downsample
 
-            FileImageWriter.getInstance().saveMatrixToImage(inputMat, "downsample_"+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().debugSaveMatrixToImage(inputMat, "downsample_"+i, ImageFileAttribute.FileType.JPEG);
 
             Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(inputMat);
             energyInputMatList[i] = yuvMat[ColorSpaceOperator.Y_CHANNEL];
@@ -125,7 +125,7 @@ public class ReleaseSRProcessor extends Thread{
 
 
         //perform feature matching of LR images against the first image as reference mat.
-        int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
+        int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.BEST_ALIGNMENT);
 
         if(warpChoice == WarpingConstants.BEST_ALIGNMENT) {
             //perform perspective warping and alignment
@@ -134,7 +134,7 @@ public class ReleaseSRProcessor extends Thread{
                 succeedingMatList[i - 1] = rgbInputMatList[i];
             }
 
-            this.performMedianAlignment(rgbInputMatList, inputIndices[0]);
+            this.performMedianAlignment(rgbInputMatList);
             this.performPerspectiveWarping(rgbInputMatList[bestIndex], succeedingMatList, succeedingMatList);
         }
         else if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
@@ -147,7 +147,7 @@ public class ReleaseSRProcessor extends Thread{
             this.performPerspectiveWarping(rgbInputMatList[bestIndex], succeedingMatList, succeedingMatList);
         }
         else {
-            this.performMedianAlignment(rgbInputMatList, inputIndices[0]);
+            this.performMedianAlignment(rgbInputMatList);
         }
 
 
@@ -258,10 +258,10 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.releaseAll(warpedMatList, false);
     }
 
-    private void performMedianAlignment(Mat[] imagesToAlignList, int inputIndex) {
+    private void performMedianAlignment(Mat[] imagesToAlignList) {
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing exposure alignment", 30.0f);
         //perform exposure alignment
-        MedianAlignmentOperator medianAlignmentOperator = new MedianAlignmentOperator(imagesToAlignList, inputIndex);
+        MedianAlignmentOperator medianAlignmentOperator = new MedianAlignmentOperator(imagesToAlignList);
         medianAlignmentOperator.perform();
 
         //MatMemory.releaseAll(imagesToAlignList, true);

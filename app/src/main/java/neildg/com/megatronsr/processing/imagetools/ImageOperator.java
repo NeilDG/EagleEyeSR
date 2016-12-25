@@ -277,7 +277,7 @@ public class ImageOperator {
         int newRows = Math.round(fromMat.rows() * scaling);
         int newCols = Math.round(fromMat.cols() * scaling);
 
-        Log.d(TAG, "Orig size: " +fromMat.rows() + " X " +fromMat.cols()+ " New size: " +newRows+ " X " +newCols);
+        Log.d(TAG, "Orig size: " +fromMat.size()+ " New size: " +newRows+ " X " +newCols);
         Mat hrMat = Mat.zeros(newRows, newCols, fromMat.type());
 
         Imgproc.resize(fromMat, hrMat, hrMat.size(), scaling, scaling, interpolationType);

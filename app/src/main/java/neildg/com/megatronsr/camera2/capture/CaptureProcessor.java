@@ -53,16 +53,17 @@ public class CaptureProcessor{
     private CameraActivity cameraActivity;
 
     private Handler backgroundTheadHandler;
-    private HandlerThread backgroundThread;
 
     private ImageReader imageReader;
 
     private boolean setupCalled = false;
 
-    private MediaActionSound soundPlayer = new MediaActionSound();
+    private CaptureCompletedHandler captureCompletedHandler = new CaptureCompletedHandler();
+    private BasicCaptureRequest basicCaptureRequest;
 
-    public CaptureProcessor(CameraActivity cameraActivity) {
+    public CaptureProcessor(CameraActivity cameraActivity, Handler backgroundTheadHandler) {
         this.cameraActivity = cameraActivity;
+        this.backgroundTheadHandler = backgroundTheadHandler;
     }
 
     public void setup(CameraDevice cameraDevice, Size imageResolution, Size thumbnailSize, int sensorRotation, CameraUserSettings.CameraType cameraType) {
@@ -77,9 +78,16 @@ public class CaptureProcessor{
         }
 
         CapturedImageSaver capturedImageSaver = new CapturedImageSaver(FileImageWriter.getInstance().getFilePath(), ImageFileAttribute.FileType.JPEG);
-        this.imageReader = ImageReader.newInstance(this.imageResolution.getWidth(), this.imageResolution.getHeight(), ImageFormat.JPEG, 10);
+        this.imageReader = ImageReader.newInstance(this.imageResolution.getWidth(), this.imageResolution.getHeight(), ImageFormat.JPEG, 1);
         this.imageReader.setOnImageAvailableListener(capturedImageSaver, this.backgroundTheadHandler);
         this.setupCalled = true;
+
+        try {
+            this.basicCaptureRequest = new BasicCaptureRequest(this.cameraDevice, this.imageReader, this.sensorRotation, this.thumbnailSize);
+        }catch(CameraAccessException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /*
@@ -91,17 +99,9 @@ public class CaptureProcessor{
             return;
         }
 
-        if(this.backgroundThread == null) {
-            Log.e(TAG, "Background thread is not available! Call startBackgroundThread() first!");
-            return;
-        }
-
         //capture sequence proper
         try {
-            final CaptureCompletedHandler captureCompletedHandler = new CaptureCompletedHandler();
             this.addOutputSurface(this.imageReader.getSurface());
-            //final List<CaptureRequest> captureRequests = this.assembleCaptureRequests();
-            final BasicCaptureRequest basicCaptureRequest = new BasicCaptureRequest(this.cameraDevice, this.imageReader, this.sensorRotation, this.thumbnailSize);
             this.cameraDevice.createCaptureSession(this.outputSurfaces, new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(CameraCaptureSession session) {
@@ -127,7 +127,7 @@ public class CaptureProcessor{
         }
     }
 
-    public void startBackgroundThread() {
+    /*public void startBackgroundThread() {
         this.backgroundThread = new HandlerThread("Camera Background");
         this.backgroundThread.start();
         this.backgroundTheadHandler = new Handler(this.backgroundThread.getLooper());
@@ -146,7 +146,7 @@ public class CaptureProcessor{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
 
     public void addOutputSurface(Surface outputSurface) {
@@ -163,7 +163,7 @@ public class CaptureProcessor{
 
     public void cleanup() {
         if(this.setupCalled) {
-            this.stopBackgroundThread();
+            //this.stopBackgroundThread();
             this.outputSurfaces.clear();
             this.imageReader.close();
             this.setupCalled = false;

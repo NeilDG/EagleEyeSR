@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import neildg.com.megatronsr.constants.BuildMode;
+
 /**
  * Writes images to external directory
  * @author NeilDG
@@ -104,6 +106,20 @@ public class FileImageWriter {
 	}
 
 	public synchronized void saveMatrixToImage(Mat mat, String fileName, ImageFileAttribute.FileType fileType) {
+		File imageFile = new File(this.proposedPath, fileName + ImageFileAttribute.getFileExtension(fileType));
+		Imgcodecs.imwrite(imageFile.getAbsolutePath(), mat);
+
+		Log.d(TAG, "Saved " + imageFile.getAbsolutePath());
+	}
+
+	/*
+	 * Is only called if debug build mode is set to true
+	 */
+	public synchronized void debugSaveMatrixToImage(Mat mat, String fileName, ImageFileAttribute.FileType fileType) {
+		if(BuildMode.DEVELOPMENT_BUILD == false) {
+			return;
+		}
+
 		File imageFile = new File(this.proposedPath, fileName + ImageFileAttribute.getFileExtension(fileType));
 		Imgcodecs.imwrite(imageFile.getAbsolutePath(), mat);
 

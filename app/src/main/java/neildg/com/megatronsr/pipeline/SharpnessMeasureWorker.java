@@ -12,6 +12,10 @@ import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
 import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
+import neildg.com.megatronsr.processing.multiple.alignment.FeatureMatchingOperator;
+import neildg.com.megatronsr.processing.multiple.alignment.LRWarpingOperator;
+import neildg.com.megatronsr.processing.multiple.alignment.MedianAlignmentOperator;
+import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
  * Handles the measurement of image sharpness and determining if image is a worthy candidate for mean fusion
@@ -19,7 +23,7 @@ import neildg.com.megatronsr.processing.imagetools.MatMemory;
  */
 
 public class SharpnessMeasureWorker extends AImageWorker {
-    private final static String TAG = "SharpnessMeasureWorker";
+    public final static String TAG = "SharpnessMeasureWorker";
 
     public final static String IMAGE_INPUT_NAME_KEY = "IMAGE_INPUT_NAME_KEY";
     public final static String HAS_PASSED_MEASURE_KEY = "HAS_PASSED_MEASURE_KEY";

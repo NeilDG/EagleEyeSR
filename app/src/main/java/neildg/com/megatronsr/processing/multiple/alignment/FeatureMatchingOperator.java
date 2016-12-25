@@ -83,7 +83,7 @@ public class FeatureMatchingOperator {
             this.matchFeaturesToReference(this.lrDescriptorList[i],i);
 
             Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
-            FileImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().debugSaveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
 
             //ProgressDialogHandler.getInstance().hideDialog();
         }

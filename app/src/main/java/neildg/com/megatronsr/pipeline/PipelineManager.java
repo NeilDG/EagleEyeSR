@@ -2,6 +2,7 @@ package neildg.com.megatronsr.pipeline;
 
 import android.util.Log;
 
+import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.model.multiple.ProcessingQueue;
 import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.notifications.Notifications;
@@ -17,9 +18,6 @@ public class PipelineManager implements WorkerListener {
 
     public final static String IMAGE_NAME_KEY = "IMAGE_NAME_KEY";
     public final static String PIPELINE_STAGE_KEY = "PIPELINE_STAGE_KEY";
-
-    public final static String SHARPNESS_MEASURE_WORKER = "SHARPNESS_MEASURE_WORKER";
-    public final static String DENOISING_WORKER = "DENOISING_WORKER";
 
     public final static String PROCESSING_QUEUE_STAGE = "In Queue";
     public final static String INITIAL_HR_CREATION = "Upsampling Stage";
@@ -43,10 +41,12 @@ public class PipelineManager implements WorkerListener {
     }
 
     //properties associated with image workers
-    private SharpnessMeasureWorker sharpnessMeasureWorker = new SharpnessMeasureWorker(SHARPNESS_MEASURE_WORKER, this);
+    private SharpnessMeasureWorker sharpnessMeasureWorker = new SharpnessMeasureWorker(SharpnessMeasureWorker.TAG, this);
+    private ImageAlignmentWorker imageAlignmentWorker = new ImageAlignmentWorker(ImageAlignmentWorker.TAG, this);
 
     public void startWorkers() {
         this.sharpnessMeasureWorker.start();
+        this.imageAlignmentWorker.start();
     }
 
     /*
@@ -74,16 +74,31 @@ public class PipelineManager implements WorkerListener {
 
         //TODO: temporary end of pipeline. Unqueue image name from processing queue
         //once finished, dequeue image name, then broadcast dequeue event
-        String dequeueImageName = ProcessingQueue.getInstance().dequeueImageName();
+        /*String dequeueImageName = ProcessingQueue.getInstance().dequeueImageName();
         Parameters parameters = new Parameters();
         parameters.putExtra(PipelineManager.IMAGE_NAME_KEY, dequeueImageName);
-        NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_DEQUEUED, parameters);
+        NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_DEQUEUED, parameters);*/
+
+        //PLACEHOLDER for denoising worker.
+        ImageProperties outgoingProperties = new ImageProperties();
+        outgoingProperties.putExtra("compare_name", imageName);
+        this.onWorkerCompleted("DenoisingWorker", outgoingProperties);
+    }
+
+    private void performImageAlignment(String referenceImageName, String compareImageName) {
+        this.imageAlignmentWorker.getIngoingProperties().putExtra(ImageAlignmentWorker.IMAGE_REFERENCE_NAME_KEY, referenceImageName);
+        this.imageAlignmentWorker.getIngoingProperties().putExtra(ImageAlignmentWorker.IMAGE_COMPARE_NAME_KEY, compareImageName);
+
+        this.imageAlignmentWorker.signal();
+        this.broadcastPipelineUpdate(compareImageName, PipelineManager.IMAGE_ALIGNMENT_STAGE);
+
+        Log.d(TAG, "Initiating image alignment for "+compareImageName+ " against " +referenceImageName);
     }
 
 
     @Override
     public void onWorkerCompleted(String workerName, ImageProperties properties) {
-        if(workerName == SHARPNESS_MEASURE_WORKER) {
+        if(workerName == SharpnessMeasureWorker.TAG) {
             //pass input image to denoising worker
             String imageName = properties.getStringExtra(SharpnessMeasureWorker.IMAGE_INPUT_NAME_KEY, null);
             boolean hasPassed = properties.getBooleanExtra(SharpnessMeasureWorker.HAS_PASSED_MEASURE_KEY, false);
@@ -97,6 +112,13 @@ public class PipelineManager implements WorkerListener {
 
             this.initiateDenoising(imageName);
             this.requestForNewImage();
+        }
+        else if(workerName == "DenoisingWorker") {
+            //pass input to alignment worker
+            String referenceImageName = FilenameConstants.INPUT_PREFIX_STRING + 0;
+            String compareImageName = properties.getStringExtra("compare_name", null);
+
+            this.performImageAlignment(referenceImageName, compareImageName);
         }
     }
 
