@@ -2,7 +2,6 @@ package neildg.com.megatronsr.camera2.capture;
 
 import android.media.Image;
 import android.media.ImageReader;
-import android.media.MediaActionSound;
 import android.util.Log;
 
 import java.io.File;
@@ -14,9 +13,8 @@ import java.nio.ByteBuffer;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
-import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.model.multiple.ProcessingQueue;
+import neildg.com.megatronsr.pipeline.ProcessingQueue;
 import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**

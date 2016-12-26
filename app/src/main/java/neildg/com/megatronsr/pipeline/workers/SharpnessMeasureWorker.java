@@ -1,21 +1,17 @@
-package neildg.com.megatronsr.pipeline;
+package neildg.com.megatronsr.pipeline.workers;
 
 import android.util.Log;
 
 import org.opencv.core.Mat;
 
-import neildg.com.megatronsr.constants.FilenameConstants;
-import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
+import neildg.com.megatronsr.pipeline.ImageProperties;
+import neildg.com.megatronsr.pipeline.WorkerListener;
 import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
-import neildg.com.megatronsr.processing.multiple.alignment.FeatureMatchingOperator;
-import neildg.com.megatronsr.processing.multiple.alignment.LRWarpingOperator;
-import neildg.com.megatronsr.processing.multiple.alignment.MedianAlignmentOperator;
-import neildg.com.megatronsr.ui.ProgressDialogHandler;
 
 /**
  * Handles the measurement of image sharpness and determining if image is a worthy candidate for mean fusion
@@ -31,9 +27,10 @@ public class SharpnessMeasureWorker extends AImageWorker {
     private double lastMeasuredSharpness = 0.0;
 
     private String inputName;
+    private boolean result = false;
 
-    public SharpnessMeasureWorker(String workerName, WorkerListener workerListener) {
-        super(workerName, workerListener);
+    public SharpnessMeasureWorker(WorkerListener workerListener) {
+        super(TAG, workerListener);
     }
 
     @Override
@@ -60,12 +57,9 @@ public class SharpnessMeasureWorker extends AImageWorker {
             //replace last measured sharpness with mean
             this.lastMeasuredSharpness = (this.lastMeasuredSharpness + currentSharpness) / 2.0f;
             Log.d(TAG, "Sharpness measure updated! New value: " +this.lastMeasuredSharpness);
-            result = true;
+            this.result = true;
         }
 
-        ImageProperties outgoingProperties = this.getOutgoingProperties();
-        outgoingProperties.putExtra(IMAGE_INPUT_NAME_KEY, this.inputName);
-        outgoingProperties.putExtra(HAS_PASSED_MEASURE_KEY, result);
 
     }
 
@@ -80,5 +74,11 @@ public class SharpnessMeasureWorker extends AImageWorker {
         else {
             return false;
         }
+    }
+
+    @Override
+    public void populateOutgoingProperties(ImageProperties outgoingProperties) {
+        outgoingProperties.putExtra(IMAGE_INPUT_NAME_KEY, this.inputName);
+        outgoingProperties.putExtra(HAS_PASSED_MEASURE_KEY, this.result);
     }
 }

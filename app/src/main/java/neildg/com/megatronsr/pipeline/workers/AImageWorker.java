@@ -1,4 +1,4 @@
-package neildg.com.megatronsr.pipeline;
+package neildg.com.megatronsr.pipeline.workers;
 
 import android.util.Log;
 
@@ -10,6 +10,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.ImageFileAttribute;
+import neildg.com.megatronsr.pipeline.ImageProperties;
+import neildg.com.megatronsr.pipeline.WorkerListener;
 
 /**
  * An abstract image worker class that is inherited by different pipeline workers that perform some image processing.
@@ -28,7 +30,7 @@ public abstract class AImageWorker extends Thread {
     protected ImageProperties ingoingProperties = new ImageProperties(); //properties to be used for performing image processing
     protected ImageProperties outgoingProperties = new ImageProperties(); //properties to be used as output.
 
-    private WorkerListener  workerListener;
+    private WorkerListener workerListener;
 
     protected String workerName;
 
@@ -62,6 +64,7 @@ public abstract class AImageWorker extends Thread {
                 }
                 this.processing = true;
                 this.perform();
+                this.populateOutgoingProperties(this.outgoingProperties);
                 this.workerListener.onWorkerCompleted(this.workerName, this.outgoingProperties);
             }
 
@@ -82,6 +85,8 @@ public abstract class AImageWorker extends Thread {
 
     }
 
-    public abstract boolean evaluateCondition(); //evaluates a given condition in the properties file, if it's true, the worker starts processing. Otherwise, it will await for the next signal.
     public abstract void perform(); //perform image processing here.
+    public abstract boolean evaluateCondition(); //evaluates a given condition in the properties file, if it's true, the worker starts processing. Otherwise, it will await for the next signal.
+    public abstract void populateOutgoingProperties(ImageProperties outgoingProperties); //outgoing properties file should be populated. called at the end of the pipeline worker stage.
+
 }

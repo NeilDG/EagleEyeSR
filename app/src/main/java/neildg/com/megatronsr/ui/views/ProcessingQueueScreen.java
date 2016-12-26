@@ -1,27 +1,15 @@
 package neildg.com.megatronsr.ui.views;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import neildg.com.megatronsr.R;
-import neildg.com.megatronsr.io.FileImageReader;
-import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.model.multiple.ProcessingQueue;
+import neildg.com.megatronsr.pipeline.ProcessingQueue;
 import neildg.com.megatronsr.pipeline.PipelineManager;
 import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.notifications.NotificationListener;
@@ -59,8 +47,8 @@ public class ProcessingQueueScreen extends AViewStubScreen implements Notificati
         NotificationCenter.getInstance().removeObserver(Notifications.ON_IMAGE_ENQUEUED, this); //remove first before adding to avoid duplication
         NotificationCenter.getInstance().addObserver(Notifications.ON_IMAGE_ENQUEUED, this);
 
-        NotificationCenter.getInstance().removeObserver(Notifications.ON_IMAGE_DEQUEUED, this); //remove first before adding to avoid duplication
-        NotificationCenter.getInstance().addObserver(Notifications.ON_IMAGE_DEQUEUED, this);
+        NotificationCenter.getInstance().removeObserver(Notifications.ON_IMAGE_EXITED_PIPELINE, this); //remove first before adding to avoid duplication
+        NotificationCenter.getInstance().addObserver(Notifications.ON_IMAGE_EXITED_PIPELINE, this);
 
         NotificationCenter.getInstance().removeObserver(Notifications.ON_IMAGE_STAGE_UPDATED, this); //remove first before adding to avoid duplication
         NotificationCenter.getInstance().addObserver(Notifications.ON_IMAGE_STAGE_UPDATED, this);
@@ -146,7 +134,7 @@ public class ProcessingQueueScreen extends AViewStubScreen implements Notificati
                 }
             });
         }
-        else if(notificationString == Notifications.ON_IMAGE_DEQUEUED) {
+        else if(notificationString == Notifications.ON_IMAGE_EXITED_PIPELINE) {
             this.activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

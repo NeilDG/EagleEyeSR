@@ -1,10 +1,12 @@
-package neildg.com.megatronsr.pipeline;
+package neildg.com.megatronsr.pipeline.workers;
 
 import org.opencv.core.Mat;
 
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.ImageFileAttribute;
+import neildg.com.megatronsr.pipeline.ImageProperties;
+import neildg.com.megatronsr.pipeline.WorkerListener;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.multiple.alignment.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.alignment.LRWarpingOperator;
@@ -21,13 +23,12 @@ public class ImageAlignmentWorker extends AImageWorker {
 
     public final static String IMAGE_REFERENCE_NAME_KEY = "IMAGE_REFERENCE_NAME_KEY";
     public final static String IMAGE_COMPARE_NAME_KEY = "IMAGE_COMPARE_NAME_KEY";
-    public final static String IS_FIRST_IMAGE_KEY = "IS_FIRST_IMAGE_KEY";
 
     private String referenceImageName;
     private String comparingImageName;
 
-    public ImageAlignmentWorker(String workerName, WorkerListener workerListener) {
-        super(workerName, workerListener);
+    public ImageAlignmentWorker(WorkerListener workerListener) {
+        super(TAG, workerListener);
     }
     @Override
     public void perform() {
@@ -35,7 +36,7 @@ public class ImageAlignmentWorker extends AImageWorker {
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.BEST_ALIGNMENT);
         Mat[] rgbInputMatList = new Mat[2];
         rgbInputMatList[0] = FileImageReader.getInstance().imReadOpenCV(this.referenceImageName, ImageFileAttribute.FileType.JPEG);
-        rgbInputMatList[1] = FileImageReader.getInstance().imReadOpenCV(this.referenceImageName, ImageFileAttribute.FileType.JPEG);
+        rgbInputMatList[1] = FileImageReader.getInstance().imReadOpenCV(this.comparingImageName, ImageFileAttribute.FileType.JPEG);
 
         Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
         for(int i = 1; i < rgbInputMatList.length; i++) {
@@ -52,6 +53,7 @@ public class ImageAlignmentWorker extends AImageWorker {
         else if(warpChoice == WarpingConstants.MEDIAN_ALIGNMENT){
             this.performMedianAlignment(rgbInputMatList);
         }
+
     }
 
     @Override
@@ -61,6 +63,11 @@ public class ImageAlignmentWorker extends AImageWorker {
         this.ingoingProperties.clearAll();
 
         return (this.referenceImageName != null && this.comparingImageName != null && this.referenceImageName != this.comparingImageName); //image alignment will start for the respective image if  it's not the first image.
+    }
+
+    @Override
+    public void populateOutgoingProperties(ImageProperties outgoingProperties) {
+        outgoingProperties.putExtra(IMAGE_COMPARE_NAME_KEY, this.comparingImageName);
     }
 
     private void performPerspectiveWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList) {

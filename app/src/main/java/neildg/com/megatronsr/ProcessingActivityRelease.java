@@ -10,7 +10,6 @@ import android.widget.TextView;
 import neildg.com.megatronsr.constants.BuildMode;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.BitmapURIRepository;
-import neildg.com.megatronsr.model.multiple.ProcessingQueue;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
 import neildg.com.megatronsr.threads.DebugSRProcessor;
 import neildg.com.megatronsr.threads.ReleaseSRProcessor;

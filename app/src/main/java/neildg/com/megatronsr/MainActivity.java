@@ -40,9 +40,7 @@ public class MainActivity extends AppCompatActivity{
 
     private boolean hasCamera = true;
 
-    private int PICK_IMAGE_MULTIPLE = 1;
-    private String imageEncoded;
-    private List<String> imagesEncodedList;
+    private int REQUEST_PICTURE_EXTERNAL = 1;
 
     static {
         System.loadLibrary("opencv_java3");
@@ -127,19 +125,22 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+        Button captureExternalBtn = (Button) this.findViewById(R.id.capture_external_btn);
+        captureExternalBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent takePictureIntent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(takePictureIntent, REQUEST_PICTURE_EXTERNAL);
+                }
+            }
+        });
+
         Button pickImagesBtn = (Button) this.findViewById(R.id.select_image_btn);
         pickImagesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);*/
-
-                Intent intent = new Intent(MainActivity.this, AlbumSelectActivity.class);
-                intent.putExtra(Constants.INTENT_EXTRA_LIMIT, 10);
-                startActivityForResult(intent, Constants.REQUEST_CODE);
+            MainActivity.this.startImagePickActivity();
             }
         });
 
@@ -204,22 +205,24 @@ public class MainActivity extends AppCompatActivity{
             }
         }
 
+        else if(requestCode == REQUEST_PICTURE_EXTERNAL) {
+            //if user attempted to use  external camera app, just launch the pick image gallery after taking pictures.
+            Log.v(TAG, "Moving to select image activity.");
+            this.startImagePickActivity();
+        }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void moveToProcessingActivity() {
-
-        /*if(BuildMode.DEVELOPMENT_BUILD == true) {
-            Intent processingIntent = new Intent(MainActivity.this, ProcessingActivityDebug.class);
-            this.startActivity(processingIntent);
-        }
-        else {
-            Intent processingIntent = new Intent(MainActivity.this, ProcessingActivityRelease.class);
-            this.startActivity(processingIntent);
-        }*/
         Intent processingIntent = new Intent(MainActivity.this, ProcessingActivityRelease.class);
         this.startActivity(processingIntent);
+    }
+
+    private void startImagePickActivity() {
+        Intent intent = new Intent(MainActivity.this, AlbumSelectActivity.class);
+        intent.putExtra(Constants.INTENT_EXTRA_LIMIT, 10);
+        startActivityForResult(intent, Constants.REQUEST_CODE);
     }
 
 }

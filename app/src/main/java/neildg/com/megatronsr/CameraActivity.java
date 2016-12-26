@@ -24,18 +24,15 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Size;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import java.util.Arrays;
 
@@ -48,11 +45,10 @@ import neildg.com.megatronsr.camera2.ICameraTextureViewListener;
 import neildg.com.megatronsr.camera2.ResolutionPicker;
 import neildg.com.megatronsr.camera2.capture.CaptureProcessor;
 import neildg.com.megatronsr.camera2.capture.FocusProcessor;
-import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.model.multiple.ProcessingQueue;
+import neildg.com.megatronsr.pipeline.ProcessingQueue;
 import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.notifications.NotificationListener;
 import neildg.com.megatronsr.platformtools.notifications.Notifications;
@@ -367,13 +363,13 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
         Size thumbnailSize = ResolutionPicker.getSharedInstance().getLastAvailableThumbnailSize();
         Size swappedThumbnailSize = new Size(thumbnailSize.getHeight(), thumbnailSize.getWidth());
 
-        this.captureProcessor.setup(this.cameraModule.getCameraDevice(), lastResolutionSize, swappedThumbnailSize, this.sensorRotation, CameraUserSettings.getInstance().getCameraType());
+        this.captureProcessor.setup(this.cameraModule.getCameraDevice(), lastResolutionSize, swappedThumbnailSize, CameraUserSettings.getInstance().getCameraType());
     }
 
     protected void takePicture() {
         ParameterConfig.setPrefs("capture_start", System.currentTimeMillis());
         this.captureProcessor.clearSurfaces();
-        this.captureProcessor.performCapture();
+        this.captureProcessor.performCapture(this.sensorRotation);
     }
 
     @Override

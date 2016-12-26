@@ -130,8 +130,14 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Capture Image"
+            android:text="Use Built-in Camera App"
             android:id="@+id/capture_btn" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Use External Camera App"
+            android:id="@+id/capture_external_btn" />
 
         <Button
             android:layout_width="match_parent"

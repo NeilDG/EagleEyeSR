@@ -14,7 +14,7 @@ import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.io.ImageFileAttribute;
-import neildg.com.megatronsr.model.multiple.ProcessingQueue;
+import neildg.com.megatronsr.pipeline.ProcessingQueue;
 import neildg.com.megatronsr.pipeline.PipelineManager;
 import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.notifications.NotificationListener;
@@ -77,7 +77,7 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
 
                 //perform code here
                 if(this.firstImage) {
-                    String imageName = ProcessingQueue.getInstance().peekImageName();
+                    String imageName = ProcessingQueue.getInstance().dequeueImageName();
                     Log.d(TAG, "Interpolating as initial HR "+imageName);
                     PipelineManager.broadcastPipelineUpdate(imageName, PipelineManager.INITIAL_HR_CREATION);
                     this.produceInitialHRImage(imageName);
@@ -87,7 +87,7 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
                     PipelineManager.getInstance().addImageEntry(imageName);
                 }
                 else {
-                    String imageName = ProcessingQueue.getInstance().getLatestImageName();
+                    String imageName = ProcessingQueue.getInstance().dequeueImageName();
                     Log.d(TAG, "Adding image entry  " +imageName);
                     PipelineManager.getInstance().addImageEntry(imageName);
                 }

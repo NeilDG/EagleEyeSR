@@ -3,7 +3,9 @@ package neildg.com.megatronsr.pipeline;
 import android.util.Log;
 
 import neildg.com.megatronsr.constants.FilenameConstants;
-import neildg.com.megatronsr.model.multiple.ProcessingQueue;
+import neildg.com.megatronsr.pipeline.workers.DenoisingWorker;
+import neildg.com.megatronsr.pipeline.workers.ImageAlignmentWorker;
+import neildg.com.megatronsr.pipeline.workers.SharpnessMeasureWorker;
 import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.notifications.Notifications;
 import neildg.com.megatronsr.platformtools.notifications.Parameters;
@@ -41,11 +43,13 @@ public class PipelineManager implements WorkerListener {
     }
 
     //properties associated with image workers
-    private SharpnessMeasureWorker sharpnessMeasureWorker = new SharpnessMeasureWorker(SharpnessMeasureWorker.TAG, this);
-    private ImageAlignmentWorker imageAlignmentWorker = new ImageAlignmentWorker(ImageAlignmentWorker.TAG, this);
+    private SharpnessMeasureWorker sharpnessMeasureWorker = new SharpnessMeasureWorker(this);
+    private ImageAlignmentWorker imageAlignmentWorker = new ImageAlignmentWorker(this);
+    private DenoisingWorker denoisingWorker = new DenoisingWorker(this);
 
     public void startWorkers() {
         this.sharpnessMeasureWorker.start();
+        this.denoisingWorker.start();
         this.imageAlignmentWorker.start();
     }
 
@@ -70,19 +74,10 @@ public class PipelineManager implements WorkerListener {
     private void initiateDenoising(String imageName) {
         Log.d(TAG, "Initiating denoising for "+imageName);
 
+        this.denoisingWorker.getIngoingProperties().putExtra(DenoisingWorker.IMAGE_INPUT_NAME_KEY, imageName);
+        this.denoisingWorker.signal();
         broadcastPipelineUpdate(imageName, PipelineManager.DENOISING_STAGE);
 
-        //TODO: temporary end of pipeline. Unqueue image name from processing queue
-        //once finished, dequeue image name, then broadcast dequeue event
-        /*String dequeueImageName = ProcessingQueue.getInstance().dequeueImageName();
-        Parameters parameters = new Parameters();
-        parameters.putExtra(PipelineManager.IMAGE_NAME_KEY, dequeueImageName);
-        NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_DEQUEUED, parameters);*/
-
-        //PLACEHOLDER for denoising worker.
-        ImageProperties outgoingProperties = new ImageProperties();
-        outgoingProperties.putExtra("compare_name", imageName);
-        this.onWorkerCompleted("DenoisingWorker", outgoingProperties);
     }
 
     private void performImageAlignment(String referenceImageName, String compareImageName) {
@@ -97,7 +92,7 @@ public class PipelineManager implements WorkerListener {
 
 
     @Override
-    public void onWorkerCompleted(String workerName, ImageProperties properties) {
+    public synchronized void onWorkerCompleted(String workerName, ImageProperties properties) {
         if(workerName == SharpnessMeasureWorker.TAG) {
             //pass input image to denoising worker
             String imageName = properties.getStringExtra(SharpnessMeasureWorker.IMAGE_INPUT_NAME_KEY, null);
@@ -113,12 +108,22 @@ public class PipelineManager implements WorkerListener {
             this.initiateDenoising(imageName);
             this.requestForNewImage();
         }
-        else if(workerName == "DenoisingWorker") {
+        else if(workerName == DenoisingWorker.TAG) {
             //pass input to alignment worker
             String referenceImageName = FilenameConstants.INPUT_PREFIX_STRING + 0;
-            String compareImageName = properties.getStringExtra("compare_name", null);
-
+            String compareImageName = properties.getStringExtra(DenoisingWorker.IMAGE_OUTPUT_NAME_KEY, null);
             this.performImageAlignment(referenceImageName, compareImageName);
+        }
+        else if(workerName == ImageAlignmentWorker.TAG) {
+            //TODO: temporary end of pipeline. Unqueue image name from processing queue
+            //once finished, dequeue image name, then broadcast dequeue event
+            String dequeueImageName = properties.getStringExtra(ImageAlignmentWorker.IMAGE_COMPARE_NAME_KEY, null);
+            Parameters parameters = new Parameters();
+            parameters.putExtra(PipelineManager.IMAGE_NAME_KEY, dequeueImageName);
+            NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_EXITED_PIPELINE, parameters);
+
+            Log.d(TAG, workerName + " finished. Removing image " +dequeueImageName+ " from queue.");
+
         }
     }
 

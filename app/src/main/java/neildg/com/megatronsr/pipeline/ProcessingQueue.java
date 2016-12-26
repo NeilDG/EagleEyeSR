@@ -1,11 +1,9 @@
-package neildg.com.megatronsr.model.multiple;
+package neildg.com.megatronsr.pipeline;
 
 import android.util.Log;
 
 import java.util.LinkedList;
 import java.util.Queue;
-
-import neildg.com.megatronsr.platformtools.notifications.Parameters;
 
 /**
  * Singleton instance that contains a queue of input string filenames that will be processed by the capture processor, and shown by the processing queue screen.
