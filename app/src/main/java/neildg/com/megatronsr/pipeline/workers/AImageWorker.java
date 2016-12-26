@@ -85,6 +85,10 @@ public abstract class AImageWorker extends Thread {
 
     }
 
+    public boolean isProcessing() {
+        return this.processing;
+    }
+
     public abstract void perform(); //perform image processing here.
     public abstract boolean evaluateCondition(); //evaluates a given condition in the properties file, if it's true, the worker starts processing. Otherwise, it will await for the next signal.
     public abstract void populateOutgoingProperties(ImageProperties outgoingProperties); //outgoing properties file should be populated. called at the end of the pipeline worker stage.

@@ -28,6 +28,7 @@ public class PipelineManager implements WorkerListener {
     public final static String IMAGE_ALIGNMENT_STAGE = "Image Alignment";
     public final static String IMAGE_FUSION_STAGE = "Image Fusion";
 
+    private final static String REFERENCE_IMAGE_NAME = FilenameConstants.INPUT_PREFIX_STRING + 0;
     private static PipelineManager sharedInstance = null;
     public static PipelineManager getInstance() {
         return sharedInstance;
@@ -47,6 +48,8 @@ public class PipelineManager implements WorkerListener {
     private ImageAlignmentWorker imageAlignmentWorker = new ImageAlignmentWorker(this);
     private DenoisingWorker denoisingWorker = new DenoisingWorker(this);
 
+    private WorkerQueueTable  workerQueueTable = WorkerQueueTable.createInstance();
+
     public void startWorkers() {
         this.sharpnessMeasureWorker.start();
         this.denoisingWorker.start();
@@ -57,6 +60,10 @@ public class PipelineManager implements WorkerListener {
      * Adds an image entry at the start of the pipeline stage (sharpness measure)
      */
     public void addImageEntry(String imageName) {
+        if(this.sharpnessMeasureWorker.isProcessing()) {
+            return;
+        }
+
         this.sharpnessMeasureWorker.getIngoingProperties().putExtra(SharpnessMeasureWorker.IMAGE_INPUT_NAME_KEY, imageName);
 
         //signal sharpness measure worker here
@@ -71,7 +78,12 @@ public class PipelineManager implements WorkerListener {
         NotificationCenter.getInstance().postNotification(Notifications.ON_PIPELINE_REQUEST_NEW_IMAGE);
     }
 
-    private void initiateDenoising(String imageName) {
+    private void initiateDenoising() {
+        if(this.denoisingWorker.isProcessing()) {
+            return;
+        }
+
+        String imageName = this.workerQueueTable.dequeueImageFromWorker(DenoisingWorker.TAG);
         Log.d(TAG, "Initiating denoising for "+imageName);
 
         this.denoisingWorker.getIngoingProperties().putExtra(DenoisingWorker.IMAGE_INPUT_NAME_KEY, imageName);
@@ -80,14 +92,19 @@ public class PipelineManager implements WorkerListener {
 
     }
 
-    private void performImageAlignment(String referenceImageName, String compareImageName) {
-        this.imageAlignmentWorker.getIngoingProperties().putExtra(ImageAlignmentWorker.IMAGE_REFERENCE_NAME_KEY, referenceImageName);
+    private void performImageAlignment() {
+        if(this.imageAlignmentWorker.isProcessing()) {
+            return;
+        }
+
+        String compareImageName = this.workerQueueTable.dequeueImageFromWorker(ImageAlignmentWorker.TAG);
+        this.imageAlignmentWorker.getIngoingProperties().putExtra(ImageAlignmentWorker.IMAGE_REFERENCE_NAME_KEY, REFERENCE_IMAGE_NAME);
         this.imageAlignmentWorker.getIngoingProperties().putExtra(ImageAlignmentWorker.IMAGE_COMPARE_NAME_KEY, compareImageName);
 
         this.imageAlignmentWorker.signal();
         this.broadcastPipelineUpdate(compareImageName, PipelineManager.IMAGE_ALIGNMENT_STAGE);
 
-        Log.d(TAG, "Initiating image alignment for "+compareImageName+ " against " +referenceImageName);
+        Log.d(TAG, "Initiating image alignment for "+compareImageName+ " against " +REFERENCE_IMAGE_NAME);
     }
 
 
@@ -100,19 +117,19 @@ public class PipelineManager implements WorkerListener {
 
             if(hasPassed) {
                 Log.d(TAG, imageName + " has passed!");
+                this.workerQueueTable.enqueueImageToWorker(DenoisingWorker.TAG, imageName);
+                this.initiateDenoising();
+                this.requestForNewImage();
             }
             else {
                 Log.d(TAG, imageName + " did  not pass sharpness measure.");
             }
-
-            this.initiateDenoising(imageName);
-            this.requestForNewImage();
         }
         else if(workerName == DenoisingWorker.TAG) {
             //pass input to alignment worker
-            String referenceImageName = FilenameConstants.INPUT_PREFIX_STRING + 0;
             String compareImageName = properties.getStringExtra(DenoisingWorker.IMAGE_OUTPUT_NAME_KEY, null);
-            this.performImageAlignment(referenceImageName, compareImageName);
+            this.workerQueueTable.enqueueImageToWorker(ImageAlignmentWorker.TAG, compareImageName);
+            this.performImageAlignment();
         }
         else if(workerName == ImageAlignmentWorker.TAG) {
             //TODO: temporary end of pipeline. Unqueue image name from processing queue
@@ -124,6 +141,20 @@ public class PipelineManager implements WorkerListener {
 
             Log.d(TAG, workerName + " finished. Removing image " +dequeueImageName+ " from queue.");
 
+        }
+
+        //everytime a worker is completed, check the worker queue table for pending tasks
+        this.doPendingTasks();
+    }
+
+    private void doPendingTasks() {
+        //denoising worker
+        if(this.workerQueueTable.hasPendingTasksForWorker(DenoisingWorker.TAG)) {
+            this.initiateDenoising();
+        }
+        //imagealignment worker
+        if(this.workerQueueTable.hasPendingTasksForWorker(ImageAlignmentWorker.TAG)) {
+           this.performImageAlignment();
         }
     }
 

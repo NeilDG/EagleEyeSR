@@ -20,13 +20,17 @@ public class WorkerQueueTable {
 
     private HashMap<String, Queue<String>> imageQueueTable = new HashMap<String, Queue<String>>();
 
+    public static WorkerQueueTable createInstance() {
+        return new WorkerQueueTable();
+    }
+
     private WorkerQueueTable() {
         //setup different image queues here.
         this.imageQueueTable.put(DenoisingWorker.TAG, new LinkedList<String>());
         this.imageQueueTable.put(ImageAlignmentWorker.TAG, new LinkedList<String>());
     }
 
-    public void enqueueImageToWorker(String workerName, String imageName) {
+    public synchronized void enqueueImageToWorker(String workerName, String imageName) {
         if(this.imageQueueTable.containsKey(workerName)) {
             this.imageQueueTable.get(workerName).add(imageName);
         }
@@ -35,13 +39,17 @@ public class WorkerQueueTable {
         }
     }
 
-    public String dequeueImageFromWorker(String workerName) {
-        if(this.imageQueueTable.containsKey(workerName) && this.imageQueueTable.get(workerName).isEmpty() == false) {
+    public synchronized String dequeueImageFromWorker(String workerName) {
+        if(this.hasPendingTasksForWorker(workerName)) {
             return this.imageQueueTable.get(workerName).remove();
         }
         else {
             Log.e(TAG, workerName + " does not exist or the queue is empty.");
             return null;
         }
+    }
+
+    public synchronized boolean hasPendingTasksForWorker(String workerName) {
+        return (this.imageQueueTable.containsKey(workerName) && this.imageQueueTable.get(workerName).isEmpty() == false);
     }
 }
