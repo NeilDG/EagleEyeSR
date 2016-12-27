@@ -47,6 +47,7 @@ public class ImageFusionWorker extends AImageWorker {
             Mat result = fusionOperator.getResult();
             this.outputImageName = FilenameConstants.HR_ITERATION_PREFIX_STRING + this.imageCounter;
             FileImageWriter.getInstance().saveMatrixToImage(result,this.outputImageName, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(result,FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
 
             result.release();
             MatMemory.cleanMemory();

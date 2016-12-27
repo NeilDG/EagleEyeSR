@@ -37,10 +37,9 @@ public class PipelinedMeanFusionOperator implements IOperator {
         int scale = ParameterConfig.getScalingFactor();
         this.outputMat = new Mat();
         Mat initialHRMat = FileImageReader.getInstance().imReadOpenCV(this.initialHRName, ImageFileAttribute.FileType.JPEG);
-
+        initialHRMat.convertTo(initialHRMat, CvType.CV_16UC(initialHRMat.channels())); //convert to CV_16UC
         Mat candidateMat = FileImageReader.getInstance().imReadOpenCV(this.candidateImageName, ImageFileAttribute.FileType.JPEG);
-        candidateMat.convertTo(candidateMat, CvType.CV_16UC(candidateMat.channels())); //convert to CV_16UC
-        candidateMat = ImageOperator.performInterpolation(candidateMat, scale, Imgproc.INTER_CUBIC); //perform cubic interpolation for the candidate mat
+        candidateMat = ImageOperator.performInterpolation(candidateMat, scale, Imgproc.INTER_LINEAR); //perform cubic interpolation for the candidate mat
 
         Mat maskMat = ImageOperator.produceMask(candidateMat);
 
