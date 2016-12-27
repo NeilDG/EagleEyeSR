@@ -5,6 +5,7 @@ import android.util.Log;
 import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.pipeline.workers.DenoisingWorker;
 import neildg.com.megatronsr.pipeline.workers.ImageAlignmentWorker;
+import neildg.com.megatronsr.pipeline.workers.ImageFusionWorker;
 import neildg.com.megatronsr.pipeline.workers.SharpnessMeasureWorker;
 import neildg.com.megatronsr.platformtools.notifications.NotificationCenter;
 import neildg.com.megatronsr.platformtools.notifications.Notifications;
@@ -48,6 +49,7 @@ public class PipelineManager implements WorkerListener {
     private SharpnessMeasureWorker sharpnessMeasureWorker = new SharpnessMeasureWorker(this);
     private ImageAlignmentWorker imageAlignmentWorker = new ImageAlignmentWorker(this);
     private DenoisingWorker denoisingWorker = new DenoisingWorker(this);
+    private ImageFusionWorker fusionWorker = new ImageFusionWorker(this);
 
     private WorkerQueueTable  workerQueueTable = WorkerQueueTable.createInstance();
 
@@ -55,6 +57,7 @@ public class PipelineManager implements WorkerListener {
         this.sharpnessMeasureWorker.start();
         this.denoisingWorker.start();
         this.imageAlignmentWorker.start();
+        this.fusionWorker.start();
     }
 
     /*
@@ -105,6 +108,20 @@ public class PipelineManager implements WorkerListener {
         this.broadcastPipelineUpdate(compareImageName, PipelineManager.IMAGE_ALIGNMENT_STAGE);
     }
 
+    private void performImageFusion() {
+        if(this.fusionWorker.isProcessing()) {
+            return;
+        }
+
+        String inputImageName = this.workerQueueTable.dequeueImageFromWorker(ImageFusionWorker.TAG);
+        String compareImageName = this.imageAlignmentWorker.getOutgoingProperties().getStringExtra(ImageAlignmentWorker.IMAGE_COMPARE_NAME_KEY, null);
+        this.broadcastPipelineUpdate(compareImageName, PipelineManager.IMAGE_FUSION_STAGE);
+
+        this.fusionWorker.getIngoingProperties().putExtra(ImageFusionWorker.IMAGE_INPUT_NAME_KEY, inputImageName);
+        this.fusionWorker.getIngoingProperties().putExtra(ImageFusionWorker.IMAGE_REFERENCE_NAME_KEY, compareImageName);
+        this.fusionWorker.signal();
+    }
+
 
     @Override
     public synchronized void onWorkerCompleted(String workerName, ImageProperties properties) {
@@ -121,6 +138,9 @@ public class PipelineManager implements WorkerListener {
             }
             else {
                 Log.d(TAG, imageName + " did  not pass sharpness measure.");
+                Parameters parameters = new Parameters();
+                parameters.putExtra(PipelineManager.IMAGE_NAME_KEY, imageName);
+                NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_EXITED_PIPELINE, parameters); //dequeue image. not needed.
             }
 
             this.requestForNewImage();
@@ -133,18 +153,25 @@ public class PipelineManager implements WorkerListener {
             this.performImageAlignment();
         }
         else if(workerName == ImageAlignmentWorker.TAG) {
-            //TODO: temporary end of pipeline. Unqueue image name from processing queue
+            String outputImageName = properties.getStringExtra(ImageAlignmentWorker.IMAGE_OUTPUT_NAME_KEY, null);
+            String comparingImageName = properties.getStringExtra(ImageAlignmentWorker.IMAGE_COMPARE_NAME_KEY, null);
+
+            this.workerQueueTable.enqueueImageToWorker(ImageFusionWorker.TAG, outputImageName);
+            broadcastPipelineUpdate(comparingImageName, PipelineManager.STALLED_STAGE_PREFIX + IMAGE_FUSION_STAGE);
+            this.performImageFusion();
+            Log.d(TAG, workerName + " selected " +outputImageName+ " as best aligned.");
+
+        }
+
+        else if(workerName == ImageFusionWorker.TAG) {
             //once finished, dequeue image name, then broadcast dequeue event
-            String dequeueImageName = properties.getStringExtra(ImageAlignmentWorker.IMAGE_COMPARE_NAME_KEY, null);
+            String dequeueImageName = properties.getStringExtra(ImageFusionWorker.IMAGE_REFERENCE_NAME_KEY, null);
+            String outputImageName = properties.getStringExtra(ImageFusionWorker.IMAGE_OUTPUT_NAME_KEY, null);
             Parameters parameters = new Parameters();
             parameters.putExtra(PipelineManager.IMAGE_NAME_KEY, dequeueImageName);
             NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_EXITED_PIPELINE, parameters);
 
-            Log.d(TAG, workerName + " finished. Removing image " +dequeueImageName+ " from queue.");
-
-            String outputImageName = properties.getStringExtra(ImageAlignmentWorker.IMAGE_OUTPUT_NAME_KEY, null);
-            Log.d(TAG, workerName + " selected " +outputImageName+ " as best aligned.");
-
+            Log.d(TAG, workerName + " finished. Removing image " +dequeueImageName+ " from queue. Produced HR " +outputImageName +".");
         }
 
         //everytime a worker is completed, check the worker queue table for pending tasks
@@ -159,6 +186,10 @@ public class PipelineManager implements WorkerListener {
         //imagealignment worker
         if(this.workerQueueTable.hasPendingTasksForWorker(ImageAlignmentWorker.TAG)) {
            this.performImageAlignment();
+        }
+
+        if(this.workerQueueTable.hasPendingTasksForWorker(ImageFusionWorker.TAG)) {
+            this.performImageFusion();
         }
     }
 

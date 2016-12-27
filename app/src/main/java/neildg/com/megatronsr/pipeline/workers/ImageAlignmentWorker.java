@@ -74,6 +74,7 @@ public class ImageAlignmentWorker extends AImageWorker {
         this.selectedAlignedName = alignedImageNames[0];
 
         this.imageCounter++;
+        MatMemory.cleanMemory();
     }
 
     @Override

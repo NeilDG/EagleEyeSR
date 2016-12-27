@@ -8,6 +8,7 @@ import java.util.Queue;
 
 import neildg.com.megatronsr.pipeline.workers.DenoisingWorker;
 import neildg.com.megatronsr.pipeline.workers.ImageAlignmentWorker;
+import neildg.com.megatronsr.pipeline.workers.ImageFusionWorker;
 
 /**
  * Contains queues that is used by different worker threads. Denoising, image alignment and image fusion workers hold queues
@@ -28,6 +29,7 @@ public class WorkerQueueTable {
         //setup different image queues here.
         this.imageQueueTable.put(DenoisingWorker.TAG, new LinkedList<String>());
         this.imageQueueTable.put(ImageAlignmentWorker.TAG, new LinkedList<String>());
+        this.imageQueueTable.put(ImageFusionWorker.TAG, new LinkedList<String>());
     }
 
     public synchronized void enqueueImageToWorker(String workerName, String imageName) {
