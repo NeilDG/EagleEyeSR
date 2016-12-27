@@ -10,4 +10,5 @@
     <string name ="desc_feature_match">Feature point minimum distance. Higher value is recommended for shaky captures.</string>
     <string name ="desc_fusion_threshold">Image fusion noise threshold. Used for assessing image alignment techniques.</string>
     <string name ="desc_warp_choice">Choice of image alignment technique. Best alignment technique chooses the best image alignment method to use.</string>
+    <string name ="desc_sr_choice">Choice of super-resolution technique. Fast mode prioritizes speed over accuracy. Full super-resolution mode considers all images for processing to have better chances of getting a clearer image. </string>
 </resources>

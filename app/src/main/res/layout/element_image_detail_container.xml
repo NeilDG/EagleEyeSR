@@ -22,6 +22,7 @@
             android:textSize="18sp"
             android:textAlignment="center"
             android:gravity="center"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:layout_marginLeft="20dp" />
 
 </LinearLayout>

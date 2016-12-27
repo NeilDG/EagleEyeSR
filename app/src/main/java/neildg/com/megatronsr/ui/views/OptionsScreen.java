@@ -11,6 +11,7 @@ import android.widget.ToggleButton;
 import neildg.com.megatronsr.R;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.processing.multiple.alignment.WarpingConstants;
+import neildg.com.megatronsr.processing.multiple.fusion.FusionConstants;
 import neildg.com.megatronsr.ui.ResolutionPickerDialog;
 
 /**
@@ -54,33 +55,10 @@ public class OptionsScreen extends AScreen {
             }
         });
 
-        /*SeekBar thresholdBar = (SeekBar) this.referenceView.findViewById(R.id.fusion_seekbar);
-        final EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
-        thresholdBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                thresholdEditText.setText(Integer.toString(progress));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        }); */
-
         RadioGroup warpChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.warp_choice_radiogroup);
         warpChoiceGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                /*if(checkedId == R.id.affine_radio_btn) {
-                    ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP);
-                }
-                else*/
                 if(checkedId == R.id.best_alignment_btn) {
                     ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.BEST_ALIGNMENT);
                 }
@@ -91,6 +69,20 @@ public class OptionsScreen extends AScreen {
                     ParameterConfig.setPrefs(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.PERSPECTIVE_WARP);
                 }
                 Log.d(TAG, ParameterConfig.WARP_CHOICE_KEY + " set to " +ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.AFFINE_WARP));
+            }
+        });
+
+        RadioGroup srChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.sr_choice_radiogroup);
+        srChoiceGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.sr_choice_fast_btn) {
+                    ParameterConfig.setPrefs(ParameterConfig.SR_CHOICE_KEY, FusionConstants.FAST_MODE);
+                }
+                else if(checkedId == R.id.sr_choice_full_btn) {
+                    ParameterConfig.setPrefs(ParameterConfig.SR_CHOICE_KEY, FusionConstants.FULL_SR_MODE);
+                }
+                Log.d(TAG, ParameterConfig.SR_CHOICE_KEY + " set to " +ParameterConfig.getPrefsInt(ParameterConfig.SR_CHOICE_KEY, FusionConstants.FULL_SR_MODE));
             }
         });
 
@@ -110,18 +102,6 @@ public class OptionsScreen extends AScreen {
     @Override
     public void hide() {
         super.hide();
-
-        /*EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
-        String thresholdString = thresholdEditText.getText().toString();
-
-        try {
-            int newValue = Integer.parseInt(thresholdString);
-            ParameterConfig.setPrefs(ParameterConfig.FUSION_THRESHOLD_KEY, newValue);
-
-            Log.d(TAG, "New fusion min threshold set: " +ParameterConfig.getPrefsInt(ParameterConfig.FUSION_THRESHOLD_KEY, ParameterConfig.MAX_FUSION_THRESHOLD));
-        } catch(NumberFormatException e) {
-            Log.e(TAG, "Error in parsing min fusion threshold text. Not a valid value. Value: " +thresholdString);
-        }*/
     }
 
     /*
@@ -134,13 +114,12 @@ public class OptionsScreen extends AScreen {
         ToggleButton denoiseBtn = (ToggleButton) this.referenceView.findViewById(R.id.denoise_option_btn);
         denoiseBtn.setChecked(false); //disable denoising mode by default.
 
-        /*SeekBar thresholdBar = (SeekBar) this.referenceView.findViewById(R.id.fusion_seekbar);
-        thresholdBar.setProgress(200); thresholdBar.setMax(ParameterConfig.MAX_FUSION_THRESHOLD);
-        EditText thresholdEditText = (EditText) this.referenceView.findViewById(R.id.fusion_text_value);
-        thresholdEditText.setText(Integer.toString(thresholdBar.getProgress()));*/
-
         RadioGroup warpChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.warp_choice_radiogroup);
         RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.best_alignment_btn);
         warpChoiceBtn.setChecked(true);
+
+        RadioGroup srChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.sr_choice_radiogroup);
+        RadioButton srChoiceBtn = (RadioButton) srChoiceGroup.findViewById(R.id.sr_choice_fast_btn);
+        srChoiceBtn.setChecked(true);
     }
 }

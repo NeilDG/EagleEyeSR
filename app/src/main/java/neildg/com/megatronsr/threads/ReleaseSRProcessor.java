@@ -22,6 +22,7 @@ import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
 import neildg.com.megatronsr.processing.multiple.alignment.MedianAlignmentOperator;
+import neildg.com.megatronsr.processing.multiple.fusion.FusionConstants;
 import neildg.com.megatronsr.processing.multiple.fusion.OptimizedMeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.TransferToDirOperator;
@@ -100,7 +101,7 @@ public class ReleaseSRProcessor extends Thread{
             }
         }
 
-        Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length);
+        Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length+ " Best index: " +bestIndex);
 
         this.performActualSuperres(rgbInputMatList, inputIndices, bestIndex);
         this.processListener.onProcessCompleted();
@@ -123,7 +124,18 @@ public class ReleaseSRProcessor extends Thread{
             Log.d(TAG, "Denoising will be skipped!");
         }
 
+        int srChoice = ParameterConfig.getPrefsInt(ParameterConfig.SR_CHOICE_KEY, FusionConstants.FULL_SR_MODE);
+        if(srChoice == FusionConstants.FULL_SR_MODE) {
+            this.performFullSRMode(rgbInputMatList, inputIndices, bestIndex);
+        }
+        else {
+            this.performFastSRMode(bestIndex);
+        }
 
+
+    }
+
+    private void performFullSRMode(Mat[] rgbInputMatList, Integer[] inputIndices, int bestIndex) {
         //perform feature matching of LR images against the first image as reference mat.
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.BEST_ALIGNMENT);
         //perform perspective warping and alignment
@@ -154,8 +166,6 @@ public class ReleaseSRProcessor extends Thread{
             this.performMedianAlignment(rgbInputMatList, medianResultNames);
         }
 
-
-
         //deallocate some classes
         SharpnessMeasure.destroy();
         MatMemory.cleanMemory();
@@ -174,10 +184,30 @@ public class ReleaseSRProcessor extends Thread{
 
         MatMemory.cleanMemory();
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 80.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Image fusion", "Performing image fusion", 80.0f);
         this.performMeanFusion(inputIndices[0], bestIndex, alignedImageNames);
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Mean fusion", "Performing image fusion", 100.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Image fusion", "Performing image fusion", 100.0f);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        ProgressDialogHandler.getInstance().hideProcessDialog();
+
+        MatMemory.cleanMemory();
+    }
+
+    private void performFastSRMode(int bestIndex) {
+        ProgressDialogHandler.getInstance().showProcessDialog("Image fusion", "Performing image fusion", 70.0f);
+        ArrayList<String> imagePathList = new ArrayList<>();
+        imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + bestIndex);
+
+        OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(imagePathList.toArray(new String[imagePathList.size()]));
+        fusionOperator.perform();
+        FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+        ProgressDialogHandler.getInstance().showProcessDialog("Image fusion", "Performing image fusion", 100.0f);
+
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {

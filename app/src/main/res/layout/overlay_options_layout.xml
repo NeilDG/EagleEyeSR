@@ -74,33 +74,49 @@ android:background="#A6000000">
                     android:textAlignment="viewStart" />
             </LinearLayout>
 
-            <!--<LinearLayout
+            <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <EditText
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:ems="10"
-                    android:id="@+id/feature_dist_text"
-                    android:text="999.0"
                     android:layout_weight="0.9"
-                    android:background="#ffffff"
-                    android:maxLines="1"/>
+                    android:layout_width="215dp">
+
+
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id = "@+id/sr_choice_radiogroup">
+                        <RadioButton
+                            android:text="Fast Mode"
+                            android:layout_width="152dp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sr_choice_fast_btn"
+                            style="@android:style/Widget.Button"/>
+
+                        <RadioButton
+                            android:text="Full Super-Resolution"
+                            android:layout_width="152dp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sr_choice_full_btn"
+                            style="@android:style/Widget.Button"/>
+                    </RadioGroup>
+                </LinearLayout>
 
                 <TextView
-                    android:text="@string/desc_feature_match"
-                    android:layout_weight="0.9"
+                    android:text="@string/desc_sr_choice"
                     android:background="#D4404040"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="20dp"
                     android:layout_margin="10dp"
                     android:textColor="@android:color/white"
-                    android:textAlignment="viewStart" />
-            </LinearLayout> -->
+                    android:textAlignment="viewStart"
+                    android:layout_weight="6"
+                    android:layout_width="700dp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"

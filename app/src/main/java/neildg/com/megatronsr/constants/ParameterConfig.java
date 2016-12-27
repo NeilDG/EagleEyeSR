@@ -23,10 +23,8 @@ public class ParameterConfig {
     public final static String DEBUGGING_FLAG_KEY = "DEBUGGING_FLAG_KEY";
     public final static String DENOISE_FLAG_KEY = "DENOISE_FLAG_KEY";
     public final static String FEATURE_MINIMUM_DISTANCE_KEY = "FEATURE_MINIMUM_DISTANCE_KEY";
-    public final static String FUSION_THRESHOLD_KEY = "FUSION_THRESHOLD_KEY";
     public final static String WARP_CHOICE_KEY = "WARP_CHOICE_KEY";
-
-    public final static int MAX_FUSION_THRESHOLD = 255;
+    public final static String SR_CHOICE_KEY = "SR_CHOICE_KEY";
 
     private SRTechnique currentTechnique = SRTechnique.MULTIPLE;
 
