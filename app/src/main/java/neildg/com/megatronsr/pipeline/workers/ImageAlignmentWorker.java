@@ -1,7 +1,10 @@
 package neildg.com.megatronsr.pipeline.workers;
 
+import android.util.Log;
+
 import org.opencv.core.Mat;
 
+import neildg.com.megatronsr.constants.FilenameConstants;
 import neildg.com.megatronsr.constants.ParameterConfig;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.ImageFileAttribute;
@@ -12,6 +15,7 @@ import neildg.com.megatronsr.processing.multiple.alignment.FeatureMatchingOperat
 import neildg.com.megatronsr.processing.multiple.alignment.LRWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.alignment.MedianAlignmentOperator;
 import neildg.com.megatronsr.processing.multiple.alignment.WarpingConstants;
+import neildg.com.megatronsr.threads.ReleaseSRProcessor;
 
 /**
  * Handles the image alignment technique.
@@ -24,8 +28,14 @@ public class ImageAlignmentWorker extends AImageWorker {
     public final static String IMAGE_REFERENCE_NAME_KEY = "IMAGE_REFERENCE_NAME_KEY";
     public final static String IMAGE_COMPARE_NAME_KEY = "IMAGE_COMPARE_NAME_KEY";
 
+    public final static String IMAGE_OUTPUT_NAME_KEY = "IMAGE_OUTPUT_NAME_KEY";
+
     private String referenceImageName;
     private String comparingImageName;
+
+    private String selectedAlignedName;
+
+    private int imageCounter = 0;
 
     public ImageAlignmentWorker(WorkerListener workerListener) {
         super(TAG, workerListener);
@@ -38,22 +48,32 @@ public class ImageAlignmentWorker extends AImageWorker {
         rgbInputMatList[0] = FileImageReader.getInstance().imReadOpenCV(this.referenceImageName, ImageFileAttribute.FileType.JPEG);
         rgbInputMatList[1] = FileImageReader.getInstance().imReadOpenCV(this.comparingImageName, ImageFileAttribute.FileType.JPEG);
 
+        String[] medianResultNames = new String[1]; String[] warpResultNames = new String[1];
+        medianResultNames[0] = FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + this.imageCounter;
+        warpResultNames[0] = FilenameConstants.WARP_PREFIX + this.imageCounter;
+
         Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
         for(int i = 1; i < rgbInputMatList.length; i++) {
             succeedingMatList[i - 1] = rgbInputMatList[i];
         }
 
         if(warpChoice == WarpingConstants.BEST_ALIGNMENT) {
-            this.performMedianAlignment(rgbInputMatList);
-            this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
+            this.performMedianAlignment(rgbInputMatList,medianResultNames);
+            this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList, warpResultNames);
+
+
         }
         else if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
-            this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList);
+            this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList, warpResultNames);
         }
         else if(warpChoice == WarpingConstants.MEDIAN_ALIGNMENT){
-            this.performMedianAlignment(rgbInputMatList);
+            this.performMedianAlignment(rgbInputMatList,medianResultNames);
         }
 
+        String[] alignedImageNames = ReleaseSRProcessor.assessImageWarpResults(0, warpChoice, warpResultNames, medianResultNames);
+        this.selectedAlignedName = alignedImageNames[0];
+
+        this.imageCounter++;
     }
 
     @Override
@@ -68,13 +88,14 @@ public class ImageAlignmentWorker extends AImageWorker {
     @Override
     public void populateOutgoingProperties(ImageProperties outgoingProperties) {
         outgoingProperties.putExtra(IMAGE_COMPARE_NAME_KEY, this.comparingImageName);
+        outgoingProperties.putExtra(IMAGE_OUTPUT_NAME_KEY, this.selectedAlignedName);
     }
 
-    private void performPerspectiveWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList) {
+    private void performPerspectiveWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList, String[] resultNames) {
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(referenceMat, candidateMatList);
         matchingOperator.perform();
 
-        LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), imagesToWarpList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
+        LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), imagesToWarpList, resultNames, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         perspectiveWarpOperator.perform();
 
         //release images
@@ -88,9 +109,9 @@ public class ImageAlignmentWorker extends AImageWorker {
         MatMemory.releaseAll(warpedMatList, false);
     }
 
-    private void performMedianAlignment(Mat[] imagesToAlignList) {
+    private void performMedianAlignment(Mat[] imagesToAlignList, String[] resultNames) {
         //perform exposure alignment
-        MedianAlignmentOperator medianAlignmentOperator = new MedianAlignmentOperator(imagesToAlignList);
+        MedianAlignmentOperator medianAlignmentOperator = new MedianAlignmentOperator(imagesToAlignList, resultNames);
         medianAlignmentOperator.perform();
 
         //MatMemory.releaseAll(imagesToAlignList, true);

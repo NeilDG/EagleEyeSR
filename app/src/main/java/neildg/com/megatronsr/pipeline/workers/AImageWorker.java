@@ -59,11 +59,11 @@ public abstract class AImageWorker extends Thread {
             while(true) {
                 while(this.evaluateCondition() == false) {
                     Log.d(TAG, "Condition is not met in the properties file. Thread "+this.workerName+ " will sleep.");
-                    this.processing = false;
                     this.propertyCondition.await();
                 }
                 this.processing = true;
                 this.perform();
+                this.processing = false;
                 this.populateOutgoingProperties(this.outgoingProperties);
                 this.workerListener.onWorkerCompleted(this.workerName, this.outgoingProperties);
             }

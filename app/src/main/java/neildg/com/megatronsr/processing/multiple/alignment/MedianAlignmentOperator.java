@@ -25,8 +25,10 @@ public class MedianAlignmentOperator implements IOperator {
     private final static String TAG = "ExposureAlignmentOperator";
 
     private Mat[] imageSequenceList;
-    public MedianAlignmentOperator(Mat[] imageSequenceList) {
+    private String[] resultNames;
+    public MedianAlignmentOperator(Mat[] imageSequenceList, String[] resultNames) {
         this.imageSequenceList = imageSequenceList;
+        this.resultNames = resultNames;
     }
 
     @Override
@@ -39,10 +41,10 @@ public class MedianAlignmentOperator implements IOperator {
         //FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(0), FilenameConstants.INPUT_PREFIX_STRING + this.inputIndex, ImageFileAttribute.FileType.JPEG);
 
         for(int i = 1; i < processMatList.size(); i++) {
-            FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(i), FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + (i-1), ImageFileAttribute.FileType.JPEG);
+            //FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(i), FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + (i-1), ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(i), resultNames[i - 1], ImageFileAttribute.FileType.JPEG);
         }
 
         //AttributeHolder.getSharedInstance().putValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, processMatList.size() - 1);
-
     }
 }

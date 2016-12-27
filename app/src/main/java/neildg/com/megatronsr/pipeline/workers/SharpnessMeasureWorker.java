@@ -52,14 +52,15 @@ public class SharpnessMeasureWorker extends AImageWorker {
         MatMemory.releaseAll(inputMatList, false);
         MatMemory.releaseAll(yuvMat, false);
 
-        boolean result = false;
         if(this.lastMeasuredSharpness <= currentSharpness) {
             //replace last measured sharpness with mean
             this.lastMeasuredSharpness = (this.lastMeasuredSharpness + currentSharpness) / 2.0f;
             Log.d(TAG, "Sharpness measure updated! New value: " +this.lastMeasuredSharpness);
             this.result = true;
         }
-
+        else {
+            this.result = false;
+        }
 
     }
 

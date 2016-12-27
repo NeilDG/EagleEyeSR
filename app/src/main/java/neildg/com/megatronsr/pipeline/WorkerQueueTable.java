@@ -16,7 +16,7 @@ import neildg.com.megatronsr.pipeline.workers.ImageAlignmentWorker;
  */
 
 public class WorkerQueueTable {
-    private final static String TAG = "WorkerQueueTable";
+    private final static String TAG = "Pipeline_WorkerQueue";
 
     private HashMap<String, Queue<String>> imageQueueTable = new HashMap<String, Queue<String>>();
 
@@ -33,6 +33,7 @@ public class WorkerQueueTable {
     public synchronized void enqueueImageToWorker(String workerName, String imageName) {
         if(this.imageQueueTable.containsKey(workerName)) {
             this.imageQueueTable.get(workerName).add(imageName);
+            Log.d(TAG, "Enqueued " +imageName + "  to " +workerName+ " queue.");
         }
         else {
             Log.e(TAG, workerName + " does not exist. ");
@@ -41,6 +42,7 @@ public class WorkerQueueTable {
 
     public synchronized String dequeueImageFromWorker(String workerName) {
         if(this.hasPendingTasksForWorker(workerName)) {
+            Log.d(TAG, "Dequeued image from " +workerName+ " queue.");
             return this.imageQueueTable.get(workerName).remove();
         }
         else {

@@ -21,9 +21,6 @@ import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.FileImageWriter;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
-import neildg.com.megatronsr.ui.ProgressDialogHandler;
-
-import static neildg.com.megatronsr.constants.FilenameConstants.WARP_PREFIX;
 
 /**
  * Created by neil.dg on 3/10/16.
@@ -37,21 +34,24 @@ public class LRWarpingOperator {
     private Mat[] imagesToWarpList;
 
     private Mat[] warpedMatList;
+    private String[] resultNames;
 
-    public LRWarpingOperator(MatOfKeyPoint refKeypoint, Mat[] imagesToWarpList, MatOfDMatch[] goodMatchList, MatOfKeyPoint[] keyPointList) {
+    public LRWarpingOperator(MatOfKeyPoint refKeypoint, Mat[] imagesToWarpList, String[] resultNames, MatOfDMatch[] goodMatchList, MatOfKeyPoint[] keyPointList) {
         this.goodMatchList = goodMatchList;
         this.keyPointList = keyPointList;
         this.refKeypoint = refKeypoint;
         this.imagesToWarpList = imagesToWarpList;
 
         this.warpedMatList = new Mat[this.imagesToWarpList.length];
+        this.resultNames = resultNames;
     }
 
     public void perform() {
 
         for(int i = 0; i < this.imagesToWarpList.length; i++) {
             Mat warpedMat = this.warpImage(this.goodMatchList[i], this.keyPointList[i], this.imagesToWarpList[i]);
-            FileImageWriter.getInstance().saveMatrixToImage(warpedMat, WARP_PREFIX +i, ImageFileAttribute.FileType.JPEG);
+            //FileImageWriter.getInstance().saveMatrixToImage(warpedMat, WARP_PREFIX +i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(warpedMat, this.resultNames[i], ImageFileAttribute.FileType.JPEG);
 
             this.imagesToWarpList[i].release();
         }

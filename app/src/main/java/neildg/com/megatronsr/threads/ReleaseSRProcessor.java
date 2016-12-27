@@ -126,28 +126,32 @@ public class ReleaseSRProcessor extends Thread{
 
         //perform feature matching of LR images against the first image as reference mat.
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.BEST_ALIGNMENT);
+        //perform perspective warping and alignment
+        Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
+        for(int i = 1; i < rgbInputMatList.length; i++) {
+            succeedingMatList[i - 1] = rgbInputMatList[i];
+        }
+
+        String[] medianResultNames = new String[succeedingMatList.length];
+        for(int i = 0; i < medianResultNames.length; i++) {
+            medianResultNames[i] = FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + i;
+        }
+
+        String[] warpResultnames = new String[succeedingMatList.length];
+        for(int i = 0; i < medianResultNames.length; i++) {
+            warpResultnames[i] = FilenameConstants.WARP_PREFIX + i;
+        }
 
         if(warpChoice == WarpingConstants.BEST_ALIGNMENT) {
-            //perform perspective warping and alignment
-            Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
-            for(int i = 1; i < rgbInputMatList.length; i++) {
-                succeedingMatList[i - 1] = rgbInputMatList[i];
-            }
-
-            this.performMedianAlignment(rgbInputMatList);
-            this.performPerspectiveWarping(rgbInputMatList[bestIndex], succeedingMatList, succeedingMatList);
+            this.performMedianAlignment(rgbInputMatList, medianResultNames);
+            this.performPerspectiveWarping(rgbInputMatList[bestIndex], succeedingMatList, succeedingMatList, warpResultnames);
         }
         else if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
-            Mat[] succeedingMatList =new Mat[rgbInputMatList.length - 1];
-            for(int i = 1; i < rgbInputMatList.length; i++) {
-                succeedingMatList[i - 1] = rgbInputMatList[i];
-            }
-
             //perform perspective warping
-            this.performPerspectiveWarping(rgbInputMatList[bestIndex], succeedingMatList, succeedingMatList);
+            this.performPerspectiveWarping(rgbInputMatList[bestIndex], succeedingMatList, succeedingMatList, warpResultnames);
         }
         else {
-            this.performMedianAlignment(rgbInputMatList);
+            this.performMedianAlignment(rgbInputMatList, medianResultNames);
         }
 
 
@@ -156,8 +160,17 @@ public class ReleaseSRProcessor extends Thread{
         SharpnessMeasure.destroy();
         MatMemory.cleanMemory();
 
+        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, 0);
+        String[] warpedImageNames = new String[numImages];
+        String[] medianAlignedNames = new String[numImages];
+
+        for(int i = 0; i < numImages; i++) {
+            warpedImageNames[i] = FilenameConstants.WARP_PREFIX +i;
+            medianAlignedNames[i] = FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + i;
+        }
+
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Refining image warping results", 70.0f);
-        String[] alignedImageNames = this.assessImageWarpResults(inputIndices[0], warpChoice);
+        String[] alignedImageNames = assessImageWarpResults(inputIndices[0], warpChoice, warpedImageNames, medianAlignedNames);
 
         MatMemory.cleanMemory();
 
@@ -201,17 +214,7 @@ public class ReleaseSRProcessor extends Thread{
         }
     }
 
-    private String[] assessImageWarpResults(int index, int alignmentUsed) {
-
-        int numImages = AttributeHolder.getSharedInstance().getValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, 0);
-        String[] warpedImageNames = new String[numImages];
-        String[] medianAlignedNames = new String[numImages];
-
-        for(int i = 0; i < numImages; i++) {
-            warpedImageNames[i] = FilenameConstants.WARP_PREFIX +i;
-            medianAlignedNames[i] = FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + i;
-        }
-
+    public static String[] assessImageWarpResults(int index, int alignmentUsed, String[] warpedImageNames, String[] medianAlignedNames) {
         if(alignmentUsed == WarpingConstants.BEST_ALIGNMENT) {
             WarpResultEvaluator warpResultEvaluator = new WarpResultEvaluator(FilenameConstants.INPUT_PREFIX_STRING + index, warpedImageNames, medianAlignedNames);
             warpResultEvaluator.perform();
@@ -237,14 +240,14 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.releaseAll(warpingOperator.getWarpedMatList(), true);
     }
 
-    private void performPerspectiveWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList) {
+    private void performPerspectiveWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList, String[] resultNames) {
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing feature matching against first image", 40.0f);
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(referenceMat, candidateMatList);
         matchingOperator.perform();
 
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 50.0f);
 
-        LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), imagesToWarpList, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
+        LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), imagesToWarpList, resultNames, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         perspectiveWarpOperator.perform();
 
         //release images
@@ -258,10 +261,10 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.releaseAll(warpedMatList, false);
     }
 
-    private void performMedianAlignment(Mat[] imagesToAlignList) {
+    private void performMedianAlignment(Mat[] imagesToAlignList, String[] resultNames) {
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing exposure alignment", 30.0f);
         //perform exposure alignment
-        MedianAlignmentOperator medianAlignmentOperator = new MedianAlignmentOperator(imagesToAlignList);
+        MedianAlignmentOperator medianAlignmentOperator = new MedianAlignmentOperator(imagesToAlignList, resultNames);
         medianAlignmentOperator.perform();
 
         //MatMemory.releaseAll(imagesToAlignList, true);

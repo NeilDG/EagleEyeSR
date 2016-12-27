@@ -88,7 +88,6 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
                 }
                 else {
                     String imageName = ProcessingQueue.getInstance().dequeueImageName();
-                    Log.d(TAG, "Adding image entry  " +imageName);
                     PipelineManager.getInstance().addImageEntry(imageName);
                 }
 
