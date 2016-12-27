@@ -124,11 +124,14 @@ public class ReleaseSRProcessor extends Thread{
             Log.d(TAG, "Denoising will be skipped!");
         }
 
+
         int srChoice = ParameterConfig.getPrefsInt(ParameterConfig.SR_CHOICE_KEY, FusionConstants.FULL_SR_MODE);
         if(srChoice == FusionConstants.FULL_SR_MODE) {
             this.performFullSRMode(rgbInputMatList, inputIndices, bestIndex);
         }
         else {
+            MatMemory.releaseAll(rgbInputMatList, false);
+            MatMemory.cleanMemory();
             this.performFastSRMode(bestIndex);
         }
 
@@ -200,12 +203,10 @@ public class ReleaseSRProcessor extends Thread{
 
     private void performFastSRMode(int bestIndex) {
         ProgressDialogHandler.getInstance().showProcessDialog("Image fusion", "Performing image fusion", 70.0f);
-        ArrayList<String> imagePathList = new ArrayList<>();
-        imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + bestIndex);
-
-        OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(imagePathList.toArray(new String[imagePathList.size()]));
-        fusionOperator.perform();
-        FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+        Mat initialMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + bestIndex, ImageFileAttribute.FileType.JPEG);
+        initialMat = ImageOperator.performInterpolation(initialMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        FileImageWriter.getInstance().saveMatrixToImage(initialMat, FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+        initialMat.release();
         ProgressDialogHandler.getInstance().showProcessDialog("Image fusion", "Performing image fusion", 100.0f);
 
         try {
