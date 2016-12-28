@@ -13,6 +13,7 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.FileImageWriter;
+import neildg.com.megatronsr.io.ImageInputMap;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
@@ -22,6 +23,7 @@ import neildg.com.megatronsr.processing.imagetools.ImageOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
 import neildg.com.megatronsr.processing.multiple.alignment.MedianAlignmentOperator;
+import neildg.com.megatronsr.processing.multiple.enhancement.UnsharpMaskOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.FusionConstants;
 import neildg.com.megatronsr.processing.multiple.fusion.OptimizedMeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
@@ -50,8 +52,8 @@ public class ReleaseSRProcessor extends Thread{
 
         ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Creating backup copy for processing.", 0.0f);
 
-        TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
-        transferToDirOperator.perform();
+        //TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
+        //transferToDirOperator.perform();
 
         ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Interpolating images and extracting energy channel", 10.0f);
         this.interpolateFirstImage();
@@ -64,7 +66,7 @@ public class ReleaseSRProcessor extends Thread{
         Mat inputMat = null;
 
         for(int i = 0; i < energyInputMatList.length; i++) {
-            inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
+            inputMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(i));
             inputMat = ImageOperator.downsample(inputMat, 0.125f); //downsample
 
             FileImageWriter.getInstance().debugSaveMatrixToImage(inputMat, "downsample_"+i, ImageFileAttribute.FileType.JPEG);
@@ -92,10 +94,18 @@ public class ReleaseSRProcessor extends Thread{
         Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(BitmapURIRepository.getInstance().getNumImagesSelected(), sharpnessResult, 0.0);
         Mat[] rgbInputMatList = new Mat[inputIndices.length];
 
+        //perform unsharp masking
+        for(int i = 0; i < inputIndices.length; i++) {
+            UnsharpMaskOperator unsharpMaskOperator =  new UnsharpMaskOperator(ImageInputMap.getInputImage(inputIndices[i]));
+            unsharpMaskOperator.perform();
+
+            unsharpMaskOperator.getResult().release();
+        }
+
         int bestIndex = 0;
         //load RGB inputs
         for(int i = 0; i < inputIndices.length; i++) {
-            rgbInputMatList[i] = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG);
+            rgbInputMatList[i] = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(inputIndices[i]));
             if(sharpnessResult.getBestIndex() == inputIndices[i]) {
                 bestIndex = i;
             }
@@ -103,11 +113,11 @@ public class ReleaseSRProcessor extends Thread{
 
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length+ " Best index: " +bestIndex);
 
-        this.performActualSuperres(rgbInputMatList, inputIndices, bestIndex);
+        this.performActualSuperres(rgbInputMatList, inputIndices, bestIndex, false);
         this.processListener.onProcessCompleted();
     }
 
-    public void performActualSuperres(Mat[] rgbInputMatList, Integer[] inputIndices, int bestIndex) {
+    public void performActualSuperres(Mat[] rgbInputMatList, Integer[] inputIndices, int bestIndex, boolean debugMode) {
         boolean performDenoising = ParameterConfig.getPrefsBoolean(ParameterConfig.DENOISE_FLAG_KEY, false);
 
         if(performDenoising) {
@@ -127,18 +137,18 @@ public class ReleaseSRProcessor extends Thread{
 
         int srChoice = ParameterConfig.getPrefsInt(ParameterConfig.SR_CHOICE_KEY, FusionConstants.FULL_SR_MODE);
         if(srChoice == FusionConstants.FULL_SR_MODE) {
-            this.performFullSRMode(rgbInputMatList, inputIndices, bestIndex);
+            this.performFullSRMode(rgbInputMatList, inputIndices, bestIndex, debugMode);
         }
         else {
             MatMemory.releaseAll(rgbInputMatList, false);
             MatMemory.cleanMemory();
-            this.performFastSRMode(bestIndex);
+            this.performFastSRMode(bestIndex, debugMode);
         }
 
 
     }
 
-    private void performFullSRMode(Mat[] rgbInputMatList, Integer[] inputIndices, int bestIndex) {
+    private void performFullSRMode(Mat[] rgbInputMatList, Integer[] inputIndices, int bestIndex, boolean debug) {
         //perform feature matching of LR images against the first image as reference mat.
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.BEST_ALIGNMENT);
         //perform perspective warping and alignment
@@ -183,12 +193,12 @@ public class ReleaseSRProcessor extends Thread{
         }
 
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Refining image warping results", 70.0f);
-        String[] alignedImageNames = assessImageWarpResults(inputIndices[0], warpChoice, warpedImageNames, medianAlignedNames);
+        String[] alignedImageNames = assessImageWarpResults(inputIndices[0], warpChoice, warpedImageNames, medianAlignedNames, debug);
 
         MatMemory.cleanMemory();
 
         ProgressDialogHandler.getInstance().showProcessDialog("Image fusion", "Performing image fusion", 80.0f);
-        this.performMeanFusion(inputIndices[0], bestIndex, alignedImageNames);
+        this.performMeanFusion(inputIndices[0], bestIndex, alignedImageNames, debug);
 
         ProgressDialogHandler.getInstance().showProcessDialog("Image fusion", "Performing image fusion", 100.0f);
         try {
@@ -201,9 +211,16 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.cleanMemory();
     }
 
-    private void performFastSRMode(int bestIndex) {
+    private void performFastSRMode(int bestIndex, boolean debugMode) {
         ProgressDialogHandler.getInstance().showProcessDialog("Image fusion", "Performing image fusion", 70.0f);
-        Mat initialMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + bestIndex, ImageFileAttribute.FileType.JPEG);
+        Mat initialMat;
+        if(debugMode) {
+            initialMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + bestIndex, ImageFileAttribute.FileType.JPEG);
+        }
+        else {
+            initialMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(bestIndex));
+        }
+
         initialMat = ImageOperator.performInterpolation(initialMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
         FileImageWriter.getInstance().saveMatrixToImage(initialMat, FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
         initialMat.release();
@@ -223,7 +240,7 @@ public class ReleaseSRProcessor extends Thread{
         boolean outputComparisons = ParameterConfig.getPrefsBoolean(ParameterConfig.DEBUGGING_FLAG_KEY, false);
 
         if(outputComparisons) {
-            Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
+            Mat inputMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(0));
 
             Mat outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
             FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
@@ -245,9 +262,18 @@ public class ReleaseSRProcessor extends Thread{
         }
     }
 
-    public static String[] assessImageWarpResults(int index, int alignmentUsed, String[] warpedImageNames, String[] medianAlignedNames) {
+    public static String[] assessImageWarpResults(int index, int alignmentUsed, String[] warpedImageNames, String[] medianAlignedNames, boolean debug) {
         if(alignmentUsed == WarpingConstants.BEST_ALIGNMENT) {
-            WarpResultEvaluator warpResultEvaluator = new WarpResultEvaluator(FilenameConstants.INPUT_PREFIX_STRING + index, warpedImageNames, medianAlignedNames);
+            Mat referenceMat;
+
+            if(debug) {
+                referenceMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + index, ImageFileAttribute.FileType.JPEG);
+            }
+            else {
+              referenceMat  = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(index));
+            }
+
+            WarpResultEvaluator warpResultEvaluator = new WarpResultEvaluator(referenceMat, warpedImageNames, medianAlignedNames);
             warpResultEvaluator.perform();
             return warpResultEvaluator.getChosenAlignedNames();
         }
@@ -301,25 +327,48 @@ public class ReleaseSRProcessor extends Thread{
         //MatMemory.releaseAll(imagesToAlignList, true);
     }
 
-    private void performMeanFusion(int index, int bestIndex, String[] alignedImageNames) {
-        ArrayList<String> imagePathList = new ArrayList<>();
+    private void performMeanFusion(int index, int bestIndex, String[] alignedImageNames, boolean debugMode) {
+
 
         if(alignedImageNames.length == 1) {
             Log.d(TAG, "Best index selected for image HR: " +bestIndex);
-            imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + bestIndex); //no need to perform image fusion, just use the best image.
+            Mat resultMat;
+            if(debugMode) {
+                resultMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + index, ImageFileAttribute.FileType.JPEG);
+            }
+            else {
+                resultMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(index));
+            }
+            //no need to perform image fusion, just use the best image.
+            resultMat = ImageOperator.performInterpolation(resultMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+            FileImageWriter.getInstance().saveMatrixToImage(resultMat, FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+
+            resultMat.release();
         }
         else {
+            ArrayList<String> imagePathList = new ArrayList<>();
             //add initial input HR image
-            imagePathList.add(FilenameConstants.INPUT_PREFIX_STRING + index);
+            Mat inputMat;
+            if(debugMode) {
+                inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + index, ImageFileAttribute.FileType.JPEG);
+            }
+            else {
+                inputMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(index));
+            }
+
             for(int i = 0; i < alignedImageNames.length; i++) {
                 imagePathList.add(alignedImageNames[i]);
             }
+
+            OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(inputMat, imagePathList.toArray(new String[imagePathList.size()]));
+            fusionOperator.perform();
+            FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+
+            fusionOperator.getResult().release();
         }
 
 
-        OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(imagePathList.toArray(new String[imagePathList.size()]));
-        fusionOperator.perform();
-        FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+
 
     }
 }

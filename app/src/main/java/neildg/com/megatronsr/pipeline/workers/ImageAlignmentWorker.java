@@ -70,7 +70,7 @@ public class ImageAlignmentWorker extends AImageWorker {
             this.performMedianAlignment(rgbInputMatList,medianResultNames);
         }
 
-        String[] alignedImageNames = ReleaseSRProcessor.assessImageWarpResults(0, warpChoice, warpResultNames, medianResultNames);
+        String[] alignedImageNames = ReleaseSRProcessor.assessImageWarpResults(0, warpChoice, warpResultNames, medianResultNames, false);
         this.selectedAlignedName = alignedImageNames[0];
 
         this.imageCounter++;

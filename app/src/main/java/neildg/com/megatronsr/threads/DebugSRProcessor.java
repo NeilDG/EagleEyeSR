@@ -21,6 +21,7 @@ import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
 import neildg.com.megatronsr.processing.multiple.fusion.OptimizedBaseFusionOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
+import neildg.com.megatronsr.processing.multiple.resizing.DegradationOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.megatronsr.processing.multiple.selection.TestImagesSelector;
 import neildg.com.megatronsr.processing.multiple.alignment.FeatureMatchingOperator;
@@ -89,13 +90,13 @@ public class DebugSRProcessor extends Thread {
         int index = sharpnessResult.getLeastIndex();
 
         //simulate degradation
-        /*DegradationOperator degradationOperator = new DegradationOperator();
+        DegradationOperator degradationOperator = new DegradationOperator();
         degradationOperator.perform();
 
         //reload images again. degradation has been imposed in input images.
         for(int i = 0; i < rgbInputMatList.length; i++) {
             rgbInputMatList[i] = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
-        }*/
+        }
 
         Log.d(TAG, "Index for interpolation: " +index);
         LRToHROperator lrToHROperator = new LRToHROperator(FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (index), ImageFileAttribute.FileType.JPEG), index);
@@ -131,7 +132,7 @@ public class DebugSRProcessor extends Thread {
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length + " Best index: " +bestIndex);
 
         ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor(this.processListener);
-        releaseSRProcessor.performActualSuperres(rgbInputMatList, inputIndices, bestIndex);
+        releaseSRProcessor.performActualSuperres(rgbInputMatList, inputIndices, bestIndex, true);
         this.processListener.onProcessCompleted();
 
         ProgressDialogHandler.getInstance().hideProcessDialog();

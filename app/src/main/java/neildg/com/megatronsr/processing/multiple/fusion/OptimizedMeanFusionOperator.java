@@ -27,10 +27,12 @@ public class OptimizedMeanFusionOperator implements IOperator {
 
     private String[] imageMatPathList;
     private Mat outputMat;
+    private Mat initialMat;
 
 
-    public OptimizedMeanFusionOperator(String[] imageMatPathList) {
+    public OptimizedMeanFusionOperator(Mat initialMat, String[] imageMatPathList) {
         this.imageMatPathList = imageMatPathList;
+        this.initialMat = initialMat;
     }
 
     @Override
@@ -38,34 +40,34 @@ public class OptimizedMeanFusionOperator implements IOperator {
 
         int scale = ParameterConfig.getScalingFactor();
         this.outputMat = new Mat();
-        Mat initialMat = FileImageReader.getInstance().imReadOpenCV(this.imageMatPathList[0], ImageFileAttribute.FileType.JPEG);
-        initialMat.convertTo(initialMat, CvType.CV_16UC(initialMat.channels())); //convert to CV_16UC
-        Log.d(TAG, "Initial image for fusion: "+this.imageMatPathList[0]+ " Size:" +initialMat.size() + " Scale: " +scale);
+        this.initialMat.convertTo(initialMat, CvType.CV_16UC(initialMat.channels())); //convert to CV_16UC
+        Log.d(TAG, "Initial image for fusion Size:" +initialMat.size() + " Scale: " +scale);
 
         Mat sumMat = ImageOperator.performInterpolation(initialMat, scale, Imgproc.INTER_CUBIC); //perform cubic interpolation for initial HR
         //sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
         //FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_ITERATION_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
-        initialMat.release();
+        this.initialMat.release();
         this.outputMat.release();
 
-        for(int i = 1; i < this.imageMatPathList.length; i++) {
+        for(int i = 0; i < this.imageMatPathList.length; i++) {
             //load second mat
-            initialMat = FileImageReader.getInstance().imReadOpenCV(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
+            this.initialMat = FileImageReader.getInstance().imReadOpenCV(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
+            Log.d(TAG, "Initial image for fusion. Name: "+this.imageMatPathList[i] + " Size:" +this.initialMat.size() + " Scale: " +scale);
 
             ProgressDialogHandler.getInstance().updateProgress(ProgressDialogHandler.getInstance().getProgress() + 5.0f);
 
             //perform interpolation
-            initialMat = ImageOperator.performInterpolation(initialMat, scale, Imgproc.INTER_CUBIC); //perform cubic interpolation
-            Mat maskMat = ImageOperator.produceMask(initialMat);
+            this.initialMat = ImageOperator.performInterpolation(this.initialMat, scale, Imgproc.INTER_CUBIC); //perform cubic interpolation
+            Mat maskMat = ImageOperator.produceMask(this.initialMat);
 
-            Core.add(sumMat, initialMat, sumMat, maskMat, CvType.CV_16UC(initialMat.channels()));
+            Core.add(sumMat, this.initialMat, sumMat, maskMat, CvType.CV_16UC(this.initialMat.channels()));
             Core.divide(sumMat, Scalar.all(2), sumMat);
 
             Log.d(TAG, "sumMat size: " +sumMat.size().toString());
             //sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
             //FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_ITERATION_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
 
-            initialMat.release();
+            this.initialMat.release();
             maskMat.release();
         }
 

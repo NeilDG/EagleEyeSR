@@ -86,6 +86,11 @@ public class FileImageReader {
 		return Imgcodecs.imread(completeFilePath);
 	}
 
+	public Mat imReadFullPath(String fullPath) {
+		Log.d(TAG, "Filepath for imread: " + fullPath);
+		return Imgcodecs.imread(fullPath);
+	}
+
 	public Mat imReadColor(String fileName, ImageFileAttribute.FileType fileType) {
 		String completeFilePath = FileImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
 

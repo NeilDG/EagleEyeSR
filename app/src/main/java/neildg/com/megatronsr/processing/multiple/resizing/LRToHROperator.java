@@ -44,7 +44,5 @@ public class LRToHROperator implements IOperator {
         //FileImageWriter.getInstance().saveMatrixToImage(zeroFillMat, FilenameConstants.HR_ZERO_FILL, ImageFileAttribute.FileType.JPEG);
 
         hrMat.release();
-
-        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 }

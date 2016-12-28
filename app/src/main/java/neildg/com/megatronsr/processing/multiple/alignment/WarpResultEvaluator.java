@@ -24,15 +24,13 @@ public class WarpResultEvaluator implements IOperator {
     private final static int MAX_THRESHOLD = 200000;
 
     private Mat referenceMat;
-
-    private String referenceImageName;
     private String[] warpedMatNames;
     private String[] medianAlignedNames;
 
     private String[] chosenAlignedNames; //output the chosen aligned names for mean fusion here
 
-    public WarpResultEvaluator(String referenceImageName, String[] warpedMatNames, String[] medianAlignedNames) {
-        this.referenceImageName = referenceImageName;
+    public WarpResultEvaluator(Mat referenceMat, String[] warpedMatNames, String[] medianAlignedNames) {
+        this.referenceMat = referenceMat;
         this.warpedMatNames = warpedMatNames;
         this.medianAlignedNames = medianAlignedNames;
         this.chosenAlignedNames = new String[this.warpedMatNames.length];
@@ -40,8 +38,6 @@ public class WarpResultEvaluator implements IOperator {
 
     @Override
     public void perform() {
-        this.referenceMat = FileImageReader.getInstance().imReadOpenCV(referenceImageName, ImageFileAttribute.FileType.JPEG);
-
         this.referenceMat.convertTo(this.referenceMat,  CvType.CV_16UC(this.referenceMat.channels()));
         int sobelReferenceMeasure = ImageOperator.edgeSobelMeasure(this.referenceMat, true);
 
@@ -63,7 +59,7 @@ public class WarpResultEvaluator implements IOperator {
             warpedMat.convertTo(warpedMat, CvType.CV_16UC(warpedMat.channels()));
 
             Log.e(TAG, "Reference mat type: " +CvType.typeToString(this.referenceMat.type()) + " Warped mat type: " +CvType.typeToString(warpedMat.type())
-                    + " Reference mat name: " +this.referenceImageName+ " Warped mat name: " +compareNames[i]);
+                    + " Warped mat name: " +compareNames[i]);
             Core.add(referenceMat, warpedMat, warpedMat);
 
             maskMat.release();
