@@ -27,7 +27,6 @@ import neildg.com.megatronsr.processing.multiple.enhancement.UnsharpMaskOperator
 import neildg.com.megatronsr.processing.multiple.fusion.FusionConstants;
 import neildg.com.megatronsr.processing.multiple.fusion.OptimizedMeanFusionOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
-import neildg.com.megatronsr.processing.multiple.resizing.TransferToDirOperator;
 import neildg.com.megatronsr.processing.multiple.alignment.AffineWarpingOperator;
 import neildg.com.megatronsr.processing.multiple.alignment.FeatureMatchingOperator;
 import neildg.com.megatronsr.processing.multiple.alignment.LRWarpingOperator;
@@ -55,8 +54,7 @@ public class ReleaseSRProcessor extends Thread{
         //TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
         //transferToDirOperator.perform();
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Interpolating images and extracting energy channel", 10.0f);
-        this.interpolateFirstImage();
+        ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Extracting energy channel", 10.0f);
 
         //initialize classes
         SharpnessMeasure.initialize();
@@ -94,18 +92,17 @@ public class ReleaseSRProcessor extends Thread{
         Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(BitmapURIRepository.getInstance().getNumImagesSelected(), sharpnessResult, 0.0);
         Mat[] rgbInputMatList = new Mat[inputIndices.length];
 
-        //perform unsharp masking
-        for(int i = 0; i < inputIndices.length; i++) {
-            UnsharpMaskOperator unsharpMaskOperator =  new UnsharpMaskOperator(ImageInputMap.getInputImage(inputIndices[i]));
-            unsharpMaskOperator.perform();
-
-            unsharpMaskOperator.getResult().release();
-        }
+        this.interpolateImage(sharpnessResult.getLeastIndex());
 
         int bestIndex = 0;
         //load RGB inputs
         for(int i = 0; i < inputIndices.length; i++) {
-            rgbInputMatList[i] = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(inputIndices[i]));
+            //rgbInputMatList[i] = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(inputIndices[i]));
+            //perform unsharp masking
+            inputMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(inputIndices[i]));
+            UnsharpMaskOperator unsharpMaskOperator =  new UnsharpMaskOperator(inputMat, inputIndices[i]);
+            unsharpMaskOperator.perform();
+            rgbInputMatList[i] = unsharpMaskOperator.getResult();
             if(sharpnessResult.getBestIndex() == inputIndices[i]) {
                 bestIndex = i;
             }
@@ -236,11 +233,11 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.cleanMemory();
     }
 
-    private void interpolateFirstImage() {
+    private void interpolateImage(int index) {
         boolean outputComparisons = ParameterConfig.getPrefsBoolean(ParameterConfig.DEBUGGING_FLAG_KEY, false);
 
         if(outputComparisons) {
-            Mat inputMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(0));
+            Mat inputMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(index));
 
             Mat outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
             FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
