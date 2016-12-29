@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        scaleRadioGroup.check(R.id.scale_2_btn); ParameterConfig.setScalingFactor(2);
+        scaleRadioGroup.check(R.id.scale_4_btn); ParameterConfig.setScalingFactor(4);
     }
 
     @Override

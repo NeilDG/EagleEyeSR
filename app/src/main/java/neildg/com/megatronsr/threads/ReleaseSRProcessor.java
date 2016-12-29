@@ -166,11 +166,11 @@ public class ReleaseSRProcessor extends Thread{
 
         if(warpChoice == WarpingConstants.BEST_ALIGNMENT) {
             this.performMedianAlignment(rgbInputMatList, medianResultNames);
-            this.performPerspectiveWarping(rgbInputMatList[bestIndex], succeedingMatList, succeedingMatList, warpResultnames);
+            this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList, warpResultnames);
         }
         else if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
             //perform perspective warping
-            this.performPerspectiveWarping(rgbInputMatList[bestIndex], succeedingMatList, succeedingMatList, warpResultnames);
+            this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList, warpResultnames);
         }
         else {
             this.performMedianAlignment(rgbInputMatList, medianResultNames);
@@ -331,10 +331,10 @@ public class ReleaseSRProcessor extends Thread{
             Log.d(TAG, "Best index selected for image HR: " +bestIndex);
             Mat resultMat;
             if(debugMode) {
-                resultMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + index, ImageFileAttribute.FileType.JPEG);
+                resultMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + bestIndex, ImageFileAttribute.FileType.JPEG);
             }
             else {
-                resultMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(index));
+                resultMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(bestIndex));
             }
             //no need to perform image fusion, just use the best image.
             resultMat = ImageOperator.performInterpolation(resultMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);

@@ -12,6 +12,7 @@ import neildg.com.megatronsr.io.BitmapURIRepository;
 import neildg.com.megatronsr.io.ImageFileAttribute;
 import neildg.com.megatronsr.io.FileImageReader;
 import neildg.com.megatronsr.io.FileImageWriter;
+import neildg.com.megatronsr.io.ImageInputMap;
 import neildg.com.megatronsr.model.AttributeHolder;
 import neildg.com.megatronsr.model.AttributeNames;
 import neildg.com.megatronsr.model.multiple.SharpnessMeasure;
@@ -19,6 +20,7 @@ import neildg.com.megatronsr.processing.filters.YangFilter;
 import neildg.com.megatronsr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.megatronsr.processing.imagetools.MatMemory;
 import neildg.com.megatronsr.processing.listeners.IProcessListener;
+import neildg.com.megatronsr.processing.multiple.enhancement.UnsharpMaskOperator;
 import neildg.com.megatronsr.processing.multiple.fusion.OptimizedBaseFusionOperator;
 import neildg.com.megatronsr.processing.multiple.refinement.DenoisingOperator;
 import neildg.com.megatronsr.processing.multiple.resizing.DegradationOperator;
@@ -90,8 +92,8 @@ public class DebugSRProcessor extends Thread {
         int index = sharpnessResult.getLeastIndex();
 
         //simulate degradation
-        DegradationOperator degradationOperator = new DegradationOperator();
-        degradationOperator.perform();
+        //DegradationOperator degradationOperator = new DegradationOperator();
+        //degradationOperator.perform();
 
         //reload images again. degradation has been imposed in input images.
         for(int i = 0; i < rgbInputMatList.length; i++) {
@@ -109,11 +111,15 @@ public class DebugSRProcessor extends Thread {
         Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(rgbInputMatList.length, sharpnessResult, 0.0);
         ArrayList<Mat> newInputMatList = new ArrayList<>();
         ArrayList<Integer> inputIndexList = new ArrayList<>();
-        int bestIndex = 0;
+        int bestIndex = 1;
         //refine input indices and remove ground-truth (if any).
         for(int i = 0; i < inputIndices.length; i++) {
             if(FileImageReader.getInstance().doesImageExists(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG)) {
                inputIndexList.add(inputIndices[i]);
+
+                if(sharpnessResult.getBestIndex() == inputIndices[i]) {
+                    bestIndex = inputIndices[i];
+                }
             }
         }
 
@@ -121,11 +127,10 @@ public class DebugSRProcessor extends Thread {
         //load RGB inputs
         for(int i = 0; i < inputIndices.length; i++) {
             Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (inputIndices[i]), ImageFileAttribute.FileType.JPEG);
+            /*UnsharpMaskOperator unsharpMaskOperator =  new UnsharpMaskOperator(inputMat, inputIndices[i]);
+            unsharpMaskOperator.perform();
+            newInputMatList.add(unsharpMaskOperator.getResult());*/
             newInputMatList.add(inputMat);
-
-            if(sharpnessResult.getBestIndex() == inputIndices[i]) {
-                bestIndex = newInputMatList.size() - 1;
-            }
         }
 
         rgbInputMatList = newInputMatList.toArray(new Mat[newInputMatList.size()]);
