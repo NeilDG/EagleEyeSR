@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        scaleRadioGroup.check(R.id.scale_4_btn); ParameterConfig.setScalingFactor(4);
+        scaleRadioGroup.check(R.id.scale_2_btn); ParameterConfig.setScalingFactor(2);
     }
 
     @Override
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity{
 
     private void startImagePickActivity() {
         Intent intent = new Intent(MainActivity.this, AlbumSelectActivity.class);
-        intent.putExtra(Constants.INTENT_EXTRA_LIMIT, 10);
+        intent.putExtra(Constants.INTENT_EXTRA_LIMIT, 40);
         startActivityForResult(intent, Constants.REQUEST_CODE);
     }
 

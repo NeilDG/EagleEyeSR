@@ -115,11 +115,30 @@ public class OptionsScreen extends AScreen {
         denoiseBtn.setChecked(false); //disable denoising mode by default.
 
         RadioGroup warpChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.warp_choice_radiogroup);
-        RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.best_alignment_btn);
-        warpChoiceBtn.setChecked(true);
+        int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.BEST_ALIGNMENT);
+        if(warpChoice == WarpingConstants.BEST_ALIGNMENT) {
+            RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.best_alignment_btn);
+            warpChoiceBtn.setChecked(true);
+        }
+        else if(warpChoice == WarpingConstants.MEDIAN_ALIGNMENT) {
+            RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.exposure_align_btn);
+            warpChoiceBtn.setChecked(true);
+        }
+        else if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
+            RadioButton warpChoiceBtn = (RadioButton) warpChoiceGroup.findViewById(R.id.perspective_warp_btn);
+            warpChoiceBtn.setChecked(true);
+        }
 
         RadioGroup srChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.sr_choice_radiogroup);
-        RadioButton srChoiceBtn = (RadioButton) srChoiceGroup.findViewById(R.id.sr_choice_fast_btn);
-        srChoiceBtn.setChecked(true);
+        int srChoice = ParameterConfig.getPrefsInt(ParameterConfig.SR_CHOICE_KEY, FusionConstants.FULL_SR_MODE);
+        if(srChoice == FusionConstants.FULL_SR_MODE) {
+            RadioButton srChoiceBtn = (RadioButton) srChoiceGroup.findViewById(R.id.sr_choice_full_btn);
+            srChoiceBtn.setChecked(true);
+        }
+        else {
+            RadioButton srChoiceBtn = (RadioButton) srChoiceGroup.findViewById(R.id.sr_choice_fast_btn);
+            srChoiceBtn.setChecked(true);
+        }
+
     }
 }

@@ -45,6 +45,6 @@ public class MedianAlignmentOperator implements IOperator {
             FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(i), resultNames[i - 1], ImageFileAttribute.FileType.JPEG);
         }
 
-        //AttributeHolder.getSharedInstance().putValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, processMatList.size() - 1);
+        AttributeHolder.getSharedInstance().putValue(AttributeNames.WARPED_IMAGES_LENGTH_KEY, processMatList.size() - 1);
     }
 }
