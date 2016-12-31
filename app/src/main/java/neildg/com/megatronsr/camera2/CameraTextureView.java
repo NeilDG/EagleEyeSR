@@ -77,7 +77,7 @@ public class CameraTextureView implements TextureView.SurfaceTextureListener {
 
     }
 
-    public void updateAspectRatio(Size size) {
+    private void updateAspectRatio(Size size) {
 
         ViewGroup.LayoutParams currentParams = this.textureView.getLayoutParams();
 
@@ -91,13 +91,46 @@ public class CameraTextureView implements TextureView.SurfaceTextureListener {
 
     public void updateToOptimalSize(Size[] sizes) {
         Log.d(TAG, "Texture view size: " +this.textureView.getWidth() + " X " +this.textureView.getHeight());
-        Size optimalSize = getOptimalPreviewSize(sizes, this.textureView.getHeight(), this.textureView.getWidth());
+        Size optimalSize =getOptimalPreviewSize(sizes, 0.5625, this.textureView.getWidth());
         this.updateAspectRatio(optimalSize);
     }
 
+
     public static Size getOptimalPreviewSize(Size[] sizes, int w, int h) {
-        final double ASPECT_TOLERANCE = 0.1;
+        final double ASPECT_TOLERANCE = 0.001;
         double targetRatio=(double)w / h;
+
+        if (sizes == null) return null;
+
+        Size optimalSize = null;
+        double minDiff = Double.MAX_VALUE;
+
+        int targetHeight = h;
+
+        for (Size size : sizes) {
+            Log.d(TAG, "Size: " +size.toString());
+            double ratio = (double) size.getWidth() / size.getHeight();
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+            if (Math.abs(size.getHeight() - targetHeight) < minDiff) {
+                optimalSize = size;
+                minDiff = Math.abs(size.getHeight() - targetHeight);
+            }
+        }
+
+        if (optimalSize == null) {
+            minDiff = Double.MAX_VALUE;
+            for (Size size : sizes) {
+                if (Math.abs(size.getHeight() - targetHeight) < minDiff) {
+                    optimalSize = size;
+                    minDiff = Math.abs(size.getHeight() - targetHeight);
+                }
+            }
+        }
+        return optimalSize;
+    }
+
+    public static Size getOptimalPreviewSize(Size[] sizes, double targetRatio, int h) {
+        final double ASPECT_TOLERANCE = 0.001;
 
         if (sizes == null) return null;
 

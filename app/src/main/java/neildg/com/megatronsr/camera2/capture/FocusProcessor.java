@@ -62,6 +62,8 @@ public class FocusProcessor extends CameraCaptureSession.CaptureCallback {
     public void initiatePreview() {
         try {
             this.captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO); //set auto mode
+            this.captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START); //trigger Auto-focus algorithm
+            this.captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON); //triger auto-exposure
             this.captureSession.setRepeatingRequest(captureRequestBuilder.build(), null, this.backgroundTheadHandler);
         } catch(CameraAccessException  e) {
             e.printStackTrace();
@@ -120,7 +122,9 @@ public class FocusProcessor extends CameraCaptureSession.CaptureCallback {
             MeteringRectangle[] regionRectList = new MeteringRectangle[1];
             regionRectList[0] = new MeteringRectangle(new Point(x,y), new Size(450,450), MeteringRectangle.METERING_WEIGHT_MAX);
 
+            this.captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO); //set auto mode
             this.captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START); //trigger Auto-focus algorithm
+            this.captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON); //triger auto-exposure
             this.captureRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS, regionRectList);
             this.captureSession.setRepeatingRequest(captureRequestBuilder.build(), this, this.backgroundTheadHandler);
             this.autoFocusTriggered = true;

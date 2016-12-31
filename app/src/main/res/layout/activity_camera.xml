@@ -17,8 +17,8 @@
             android:layout_alignParentTop="false"
             android:layout_alignParentStart="false"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent" />
+            android:background="@android:color/transparent"
+            android:layout_height="wrap_content" />
 
         <neildg.com.megatronsr.camera2.CameraDrawableView
             android:layout_width="match_parent"

@@ -259,11 +259,11 @@ public class ReleaseSRProcessor extends Thread{
         }
     }
 
-    public static String[] assessImageWarpResults(int index, int alignmentUsed, String[] warpedImageNames, String[] medianAlignedNames, boolean debug) {
+    public static String[] assessImageWarpResults(int index, int alignmentUsed, String[] warpedImageNames, String[] medianAlignedNames, boolean useLocalDir) {
         if(alignmentUsed == WarpingConstants.BEST_ALIGNMENT) {
             Mat referenceMat;
 
-            if(debug) {
+            if(useLocalDir) {
                 referenceMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + index, ImageFileAttribute.FileType.JPEG);
             }
             else {
