@@ -3,9 +3,12 @@
  */
 package neildg.com.megatronsr.io;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -13,6 +16,8 @@ import org.opencv.imgcodecs.Imgcodecs;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import neildg.com.megatronsr.constants.BuildMode;
 
@@ -30,6 +35,7 @@ public class FileImageWriter {
 	}
 	
 	public final static String ALBUM_NAME_PREFIX = "/SR";
+	public final static String ALBUM_EXTERNAL_NAME = "EagleEye Results";
 
 	private Context context;
 	private String proposedPath;
@@ -136,6 +142,37 @@ public class FileImageWriter {
 		Imgcodecs.imwrite(imageFile.getAbsolutePath(), mat);
 
 		//Log.d(TAG, "Saved " + imageFile.getAbsolutePath());
+	}
+
+	public synchronized void saveHRResultToUserDir(Mat mat, ImageFileAttribute.FileType fileType) {
+		File albumDir = this.getAlbumStorageDir(ALBUM_EXTERNAL_NAME);
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+		String timeStamp = dateFormat.format(new Date());
+		String imageFileName = "EagleEyeHD_" + timeStamp;
+
+		File imageFile = new File(albumDir.getPath(), imageFileName + ImageFileAttribute.getFileExtension(fileType));
+		Imgcodecs.imwrite(imageFile.getAbsolutePath(), mat);
+
+		final String message = "Super HD image saved at: " +imageFile.getPath();
+
+		Activity activity = (Activity) this.context;
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+			}
+		});
+
+	}
+
+	private File getAlbumStorageDir(String albumName) {
+		// Get the directory for the app's private pictures directory.
+		File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), albumName);
+		if (!file.mkdirs()) {
+			Log.e(TAG, "Directory not created");
+		}
+		return file;
 	}
 
 	public synchronized void deleteImage(String fileName, ImageFileAttribute.FileType fileType) {

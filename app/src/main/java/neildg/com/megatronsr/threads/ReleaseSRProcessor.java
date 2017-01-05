@@ -54,7 +54,7 @@ public class ReleaseSRProcessor extends Thread{
         //TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
         //transferToDirOperator.perform();
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Extracting energy channel", 10.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Analyzing images", 10.0f);
 
         //initialize classes
         SharpnessMeasure.initialize();
@@ -76,7 +76,7 @@ public class ReleaseSRProcessor extends Thread{
 
         }
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Assessing sharpness measure of images", 15.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Analyzing images", 15.0f);
 
         //extract features
         YangFilter yangFilter = new YangFilter(energyInputMatList);
@@ -189,7 +189,7 @@ public class ReleaseSRProcessor extends Thread{
             medianAlignedNames[i] = FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + i;
         }
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Refining image warping results", 70.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Aligning images", 70.0f);
         String[] alignedImageNames = assessImageWarpResults(inputIndices[0], warpChoice, warpedImageNames, medianAlignedNames, debug);
 
         MatMemory.cleanMemory();
@@ -295,11 +295,11 @@ public class ReleaseSRProcessor extends Thread{
     }
 
     private void performPerspectiveWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList, String[] resultNames) {
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing feature matching against first image", 40.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Aligning images", 40.0f);
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(referenceMat, candidateMatList);
         matchingOperator.perform();
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing image warping", 50.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Aligning images", 50.0f);
 
         LRWarpingOperator perspectiveWarpOperator = new LRWarpingOperator(matchingOperator.getRefKeypoint(), imagesToWarpList, resultNames, matchingOperator.getdMatchesList(), matchingOperator.getLrKeypointsList());
         perspectiveWarpOperator.perform();
@@ -316,7 +316,7 @@ public class ReleaseSRProcessor extends Thread{
     }
 
     private void performMedianAlignment(Mat[] imagesToAlignList, String[] resultNames) {
-        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Performing exposure alignment", 30.0f);
+        ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Aligning images", 60.0f);
         //perform exposure alignment
         MedianAlignmentOperator medianAlignmentOperator = new MedianAlignmentOperator(imagesToAlignList, resultNames);
         medianAlignmentOperator.perform();
@@ -360,6 +360,7 @@ public class ReleaseSRProcessor extends Thread{
             OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(inputMat, imagePathList.toArray(new String[imagePathList.size()]));
             fusionOperator.perform();
             FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveHRResultToUserDir(fusionOperator.getResult(), ImageFileAttribute.FileType.JPEG);
 
             fusionOperator.getResult().release();
         }
