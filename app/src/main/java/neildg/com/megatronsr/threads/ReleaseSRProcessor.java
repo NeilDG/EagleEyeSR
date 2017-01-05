@@ -97,12 +97,12 @@ public class ReleaseSRProcessor extends Thread{
         int bestIndex = 0;
         //load RGB inputs
         for(int i = 0; i < inputIndices.length; i++) {
-            //rgbInputMatList[i] = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(inputIndices[i]));
+            rgbInputMatList[i] = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(inputIndices[i]));
             //perform unsharp masking
-            inputMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(inputIndices[i]));
+            /*inputMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(inputIndices[i]));
             UnsharpMaskOperator unsharpMaskOperator =  new UnsharpMaskOperator(inputMat, inputIndices[i]);
             unsharpMaskOperator.perform();
-            rgbInputMatList[i] = unsharpMaskOperator.getResult();
+            rgbInputMatList[i] = unsharpMaskOperator.getResult();*/
             if(sharpnessResult.getBestIndex() == inputIndices[i]) {
                 bestIndex = i;
             }
@@ -163,6 +163,9 @@ public class ReleaseSRProcessor extends Thread{
         for(int i = 0; i < medianResultNames.length; i++) {
             warpResultnames[i] = FilenameConstants.WARP_PREFIX + i;
         }
+
+        //AffineWarpingOperator affineWarpingOperator = new AffineWarpingOperator(rgbInputMatList[0], succeedingMatList, succeedingMatList);
+        //affineWarpingOperator.perform();
 
         if(warpChoice == WarpingConstants.BEST_ALIGNMENT) {
             this.performMedianAlignment(rgbInputMatList, medianResultNames);

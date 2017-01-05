@@ -96,6 +96,20 @@ public class ImageOperator {
         return baseMaskMat;
     }
 
+    public static void testLaplacian(Mat inputMat, boolean applyBlur) {
+        Mat referenceMat = new Mat(); inputMat.copyTo(referenceMat);
+        Mat laplaceMat = new Mat();
+
+        if(applyBlur) {
+            Imgproc.blur(referenceMat, referenceMat, new Size(3,3));
+        }
+
+        Imgproc.Laplacian(referenceMat, laplaceMat, CvType.CV_16S);
+        laplaceMat.convertTo(laplaceMat, CvType.CV_8U);
+
+        FileImageWriter.getInstance().saveMatrixToImage(laplaceMat, "laplace_sample", ImageFileAttribute.FileType.JPEG);
+    }
+
     /*
      * Performs an edge sobel measure by counting the non-zero elements produced by getting the sobel derivatives of an image in X and  Y axis.
      * Creates a copy of the input mat for temporary processing.

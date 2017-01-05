@@ -16,6 +16,7 @@ public class FilenameConstants {
     public final static String HR_ITERATION_PREFIX_STRING = "hr_initial_";
 
     public final static String WARP_PREFIX = "warp_";
+    public final static String AFFINE_WARP_PREFIX = "affine_warp_";
     public final static String MEDIAN_ALIGNMENT_PREFIX = "median_align_";
 
     public final static String EDGE_DIRECTORY_PREFIX = "YangEdges";
