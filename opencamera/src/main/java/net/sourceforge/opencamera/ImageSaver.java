@@ -1,6 +1,7 @@
 package net.sourceforge.opencamera;
 
 import net.sourceforge.opencamera.CameraController.CameraController;
+import net.sourceforge.opencamera.external_bridge.ImageSaveBroadcaster;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -189,12 +190,14 @@ public class ImageSaver extends Thread {
 					if( MyDebug.LOG )
 						Log.e(TAG, "request is unknown type!");
 				}
-				if( MyDebug.LOG ) {
-					if( success )
-						Log.d(TAG, "ImageSaver thread successfully saved image");
-					else
-						Log.e(TAG, "ImageSaver thread failed to save image");
+
+				if( success ) {
+					Log.d(TAG, "ImageSaver thread successfully saved image");
+					ImageSaveBroadcaster.getSharedInstance().broadcastEvent();
 				}
+				else
+					Log.e(TAG, "ImageSaver thread failed to save image");
+				
 				synchronized( this ) {
 					n_images_to_save--;
 					if( MyDebug.LOG )
