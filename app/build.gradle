@@ -12,11 +12,11 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.1"
     defaultConfig {
-        applicationId "neildg.com.megatronsr"
+        applicationId 'neildg.com.eagleeyesr'
         minSdkVersion 21
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0"
+        versionName '01.00.00'
         signingConfig signingConfigs.config
         vectorDrawables.useSupportLibrary = true
         ndk {

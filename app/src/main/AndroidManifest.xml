@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="neildg.com.megatronsr">
+    package="neildg.com.eagleeyesr">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -26,7 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="neildg.com.eagleeyesr.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="sensorLandscape">
             <intent-filter>
@@ -36,21 +36,21 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ProcessingActivityDebug"
+            android:name="neildg.com.eagleeyesr.ProcessingActivityDebug"
             android:label="Process Images"
             android:screenOrientation="sensorLandscape" />
         <activity
-            android:name=".ProcessingActivityRelease"
+            android:name="neildg.com.eagleeyesr.ProcessingActivityRelease"
             android:label="Process Images"
             android:screenOrientation="sensorLandscape" />
         <activity
-            android:name=".MeanFusionActivity"
+            android:name="neildg.com.eagleeyesr.MeanFusionActivity"
             android:process=":mean_fusion_process" />
         <activity
-            android:name=".CameraActivity"
+            android:name="neildg.com.eagleeyesr.CameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
-        <activity android:name=".ImageViewActivity"
+        <activity android:name="neildg.com.eagleeyesr.ImageViewActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             android:screenOrientation="sensorLandscape"></activity>
         <activity

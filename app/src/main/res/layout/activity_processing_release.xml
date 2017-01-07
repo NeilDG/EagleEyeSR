@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="neildg.com.megatronsr.ProcessingActivityRelease">
+    tools:context="neildg.com.eagleeyesr.ProcessingActivityRelease">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,54 +42,24 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Perform SR"
+        android:text="Create Super HD"
         android:id="@+id/perform_sr_btn"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:textSize="20sp" />
 
-        <LinearLayout
-            android:orientation="vertical"
+        <Button
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Processing Settings"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="0dp"
-                android:layout_marginBottom="0dp" />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Settings"
-                android:id="@+id/settings_btn"/>
-
-        </LinearLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="144dp">
-
-        <TextView
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="View Image Results"
-            android:id="@+id/textView6"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="0dp"
-            android:layout_marginBottom="0dp" />
+            android:text="Settings"
+            android:id="@+id/settings_btn"
+            android:textSize="14sp" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Image Viewer"
-            android:id="@+id/image_results_view_btn" />
-
-    </LinearLayout>
+            android:id="@+id/image_results_view_btn"
+            android:textSize="14sp" />
 
     </LinearLayout>
 
