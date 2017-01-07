@@ -757,7 +757,7 @@ public class DrawPreview {
 			}
 		}
 
-		if( sharedPreferences.getBoolean(PreferenceKeys.getShowBatteryPreferenceKey(), true) ) {
+		/*if( sharedPreferences.getBoolean(PreferenceKeys.getShowBatteryPreferenceKey(), true) ) {
 			if( !this.has_battery_frac || System.currentTimeMillis() > this.last_battery_time + 60000 ) {
 				// only check periodically - unclear if checking is costly in any way
 				// note that it's fine to call registerReceiver repeatedly - we pass a null receiver, so this is fine as a "one shot" use
@@ -799,7 +799,7 @@ public class DrawPreview {
 				p.setStyle(Paint.Style.FILL);
 				canvas.drawRect(battery_x+1, battery_y+1+(1.0f-battery_frac)*(battery_height-2), battery_x+battery_width-1, battery_y+battery_height-1, p);
 			}
-		}
+		}*/
 		
 		boolean store_location = sharedPreferences.getBoolean(PreferenceKeys.getLocationPreferenceKey(), false);
 		if( store_location ) {
@@ -831,7 +831,7 @@ public class DrawPreview {
 			}
 		}
 		
-		if( sharedPreferences.getBoolean(PreferenceKeys.getShowTimePreferenceKey(), true) ) {
+		/*if( sharedPreferences.getBoolean(PreferenceKeys.getShowTimePreferenceKey(), true) ) {
 			p.setTextSize(14 * scale + 0.5f); // convert dps to pixels
 			p.setTextAlign(Paint.Align.LEFT);
 			int location_x = (int) (50 * scale + 0.5f); // convert dps to pixels
@@ -888,7 +888,7 @@ public class DrawPreview {
 			if( free_memory_gb >= 0.0f ) {
 				applicationInterface.drawTextWithBackground(canvas, p, getContext().getResources().getString(R.string.free_memory) + ": " + decimalFormat.format(free_memory_gb) + getContext().getResources().getString(R.string.gb_abbreviation), Color.WHITE, Color.BLACK, location_x, location_y, true);
 			}
-		}
+		}*/
 
 		canvas.restore();
 		

@@ -220,8 +220,8 @@ public class CameraActivity extends AppCompatActivity implements ICameraTextureV
 
         //create container for processing queue view
         ProgressBar processingQueueBar = (ProgressBar) this.findViewById(R.id.processing_bar);
-        this.processingQueueScreen = new ProcessingQueueScreen((ViewStub)this.findViewById(R.id.processing_queue_stub), false,
-                processingQueueBar, this);
+        View processingQueueView = this.findViewById(R.id.processing_queue_layout);
+        this.processingQueueScreen = new ProcessingQueueScreen(processingQueueView, processingQueueBar, this);
         this.processingQueueScreen.initialize();
 
     }

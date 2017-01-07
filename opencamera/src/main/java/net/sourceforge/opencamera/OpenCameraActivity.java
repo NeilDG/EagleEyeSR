@@ -314,7 +314,7 @@ public class OpenCameraActivity extends Activity implements AudioListener.AudioL
 			Log.d(TAG, "onCreate: time after setting immersive mode listener: " + (System.currentTimeMillis() - debug_time));
 
 		// show "about" dialog for first time use; also set some per-device defaults
-		boolean has_done_first_time = sharedPreferences.contains(PreferenceKeys.getFirstTimePreferenceKey());
+		/*boolean has_done_first_time = sharedPreferences.contains(PreferenceKeys.getFirstTimePreferenceKey());
 		if( !has_done_first_time ) {
 			setDeviceDefaults();
 		}
@@ -326,7 +326,7 @@ public class OpenCameraActivity extends Activity implements AudioListener.AudioL
             alertDialog.show();
 
             setFirstTimeFlag();
-        }
+        }*/
 
         // load icons
         preloadIcons(R.array.flash_icons);

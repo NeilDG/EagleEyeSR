@@ -127,7 +127,7 @@
         android:contentDescription="@string/switch_to_video"
         android:src="@drawable/switch_video"
         android:onClick="clickedSwitchVideo"
-        />
+        android:visibility="gone" />
 
     <ImageButton
         android:id="@+id/switch_camera"
@@ -292,6 +292,44 @@
         android:id="@+id/hide_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        >
+    </ScrollView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+        <!--<Button
+            android:text="MODE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_mode"
+            android:elevation="0dp"
+            android:textStyle="normal|bold"
+            android:layout_marginTop="20dp"
+            android:textSize="15sp"
+            android:layout_marginStart="20dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />-->
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_height="50dp"
+            android:id="@+id/processing_bar"
+            android:layout_width="50dp"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="14dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/opencamera_overlay_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         />
-    
+
 </RelativeLayout>

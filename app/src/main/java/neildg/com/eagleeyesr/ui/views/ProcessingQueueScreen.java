@@ -25,7 +25,7 @@ import neildg.com.eagleeyesr.ui.elements.ImageDetailElement;
  * Created by NeilDG on 12/3/2016.
  */
 
-public class ProcessingQueueScreen extends AViewStubScreen implements NotificationListener {
+public class ProcessingQueueScreen extends AScreen implements NotificationListener {
     private final static String TAG = "ProcessingQueueScreen";
 
     private ProgressBar processingBar;
@@ -34,8 +34,8 @@ public class ProcessingQueueScreen extends AViewStubScreen implements Notificati
     private ProcessingQueueAdapter arrayAdapter;
     private ListView listView;
 
-    public ProcessingQueueScreen(ViewStub viewStub, boolean makeVisible, ProgressBar progressBar, Activity holdingActivity) {
-        super(viewStub, makeVisible);
+    public ProcessingQueueScreen(View view, ProgressBar progressBar, Activity holdingActivity) {
+        super(view);
         this.activity = holdingActivity;
         this.processingBar = progressBar;
         this.processingBar.setVisibility(View.INVISIBLE);

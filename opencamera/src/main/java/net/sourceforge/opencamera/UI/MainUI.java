@@ -233,6 +233,7 @@ public class MainUI {
 			layoutParams.addRule(right_of, 0);
 			view.setLayoutParams(layoutParams);
 			setViewRotation(view, ui_rotation);
+			view.setVisibility(View.GONE);
 	
 			view = main_activity.findViewById(R.id.switch_camera);
 			layoutParams = (RelativeLayout.LayoutParams)view.getLayoutParams();
@@ -469,6 +470,7 @@ public class MainUI {
 
 			view = (ImageButton)main_activity.findViewById(R.id.switch_video);
 			view.setContentDescription( main_activity.getResources().getString(switch_video_content_description) );
+			view.setVisibility(View.GONE);
 		}
     }
 
@@ -536,7 +538,7 @@ public class MainUI {
 					Log.d(TAG, "setImmersiveMode: set visibility: " + visibility);
 		    	// n.b., don't hide share and trash buttons, as they require immediate user input for us to continue
 			    View switchCameraButton = main_activity.findViewById(R.id.switch_camera);
-			    View switchVideoButton = main_activity.findViewById(R.id.switch_video);
+			    View switchVideoButton = main_activity.findViewById(R.id.switch_video); switchVideoButton.setVisibility(View.GONE);
 			    View exposureButton = main_activity.findViewById(R.id.exposure);
 			    View exposureLockButton = main_activity.findViewById(R.id.exposure_lock);
 			    View audioControlButton = main_activity.findViewById(R.id.audio_control);
@@ -617,6 +619,8 @@ public class MainUI {
 			    }
 			    if( !main_activity.getPreview().isVideo() || !main_activity.getPreview().supportsFlash() )
 			    	popupButton.setVisibility(visibility); // still allow popup in order to change flash mode when recording video
+
+				switchVideoButton.setVisibility(View.GONE);
 			}
 		});
     }
