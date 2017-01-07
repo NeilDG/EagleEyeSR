@@ -17,6 +17,8 @@ import com.darsh.multipleimageselect.activities.AlbumSelectActivity;
 import com.darsh.multipleimageselect.helpers.Constants;
 import com.darsh.multipleimageselect.models.Image;
 
+import net.sourceforge.opencamera.OpenCameraActivity;
+
 import org.opencv.android.*;
 
 import java.io.File;
@@ -123,7 +125,7 @@ public class MainActivity extends AppCompatActivity{
         captureImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent cameraIntent = new Intent(MainActivity.this, CameraActivity.class);
+                Intent cameraIntent = new Intent(MainActivity.this, OpenCameraActivity.class);
                 startActivity(cameraIntent);
             }
         });
@@ -189,7 +191,7 @@ public class MainActivity extends AppCompatActivity{
 
         //TODO: temporarily disable functionalities
         scale4Btn.setEnabled(false);
-        captureImageBtn.setEnabled(false);
+        //captureImageBtn.setEnabled(false);
     }
 
     @Override
