@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity{
 
         //TODO: temporarily disable functionalities
         scale4Btn.setEnabled(false);
-        //captureImageBtn.setEnabled(false);
+        captureImageBtn.setEnabled(false);
     }
 
     @Override
@@ -204,13 +204,13 @@ public class MainActivity extends AppCompatActivity{
                 imageURIList.add(Uri.fromFile(new File(images.get(i).path)));
             }
 
-            if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE && imageURIList.size() > 1) {
+            if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE && imageURIList.size() >= 3) {
                 Log.v("LOG_TAG", "Selected Images " + imageURIList.size());
                 BitmapURIRepository.getInstance().setImageURIList(imageURIList);
                 this.moveToProcessingActivity();
             }
-            else if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE && imageURIList.size() < 1) {
-                Toast.makeText(this, "You haven't picked enough images. Pick multiple similar images.",
+            else if(ParameterConfig.getCurrentTechnique() == ParameterConfig.SRTechnique.MULTIPLE && imageURIList.size() < 3) {
+                Toast.makeText(this, "You haven't picked enough images. Pick multiple similar images. At least 3.",
                         Toast.LENGTH_LONG).show();
             }
         }
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity{
 
     private void startImagePickActivity() {
         Intent intent = new Intent(MainActivity.this, AlbumSelectActivity.class);
-        intent.putExtra(Constants.INTENT_EXTRA_LIMIT, 40);
+        intent.putExtra(Constants.INTENT_EXTRA_LIMIT, 10);
         startActivityForResult(intent, Constants.REQUEST_CODE);
     }
 
