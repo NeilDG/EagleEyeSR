@@ -76,15 +76,11 @@ public class FeatureMatchingOperator {
         Mat matchesShower = new Mat();
 
         for(int i = 0; i < comparingMatList.length; i++) {
-            Mat comparingMat = this.comparingMatList[i];
-
-            //ProgressDialogHandler.getInstance().showDialog("Matching features for image " +i, "Matching features in image " +i+ " to reference image.");
+            //Mat comparingMat = this.comparingMatList[i];
             this.matchFeaturesToReference(this.lrDescriptorList[i],i);
 
-            Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
-            FileImageWriter.getInstance().debugSaveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
-
-            //ProgressDialogHandler.getInstance().hideDialog();
+            //Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
+            //FileImageWriter.getInstance().debugSaveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
         }
 
         MatMemory.releaseAll(this.lrDescriptorList, false);

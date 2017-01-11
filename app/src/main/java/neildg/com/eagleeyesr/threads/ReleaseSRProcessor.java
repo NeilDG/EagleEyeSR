@@ -6,6 +6,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
@@ -14,6 +15,8 @@ import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.io.ImageInputMap;
+import neildg.com.eagleeyesr.metrics.TimeMeasure;
+import neildg.com.eagleeyesr.metrics.TimeMeasureManager;
 import neildg.com.eagleeyesr.model.AttributeHolder;
 import neildg.com.eagleeyesr.model.AttributeNames;
 import neildg.com.eagleeyesr.model.multiple.SharpnessMeasure;
@@ -23,6 +26,7 @@ import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
 import neildg.com.eagleeyesr.processing.imagetools.MatMemory;
 import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
 import neildg.com.eagleeyesr.processing.multiple.alignment.MedianAlignmentOperator;
+import neildg.com.eagleeyesr.processing.multiple.assessment.InputImageEnergyReader;
 import neildg.com.eagleeyesr.processing.multiple.enhancement.UnsharpMaskOperator;
 import neildg.com.eagleeyesr.processing.multiple.fusion.FusionConstants;
 import neildg.com.eagleeyesr.processing.multiple.fusion.OptimizedMeanFusionOperator;
@@ -49,6 +53,9 @@ public class ReleaseSRProcessor extends Thread{
     @Override
     public void run() {
 
+        TimeMeasure srTimeMeasure = TimeMeasureManager.getInstance().newTimeMeasure(TimeMeasureManager.MEASURE_SR_TIME);
+        srTimeMeasure.timeStart();
+
         ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Creating backup copy for processing.", 0.0f);
 
         //TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
@@ -59,11 +66,28 @@ public class ReleaseSRProcessor extends Thread{
         //initialize classes
         SharpnessMeasure.initialize();
 
-        //load images and use Y channel as input for succeeding operators
         Mat[] energyInputMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected()];
-        Mat inputMat = null;
+        InputImageEnergyReader[] energyReaders = new InputImageEnergyReader[energyInputMatList.length];
+        //load images and use Y channel as input for succeeding operators
+        try {
+            Semaphore energySem = new Semaphore(energyInputMatList.length);
+            for(int i = 0; i < energyReaders.length; i++) {
+                energyReaders[i] = new InputImageEnergyReader(energySem, ImageInputMap.getInputImage(i));
+                energyReaders[i].startWork();
+            }
 
-        for(int i = 0; i < energyInputMatList.length; i++) {
+            energySem.acquire(energyInputMatList.length);
+            for(int i = 0; i < energyReaders.length; i++) {
+                energyInputMatList[i] = energyReaders[i].getOutputMat();
+            }
+
+
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Mat inputMat = null;
+        /*for(int i = 0; i < energyInputMatList.length; i++) {
             inputMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(i));
             inputMat = ImageOperator.downsample(inputMat, 0.125f); //downsample
 
@@ -73,8 +97,7 @@ public class ReleaseSRProcessor extends Thread{
             energyInputMatList[i] = yuvMat[ColorSpaceOperator.Y_CHANNEL];
 
             inputMat.release();
-
-        }
+        }*/
 
         ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Analyzing images", 15.0f);
 
@@ -112,6 +135,9 @@ public class ReleaseSRProcessor extends Thread{
 
         this.performActualSuperres(rgbInputMatList, inputIndices, bestIndex, false);
         this.processListener.onProcessCompleted();
+
+        srTimeMeasure.timeEnd();
+        Log.d(TAG,"Total processing time is " +TimeMeasureManager.convertDeltaToString(srTimeMeasure.getDeltaDifference()));
     }
 
     public void performActualSuperres(Mat[] rgbInputMatList, Integer[] inputIndices, int bestIndex, boolean debugMode) {
