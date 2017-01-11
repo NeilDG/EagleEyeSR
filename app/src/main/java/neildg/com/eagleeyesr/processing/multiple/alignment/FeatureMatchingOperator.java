@@ -79,7 +79,6 @@ public class FeatureMatchingOperator {
             Mat comparingMat = this.comparingMatList[i];
 
             //ProgressDialogHandler.getInstance().showDialog("Matching features for image " +i, "Matching features in image " +i+ " to reference image.");
-            ProgressDialogHandler.getInstance().updateProgress(ProgressDialogHandler.getInstance().getProgress() + 5.0f);
             this.matchFeaturesToReference(this.lrDescriptorList[i],i);
 
             Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
