@@ -34,7 +34,7 @@ public class UnsharpMaskOperator implements IOperator {
         this.outputMat = new Mat();
         Imgproc.blur(this.inputMat, blurMat, new Size(25,25));
 
-        Core.addWeighted(this.inputMat, 1.5, blurMat, -0.5, 0, this.outputMat, CvType.CV_8UC(this.inputMat.channels()));
+        Core.addWeighted(this.inputMat, 1.75, blurMat, -0.75, 0, this.outputMat, CvType.CV_8UC(this.inputMat.channels()));
         FileImageWriter.getInstance().debugSaveMatrixToImage(this.outputMat, FilenameConstants.INPUT_PREFIX_SHARPEN_STRING + index, ImageFileAttribute.FileType.JPEG);
 
         blurMat.release();
