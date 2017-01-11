@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="MultipleImageSelect-v0.0.4">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.darsh2/MultipleImageSelect/v0.0.4/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.darsh2/MultipleImageSelect/v0.0.4/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
