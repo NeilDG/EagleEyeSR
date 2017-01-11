@@ -63,7 +63,7 @@ public class OptimizedMeanFusionOperator implements IOperator {
             Mat maskMat = ImageOperator.produceMask(this.initialMat);
 
             Core.add(sumMat, this.initialMat, sumMat, maskMat, CvType.CV_16UC(this.initialMat.channels()));
-            Core.divide(sumMat, Scalar.all(2), sumMat);
+            //Core.divide(sumMat, Scalar.all(2), sumMat);
 
             Log.d(TAG, "sumMat size: " +sumMat.size().toString());
             //sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
@@ -72,6 +72,8 @@ public class OptimizedMeanFusionOperator implements IOperator {
             this.initialMat.release();
             maskMat.release();
         }
+
+        Core.divide(sumMat, Scalar.all(this.imageMatPathList.length + 1), sumMat);
 
         sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
         sumMat.release();
