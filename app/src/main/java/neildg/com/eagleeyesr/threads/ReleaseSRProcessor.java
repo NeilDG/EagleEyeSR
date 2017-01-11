@@ -352,7 +352,6 @@ public class ReleaseSRProcessor extends Thread{
 
     private void performMeanFusion(int index, int bestIndex, String[] alignedImageNames, boolean debugMode) {
 
-
         if(alignedImageNames.length == 1) {
             Log.d(TAG, "Best index selected for image HR: " +bestIndex);
             Mat resultMat;

@@ -186,8 +186,8 @@ public class FileImageWriter {
 		imageFile.delete();
 	}
 
-	public synchronized void recreateDirectory() {
-		File dirFile = new File(this.proposedPath);
+	public static synchronized void recreateDirectory(String path) {
+		File dirFile = new File(path);
 		deleteRecursive(dirFile);
 
 		if(dirFile.mkdirs() == false) {
@@ -195,7 +195,12 @@ public class FileImageWriter {
 		}
 	}
 
-	private void deleteRecursive(File fileOrDirectory) {
+	public synchronized void deleteWorkspace() {
+		File dirFile = new File(this.proposedPath);
+		deleteRecursive(dirFile);
+	}
+
+	private static void deleteRecursive(File fileOrDirectory) {
 		if (fileOrDirectory.isDirectory())
 			for (File child : fileOrDirectory.listFiles())
 				deleteRecursive(child);

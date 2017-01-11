@@ -1,11 +1,13 @@
 package neildg.com.eagleeyesr.camera2.capture;
 
+import android.annotation.TargetApi;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.media.ImageReader;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.util.Size;
@@ -52,6 +54,7 @@ public class CaptureProcessor{
         this.backgroundTheadHandler = backgroundTheadHandler;
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setup(CameraDevice cameraDevice, Size imageResolution, Size thumbnailSize, CameraUserSettings.CameraType cameraType) {
         this.cameraDevice = cameraDevice;
         this.imageResolution = imageResolution;
@@ -73,6 +76,7 @@ public class CaptureProcessor{
     /*
      * Performs the capture based from the capture requests created in sequence. This is performed in the background thread.
      */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void performCapture(int sensorRotation) {
         if(this.setupCalled == false) {
             Log.e(TAG, "Setup function was not called!");
@@ -142,6 +146,7 @@ public class CaptureProcessor{
         this.outputSurfaces.clear();
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public void cleanup() {
         if(this.setupCalled) {
             //this.stopBackgroundThread();

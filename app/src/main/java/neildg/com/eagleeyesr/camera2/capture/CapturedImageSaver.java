@@ -1,7 +1,9 @@
 package neildg.com.eagleeyesr.camera2.capture;
 
+import android.annotation.TargetApi;
 import android.media.Image;
 import android.media.ImageReader;
+import android.os.Build;
 import android.util.Log;
 
 import java.io.File;
@@ -22,6 +24,7 @@ import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
  * Created by NeilDG on 11/19/2016.
  */
 
+@TargetApi(Build.VERSION_CODES.KITKAT)
 public class CapturedImageSaver implements ImageReader.OnImageAvailableListener {
 
     private final static String TAG = "CapturedImageSaver";

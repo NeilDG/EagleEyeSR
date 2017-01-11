@@ -104,6 +104,11 @@ public class MainActivity extends AppCompatActivity{
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
         ProgressDialogHandler.destroy();
         FileImageWriter.destroy();

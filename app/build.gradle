@@ -13,7 +13,7 @@ android {
     buildToolsVersion "24.0.1"
     defaultConfig {
         applicationId 'neildg.com.eagleeyesr'
-        minSdkVersion 21
+        minSdkVersion 17
         targetSdkVersion 22
         versionCode 1
         versionName '01.00.00'

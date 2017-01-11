@@ -39,12 +39,17 @@ public class DirectoryStorage {
 
     private void identifyDir() {
         //identify directory index first
-        while(this.isAlbumDirExisting(this.startingAlbum)) {
+        /*while(this.isAlbumDirExisting(this.startingAlbum)) {
             this.startingAlbum++;
         }
-
         //create path
+        this.refreshProposedPath(); */
+
+
         this.refreshProposedPath();
+        if(this.isAlbumDirExisting(this.startingAlbum)) {
+            FileImageWriter.recreateDirectory(this.proposedPath);
+        }
     }
 
     public void createDirectory() {

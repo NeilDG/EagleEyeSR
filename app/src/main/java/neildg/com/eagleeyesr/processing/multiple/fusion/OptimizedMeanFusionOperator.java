@@ -10,6 +10,7 @@ import org.opencv.imgproc.Imgproc;
 
 import neildg.com.eagleeyesr.constants.ParameterConfig;
 import neildg.com.eagleeyesr.io.FileImageReader;
+import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.processing.IOperator;
 import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
@@ -50,6 +51,9 @@ public class OptimizedMeanFusionOperator implements IOperator {
         for(int i = 0; i < this.imageMatPathList.length; i++) {
             //load second mat
             this.initialMat = FileImageReader.getInstance().imReadOpenCV(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
+            //delete file. no longer needed.
+            FileImageWriter.getInstance().deleteImage(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
+
             Log.d(TAG, "Initial image for fusion. Name: "+this.imageMatPathList[i] + " Size:" +this.initialMat.size() + " Scale: " +scale);
 
             ProgressDialogHandler.getInstance().updateProgress(ProgressDialogHandler.getInstance().getProgress() + 5.0f);

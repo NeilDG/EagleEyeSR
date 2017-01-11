@@ -11,6 +11,7 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.io.FileImageReader;
+import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 
 public class ImageViewActivity extends AppCompatActivity {
@@ -43,6 +44,11 @@ public class ImageViewActivity extends AppCompatActivity {
         RadioGroup radioGroup = (RadioGroup) this.findViewById(R.id.image_view_radio_group);
         RadioButton cubicBtn = (RadioButton) radioGroup.findViewById(R.id.cubic_radio_btn);
         cubicBtn.setChecked(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     private void loadImageView() {
