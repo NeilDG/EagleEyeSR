@@ -101,6 +101,9 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
         this.processingQueueScreen = new ProcessingQueueScreen(processingQueueView, processingQueueBar, this);
         this.processingQueueScreen.initialize();
         this.processingQueueScreen.hide();
+
+        ProgressBar captureProgressBar = (ProgressBar) this.findViewById(R.id.capture_progress_bar);
+        captureProgressBar.setVisibility(View.GONE);
     }
 
     private void initializeButtons() {
@@ -148,7 +151,10 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
     @Override
     public void clickedTakePhoto(View view) {
         super.clickedTakePhoto(view);
-        Toast.makeText(this, "Taking 10 pictures. Keep device steady.",Toast.LENGTH_SHORT).show();
+
+        ProgressBar captureProgressBar = (ProgressBar) this.findViewById(R.id.capture_progress_bar);
+        captureProgressBar.setVisibility(View.VISIBLE);
+        Toast.makeText(this, "Taking 10 pictures. Keep device steady.",Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -167,6 +173,9 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
     }
 
     private void initiateSequential() {
+        ProgressBar captureProgressBar = (ProgressBar) this.findViewById(R.id.capture_progress_bar);
+        captureProgressBar.setVisibility(View.GONE);
+
         ImageInputMap.setImagePath(ProcessingQueue.getInstance().getAllImages());
         Intent previewIntent = new Intent(NewCameraActivity.this,ProcessingFromCamActivity.class);
         startActivity(previewIntent);

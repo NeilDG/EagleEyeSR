@@ -33,15 +33,15 @@
         />
 
     <SeekBar
-        android:id="@+id/zoom_seekbar"
-        android:contentDescription="@string/zoom"
-        android:layout_width="150dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp"
-        />
+    android:id="@+id/zoom_seekbar"
+    android:contentDescription="@string/zoom"
+    android:layout_width="150dp"
+    android:layout_height="50dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="0dp"
+    android:layout_marginBottom="0dp"
+    />
 
     <SeekBar
         android:id="@+id/focus_seekbar"
@@ -333,6 +333,14 @@
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
             android:layout_alignStart="@+id/processing_bar" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_height="50dp"
+            android:id="@+id/capture_progress_bar"
+            android:layout_width="50dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
 
