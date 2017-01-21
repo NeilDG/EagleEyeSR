@@ -66,7 +66,7 @@ public class ReleaseSRProcessor extends Thread{
         //initialize classes
         SharpnessMeasure.initialize();
 
-        Mat[] energyInputMatList = new Mat[BitmapURIRepository.getInstance().getNumImagesSelected()];
+        Mat[] energyInputMatList = new Mat[ImageInputMap.numImages()];
         InputImageEnergyReader[] energyReaders = new InputImageEnergyReader[energyInputMatList.length];
         //load images and use Y channel as input for succeeding operators
         try {
@@ -112,7 +112,7 @@ public class ReleaseSRProcessor extends Thread{
         SharpnessMeasure.SharpnessResult sharpnessResult = SharpnessMeasure.getSharedInstance().measureSharpness(yangFilter.getEdgeMatList());
 
         //trim the input list from the measured sharpness mean
-        Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(BitmapURIRepository.getInstance().getNumImagesSelected(), sharpnessResult, 0.0);
+        Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(ImageInputMap.numImages(), sharpnessResult, 0.0);
         Mat[] rgbInputMatList = new Mat[inputIndices.length];
 
         this.interpolateImage(sharpnessResult.getLeastIndex());

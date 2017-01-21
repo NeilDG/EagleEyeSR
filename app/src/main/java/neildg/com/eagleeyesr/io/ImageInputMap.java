@@ -28,9 +28,20 @@ public class ImageInputMap {
         }
     }
 
+    public static void setImagePath(String[] imageList) {
+        sharedInstance.imagePath.clear();
+        for(int i = 0; i < imageList.length; i++) {
+            sharedInstance.imagePath.add(imageList[i]);
+        }
+    }
+
     public static String getInputImage(int index) {
         Log.d(TAG, "Selected  path: " +sharedInstance.imagePath.get(index));
         return sharedInstance.imagePath.get(index);
+    }
+
+    public static int numImages() {
+        return sharedInstance.imagePath.size();
     }
 
 }

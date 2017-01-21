@@ -71,6 +71,15 @@ public class ProcessingQueue {
         }
     }
 
+    public String[] getAllImages() {
+        String[] imageList = new String[this.inputQueue.size()];
+        for(int i = 0; i < imageList.length; i++) {
+            imageList[i] = this.dequeueImageName();
+        }
+
+        return imageList;
+    }
+
     public boolean hasElements() {
         return this.inputQueue.size() > 0;
     }

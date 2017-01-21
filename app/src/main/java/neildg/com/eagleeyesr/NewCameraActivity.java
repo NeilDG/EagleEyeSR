@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import net.sourceforge.opencamera.OpenCameraActivity;
 import net.sourceforge.opencamera.external_bridge.IEvent;
@@ -20,6 +21,7 @@ import net.sourceforge.opencamera.external_bridge.ImageSaveBroadcaster;
 import neildg.com.eagleeyesr.camera2.CameraUserSettings;
 import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
+import neildg.com.eagleeyesr.io.ImageInputMap;
 import neildg.com.eagleeyesr.pipeline.ProcessingQueue;
 import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
 import neildg.com.eagleeyesr.platformtools.notifications.NotificationListener;
@@ -144,9 +146,9 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
     }
 
     @Override
-    public void clickedGallery(View view) {
-        Intent previewIntent = new Intent(NewCameraActivity.this,ImageViewActivity.class);
-        startActivity(previewIntent);
+    public void clickedTakePhoto(View view) {
+        super.clickedTakePhoto(view);
+        Toast.makeText(this, "Taking 10 pictures. Keep device steady.",Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -155,17 +157,29 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
             @Override
             public void run() {
                 ProcessingQueue.getInstance().enqueueImageName(absolutePath);
-                ImageButton imageButton = (ImageButton) NewCameraActivity.this.findViewById(R.id.btn_image_preview);
-                Bitmap thumbnailBmp = FileImageReader.getInstance().loadAbsoluteBitmapThumbnail(ProcessingQueue.getInstance().getLatestImageName(), 300, 300);
+
+                if(ProcessingQueue.getInstance().getInputLength() == 10) {
+                    NewCameraActivity.this.initiateSequential();
+                }
+            }
+        });
+
+    }
+
+    private void initiateSequential() {
+        ImageInputMap.setImagePath(ProcessingQueue.getInstance().getAllImages());
+        Intent previewIntent = new Intent(NewCameraActivity.this,ProcessingFromCamActivity.class);
+        startActivity(previewIntent);
+    }
+
+    private void initiatePipeline() {
+         ImageButton imageButton = (ImageButton) NewCameraActivity.this.findViewById(R.id.btn_image_preview);
+            Bitmap thumbnailBmp = FileImageReader.getInstance().loadAbsoluteBitmapThumbnail(ProcessingQueue.getInstance().getLatestImageName(), 300, 300);
                 imageButton.setImageBitmap(thumbnailBmp);
                 imageButton.setVisibility(View.VISIBLE);
                 imageButton.setEnabled(true);
 
                 NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_ENQUEUED);
                 NotificationCenter.getInstance().postNotification(Notifications.ON_SR_AWAKE);
-            }
-        });
-
-
     }
 }
