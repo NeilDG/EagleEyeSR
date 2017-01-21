@@ -7,6 +7,7 @@ import org.opencv.core.DMatch;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfKeyPoint;
+import org.opencv.core.Scalar;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
@@ -76,11 +77,11 @@ public class FeatureMatchingOperator {
         Mat matchesShower = new Mat();
 
         for(int i = 0; i < comparingMatList.length; i++) {
-            //Mat comparingMat = this.comparingMatList[i];
+            Mat comparingMat = this.comparingMatList[i];
             this.matchFeaturesToReference(this.lrDescriptorList[i],i);
 
-            //Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
-            //FileImageWriter.getInstance().debugSaveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
+            Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
+            FileImageWriter.getInstance().debugSaveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
         }
 
         MatMemory.releaseAll(this.lrDescriptorList, false);
@@ -105,6 +106,12 @@ public class FeatureMatchingOperator {
 
         this.lrKeypointsList[index] = refKeypoint;
         this.lrDescriptorList[index] = lrDescriptor;
+
+        Mat drawingMat = new Mat();
+        Features2d.drawKeypoints(imgMat, refKeypoint, drawingMat, new Scalar(0.0,255.0,0.0), Features2d.DRAW_RICH_KEYPOINTS);
+        FileImageWriter.getInstance().debugSaveMatrixToImage(drawingMat, "keypoint_" +index, ImageFileAttribute.FileType.JPEG);
+
+        drawingMat.release();
     }
 
     private void matchFeaturesToReference(Mat comparingDescriptor, int index) {

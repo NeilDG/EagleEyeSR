@@ -52,7 +52,7 @@ public class OptimizedMeanFusionOperator implements IOperator {
             //load second mat
             this.initialMat = FileImageReader.getInstance().imReadOpenCV(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
             //delete file. no longer needed.
-            FileImageWriter.getInstance().deleteImage(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
+            //FileImageWriter.getInstance().deleteImage(this.imageMatPathList[i], ImageFileAttribute.FileType.JPEG);
 
             Log.d(TAG, "Initial image for fusion. Name: "+this.imageMatPathList[i] + " Size:" +this.initialMat.size() + " Scale: " +scale);
 

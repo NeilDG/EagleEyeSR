@@ -33,9 +33,14 @@ public class MedianAlignmentOperator implements IOperator {
         AlignMTB mtbAligner = Photo.createAlignMTB();
 
         List<Mat> processMatList = Arrays.asList(this.imageSequenceList);
-        mtbAligner.process(processMatList, processMatList);
 
-        //FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(0), FilenameConstants.INPUT_PREFIX_STRING + this.inputIndex, ImageFileAttribute.FileType.JPEG);
+        Mat tbMat = new Mat(); Mat ebMat = new Mat();
+        mtbAligner.setExcludeRange(30);
+        mtbAligner.computeBitmaps(processMatList.get(0),tbMat, ebMat);
+        FileImageWriter.getInstance().debugSaveMatrixToImage(tbMat, "tb_image", ImageFileAttribute.FileType.JPEG);
+        FileImageWriter.getInstance().debugSaveMatrixToImage(ebMat, "eb_image", ImageFileAttribute.FileType.JPEG);
+
+        mtbAligner.process(processMatList, processMatList);
 
         for(int i = 1; i < processMatList.size(); i++) {
             //FileImageWriter.getInstance().saveMatrixToImage(processMatList.get(i), FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + (i-1), ImageFileAttribute.FileType.JPEG);

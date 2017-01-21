@@ -40,7 +40,6 @@ public class WarpResultEvaluator implements IOperator {
     public void perform() {
         this.referenceMat.convertTo(this.referenceMat,  CvType.CV_16UC(this.referenceMat.channels()));
         int sobelReferenceMeasure = ImageOperator.edgeSobelMeasure(this.referenceMat, true, "test_sobel");
-        ImageOperator.testLaplacian(this.referenceMat, true);
 
         int[] warpedDifferenceList = this.measureDifference(this.referenceMat, sobelReferenceMeasure, this.warpedMatNames);
         int[] medianDifferenceList = this.measureDifference(this.referenceMat, sobelReferenceMeasure, this.medianAlignedNames);
