@@ -360,6 +360,12 @@ public class OpenCameraActivity extends Activity implements AudioListener.AudioL
 
 		if( MyDebug.LOG )
 			Log.d(TAG, "onCreate: total time for Activity startup: " + (System.currentTimeMillis() - debug_time));
+
+		//Add burst mode preference since it's SR
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putString(PreferenceKeys.getBurstModePreferenceKey(), "10");
+		editor.apply();
 	}
 
 	/* This method sets the preference defaults which are set specific for a particular device.

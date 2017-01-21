@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity{
 
         //TODO: temporarily disable functionalities
         scale4Btn.setEnabled(false);
-        captureImageBtn.setEnabled(false);
+        //captureImageBtn.setEnabled(false);
     }
 
     @Override

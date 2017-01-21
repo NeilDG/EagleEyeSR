@@ -113,6 +113,16 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
 
         ImageButton imagePreviewBtn = (ImageButton) this.findViewById(R.id.gallery);
         imagePreviewBtn.setVisibility(View.GONE); //show the image thumbnail when the HD image is available
+
+        ImageButton imageButton = (ImageButton) NewCameraActivity.this.findViewById(R.id.btn_image_preview);
+        imageButton.setVisibility(View.GONE);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent previewIntent = new Intent(NewCameraActivity.this,ImageViewActivity.class);
+                startActivity(previewIntent);
+            }
+        });
     }
 
     private void filterUneededViews() {
@@ -140,19 +150,22 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
     }
 
     @Override
-    public void onReceivedEvent() {
+    public void onReceivedEvent(final String absolutePath) {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
+                ProcessingQueue.getInstance().enqueueImageName(absolutePath);
                 ImageButton imageButton = (ImageButton) NewCameraActivity.this.findViewById(R.id.btn_image_preview);
-                Bitmap thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(ProcessingQueue.getInstance().getLatestImageName(), ImageFileAttribute.FileType.JPEG, 300, 300);
+                Bitmap thumbnailBmp = FileImageReader.getInstance().loadAbsoluteBitmapThumbnail(ProcessingQueue.getInstance().getLatestImageName(), 300, 300);
                 imageButton.setImageBitmap(thumbnailBmp);
+                imageButton.setVisibility(View.VISIBLE);
                 imageButton.setEnabled(true);
+
+                NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_ENQUEUED);
+                NotificationCenter.getInstance().postNotification(Notifications.ON_SR_AWAKE);
             }
         });
 
-        NotificationCenter.getInstance().postNotification(Notifications.ON_IMAGE_ENQUEUED);
-        NotificationCenter.getInstance().postNotification(Notifications.ON_SR_AWAKE);
+
     }
 }

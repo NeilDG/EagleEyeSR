@@ -34,9 +34,9 @@ public class ImageSaveBroadcaster implements IBroadcaster {
     }
 
     @Override
-    public void broadcastEvent() {
+    public void broadcastEvent(String absolutePath) {
         for(int i = 0; i < this.eventList.size(); i++) {
-            this.eventList.get(i).onReceivedEvent();
+            this.eventList.get(i).onReceivedEvent(absolutePath);
         }
     }
 }

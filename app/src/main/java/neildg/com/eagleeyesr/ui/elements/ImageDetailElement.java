@@ -25,7 +25,8 @@ public class ImageDetailElement{
     public void setup(String inputImageName) {
         this.imageName = inputImageName;
 
-        this.thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(this.imageName, ImageFileAttribute.FileType.JPEG, 70, 70);
+        //this.thumbnailBmp = FileImageReader.getInstance().loadBitmapThumbnail(this.imageName, ImageFileAttribute.FileType.JPEG, 70, 70);
+        this.thumbnailBmp = FileImageReader.getInstance().loadAbsoluteBitmapThumbnail(this.imageName, 70, 70);
         Log.d(TAG, "Queue: Thumbnail bmp details: " +this.imageName);
 
     }

@@ -6,5 +6,5 @@ package net.sourceforge.opencamera.external_bridge;
  */
 
 public interface IBroadcaster {
-    void broadcastEvent();
+    void broadcastEvent(String absolutePath);
 }
