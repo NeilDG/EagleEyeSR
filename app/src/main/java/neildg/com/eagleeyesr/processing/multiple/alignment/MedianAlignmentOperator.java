@@ -37,8 +37,6 @@ public class MedianAlignmentOperator implements IOperator {
         Mat tbMat = new Mat(); Mat ebMat = new Mat();
         mtbAligner.setExcludeRange(30);
         mtbAligner.computeBitmaps(processMatList.get(0),tbMat, ebMat);
-        FileImageWriter.getInstance().debugSaveMatrixToImage(tbMat, "tb_image", ImageFileAttribute.FileType.JPEG);
-        FileImageWriter.getInstance().debugSaveMatrixToImage(ebMat, "eb_image", ImageFileAttribute.FileType.JPEG);
 
         mtbAligner.process(processMatList, processMatList);
 
