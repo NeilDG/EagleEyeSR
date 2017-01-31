@@ -64,6 +64,9 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
 
         ProgressDialogHandler.initialize(this);
         ImageSaveBroadcaster.getSharedInstance().addEvent(this);
+
+        ImageButton takePhotoBtn = (ImageButton) this.findViewById(R.id.take_photo);
+        takePhotoBtn.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -154,6 +157,10 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
 
         ProgressBar captureProgressBar = (ProgressBar) this.findViewById(R.id.capture_progress_bar);
         captureProgressBar.setVisibility(View.VISIBLE);
+
+        ImageButton takePhotoBtn = (ImageButton) this.findViewById(R.id.take_photo);
+        takePhotoBtn.setVisibility(View.GONE);
+
         Toast.makeText(this, "Taking 10 pictures. Keep device steady.",Toast.LENGTH_LONG).show();
     }
 
