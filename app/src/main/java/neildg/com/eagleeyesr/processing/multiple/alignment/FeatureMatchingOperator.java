@@ -107,11 +107,11 @@ public class FeatureMatchingOperator {
         this.lrKeypointsList[index] = refKeypoint;
         this.lrDescriptorList[index] = lrDescriptor;
 
-        Mat drawingMat = new Mat();
+        /*Mat drawingMat = new Mat();
         Features2d.drawKeypoints(imgMat, refKeypoint, drawingMat, new Scalar(0.0,255.0,0.0), Features2d.DRAW_RICH_KEYPOINTS);
         FileImageWriter.getInstance().debugSaveMatrixToImage(drawingMat, "keypoint_" +index, ImageFileAttribute.FileType.JPEG);
 
-        drawingMat.release();
+        drawingMat.release();*/
     }
 
     private void matchFeaturesToReference(Mat comparingDescriptor, int index) {

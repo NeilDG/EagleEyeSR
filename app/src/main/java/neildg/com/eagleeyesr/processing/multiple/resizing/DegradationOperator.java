@@ -18,23 +18,22 @@ import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
 public class DegradationOperator implements IOperator{
     private final static String TAG = "BlurImposeOperator";
 
+    private Mat[] inputMatList;
 
-    public DegradationOperator() {
-
+    public DegradationOperator(Mat[] rgbInputMatList) {
+        this.inputMatList = rgbInputMatList;
     }
 
     @Override
     public void perform() {
-        int numImages = BitmapURIRepository.getInstance().getNumImagesSelected();
-
         ProgressDialogHandler.getInstance().showProcessDialog("Debugging", "Imposing degradation operators", ProgressDialogHandler.getInstance().getProgress());
 
-        for(int i = 0; i < numImages; i++) {
-            Mat inputMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
+        for(int i = 0; i < this.inputMatList.length; i++) {
+            Mat inputMat =  this.inputMatList[i];
             //Imgproc.blur(inputMat, inputMat, new Size(5,5));
             inputMat = ImageOperator.induceNoise(inputMat);
             FileImageWriter.getInstance().saveMatrixToImage(inputMat, FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
-            inputMat.release();
+            //inputMat.release();
         }
     }
 }

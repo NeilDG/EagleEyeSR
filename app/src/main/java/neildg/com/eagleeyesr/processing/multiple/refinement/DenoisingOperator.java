@@ -5,6 +5,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfFloat;
 import org.opencv.photo.Photo;
 
+import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.processing.IOperator;
@@ -33,7 +34,7 @@ public class DenoisingOperator implements IOperator{
             //perform denoising on energy channel only
             Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(this.matList[i]);
             Mat denoisedMat = new Mat();
-            MatOfFloat h = new MatOfFloat(3.0f);
+            MatOfFloat h = new MatOfFloat(6.0f);
             Photo.fastNlMeansDenoising(yuvMat[ColorSpaceOperator.Y_CHANNEL], denoisedMat, h, 7, 21, Core.NORM_L1);
 
             FileImageWriter.getInstance().saveMatrixToImage(yuvMat[ColorSpaceOperator.Y_CHANNEL], "noise_" +i, ImageFileAttribute.FileType.JPEG);
@@ -44,6 +45,7 @@ public class DenoisingOperator implements IOperator{
             yuvMat[ColorSpaceOperator.Y_CHANNEL] = denoisedMat;
 
             this.outputMatList[i] = ColorSpaceOperator.convertYUVtoRGB(yuvMat);
+            FileImageWriter.getInstance().saveMatrixToImage(this.outputMatList[i], FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
 
             /*Mat denoisedMat = new Mat();
             Photo.fastNlMeansDenoisingColored(this.matList[i], denoisedMat, 3, 0, 7, 21);

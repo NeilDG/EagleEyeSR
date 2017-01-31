@@ -366,7 +366,7 @@ public class ReleaseSRProcessor extends Thread{
             }
             //no need to perform image fusion, just use the best image.
             resultMat = ImageOperator.performInterpolation(resultMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-            FileImageWriter.getInstance().saveMatrixToImage(resultMat, FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(resultMat, FilenameConstants.HR_SUPERRES+"_denoise", ImageFileAttribute.FileType.JPEG);
 
             resultMat.release();
         }
@@ -387,7 +387,7 @@ public class ReleaseSRProcessor extends Thread{
 
             OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(inputMat, imagePathList.toArray(new String[imagePathList.size()]));
             fusionOperator.perform();
-            FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES+"_denoise", ImageFileAttribute.FileType.JPEG);
             FileImageWriter.getInstance().saveHRResultToUserDir(fusionOperator.getResult(), ImageFileAttribute.FileType.JPEG);
 
             fusionOperator.getResult().release();

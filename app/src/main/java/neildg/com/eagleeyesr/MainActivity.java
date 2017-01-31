@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity{
                 }
                 else if(checkedId == R.id.scale_4_btn) {
                     //Toast.makeText(MainActivity.this, "4x scale", Toast.LENGTH_SHORT).show();
-                    //ParameterConfig.setScalingFactor(4);
+                    ParameterConfig.setScalingFactor(4);
                 }
             }
         });
@@ -191,11 +191,11 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        scaleRadioGroup.check(R.id.scale_2_btn); ParameterConfig.setScalingFactor(2);
+        scaleRadioGroup.check(R.id.scale_4_btn); ParameterConfig.setScalingFactor(4);
         RadioButton scale4Btn = (RadioButton) scaleRadioGroup.findViewById(R.id.scale_4_btn);
 
         //TODO: temporarily disable functionalities
-        scale4Btn.setEnabled(false);
+        //scale4Btn.setEnabled(false);
         captureImageBtn.setEnabled(false);
     }
 

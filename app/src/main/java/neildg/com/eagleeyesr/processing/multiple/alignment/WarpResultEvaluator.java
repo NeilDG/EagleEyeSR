@@ -64,7 +64,7 @@ public class WarpResultEvaluator implements IOperator {
 
             maskMat.release();
 
-            warpedDifferenceList[i] = ImageOperator.edgeSobelMeasure(warpedMat, true) - referenceSobelMeasure;
+            warpedDifferenceList[i] = ImageOperator.edgeSobelMeasure(warpedMat, true, "sobel_" +i) - referenceSobelMeasure;
             Log.d(TAG, "Non zero elems in difference mat for "+compareNames[i]+ " : " +warpedDifferenceList[i]);
 
             warpedMat.release();

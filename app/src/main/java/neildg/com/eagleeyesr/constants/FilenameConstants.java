@@ -7,6 +7,7 @@ package neildg.com.eagleeyesr.constants;
 public class FilenameConstants {
     public final static  String GROUND_TRUTH_PREFIX_STRING = "groundtruth_";
     public final static String INPUT_PREFIX_STRING = "input_";
+    public final static String NOISE_PREFIX_STRING = "input_noise_";
     public final static String INPUT_PREFIX_SHARPEN_STRING = "sharpen_";
 
     public final static String HR_NEAREST = "nearest";

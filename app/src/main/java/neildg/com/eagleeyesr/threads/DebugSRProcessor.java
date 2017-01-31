@@ -3,19 +3,24 @@ package neildg.com.eagleeyesr.threads;
 import android.util.Log;
 
 import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 
 import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
 import neildg.com.eagleeyesr.io.BitmapURIRepository;
+import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.model.multiple.SharpnessMeasure;
 import neildg.com.eagleeyesr.processing.filters.YangFilter;
 import neildg.com.eagleeyesr.processing.imagetools.ColorSpaceOperator;
+import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
 import neildg.com.eagleeyesr.processing.imagetools.MatMemory;
 import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
+import neildg.com.eagleeyesr.processing.multiple.refinement.DenoisingOperator;
+import neildg.com.eagleeyesr.processing.multiple.resizing.DegradationOperator;
 import neildg.com.eagleeyesr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.eagleeyesr.processing.multiple.selection.TestImagesSelector;
 import neildg.com.eagleeyesr.processing.multiple.resizing.LRToHROperator;
@@ -71,28 +76,30 @@ public class DebugSRProcessor extends Thread {
         testImagesSelector.perform();
         rgbInputMatList = testImagesSelector.getProposedList();
 
-        /*int index = 0;
-        for(int i = 0; i < BitmapURIRepository.getInstance().getNumImagesSelected(); i++) {
-            index = i;
-            if(FileImageReader.getInstance().doesImageExists(FilenameConstants.INPUT_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG)) {
-                break;
-            }
-        }*/
 
         int index = sharpnessResult.getLeastIndex();
 
         //simulate degradation
-        //DegradationOperator degradationOperator = new DegradationOperator();
-        //degradationOperator.perform();
+        DegradationOperator degradationOperator = new DegradationOperator(rgbInputMatList);
+        degradationOperator.perform();
 
         //reload images again. degradation has been imposed in input images.
         for(int i = 0; i < rgbInputMatList.length; i++) {
             rgbInputMatList[i] = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (i), ImageFileAttribute.FileType.JPEG);
         }
 
+        ProgressDialogHandler.getInstance().showProcessDialog("Denoising images", "Denoising.", 0.0f);
+
+        DenoisingOperator denoisingOperator = new DenoisingOperator(rgbInputMatList);
+        denoisingOperator.perform();
+        rgbInputMatList = denoisingOperator.getResult();
+
+        Mat cubicMat = ImageOperator.performInterpolation(rgbInputMatList[0], 4, Imgproc.INTER_CUBIC);
+        FileImageWriter.getInstance().saveMatrixToImage(cubicMat, "cubic_denoise", ImageFileAttribute.FileType.JPEG);
+
         Log.d(TAG, "Index for interpolation: " +index);
-        LRToHROperator lrToHROperator = new LRToHROperator(FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (index), ImageFileAttribute.FileType.JPEG), index);
-        lrToHROperator.perform();
+        //LRToHROperator lrToHROperator = new LRToHROperator(FileImageReader.getInstance().imReadOpenCV(FilenameConstants.INPUT_PREFIX_STRING + (index), ImageFileAttribute.FileType.JPEG), index);
+        //lrToHROperator.perform();
 
         //remeasure sharpness result without the image ground-truth
         sharpnessResult = SharpnessMeasure.getSharedInstance().measureSharpness(testImagesSelector.getProposedEdgeList());
