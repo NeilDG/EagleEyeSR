@@ -193,7 +193,6 @@ public class ImageSaver extends Thread {
 
 				if( success ) {
 					Log.d(TAG, "ImageSaver thread successfully saved image");
-					ImageSaveBroadcaster.getSharedInstance().broadcastEvent();
 				}
 				else
 					Log.e(TAG, "ImageSaver thread failed to save image");
@@ -1337,6 +1336,7 @@ public class ImageSaver extends Thread {
 		    bitmap = null;
         }
 
+		ImageSaveBroadcaster.getSharedInstance().broadcastEvent(picFile.getAbsolutePath());
         if( picFile != null && saveUri != null ) {
     		if( MyDebug.LOG )
     			Log.d(TAG, "delete temp picFile: " + picFile);
@@ -1348,7 +1348,7 @@ public class ImageSaver extends Thread {
         }
         
         System.gc();
-        
+
 		main_activity.savingImage(false);
 
 		if( MyDebug.LOG ) {
