@@ -54,6 +54,14 @@ public class ReleaseSRProcessor extends Thread{
     public void run() {
 
         TimeMeasure srTimeMeasure = TimeMeasureManager.getInstance().newTimeMeasure(TimeMeasureManager.MEASURE_SR_TIME);
+        TimeMeasure edgeDetectionMeasure = TimeMeasureManager.getInstance().newTimeMeasure(TimeMeasureManager.EDGE_DETECTION_TIME);
+        TimeMeasure selectionMeasure = TimeMeasureManager.getInstance().newTimeMeasure(TimeMeasureManager.IMAGE_SELECTION_TIME);
+        TimeMeasure sharpeningMeasure = TimeMeasureManager.getInstance().newTimeMeasure(TimeMeasureManager.SHARPENING_TIME);
+        TimeMeasure denoisingMeasure = TimeMeasureManager.getInstance().newTimeMeasure(TimeMeasureManager.DENOISING_TIME);
+        TimeMeasure imageAlignmentMeasure = TimeMeasureManager.getInstance().newTimeMeasure(TimeMeasureManager.IMAGE_ALIGNMENT_TIME);
+        TimeMeasure alignmentSelectMeasure = TimeMeasureManager.getInstance().newTimeMeasure(TimeMeasureManager.ALIGNMENT_SELECTION_TIME);
+        TimeMeasure fusionMeasuure = TimeMeasureManager.getInstance().newTimeMeasure(TimeMeasureManager.IMAGE_FUSION_TIME);
+
         srTimeMeasure.timeStart();
 
         ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Creating backup copy for processing.", 0.0f);
@@ -65,6 +73,7 @@ public class ReleaseSRProcessor extends Thread{
 
         //initialize classes
         SharpnessMeasure.initialize();
+        edgeDetectionMeasure.timeStart();
 
         Mat[] energyInputMatList = new Mat[ImageInputMap.numImages()];
         InputImageEnergyReader[] energyReaders = new InputImageEnergyReader[energyInputMatList.length];
@@ -86,18 +95,6 @@ public class ReleaseSRProcessor extends Thread{
             e.printStackTrace();
         }
 
-        Mat inputMat = null;
-        /*for(int i = 0; i < energyInputMatList.length; i++) {
-            inputMat = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(i));
-            inputMat = ImageOperator.downsample(inputMat, 0.125f); //downsample
-
-            FileImageWriter.getInstance().debugSaveMatrixToImage(inputMat, "downsample_"+i, ImageFileAttribute.FileType.JPEG);
-
-            Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(inputMat);
-            energyInputMatList[i] = yuvMat[ColorSpaceOperator.Y_CHANNEL];
-
-            inputMat.release();
-        }*/
 
         ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Analyzing images", 15.0f);
 
@@ -105,9 +102,12 @@ public class ReleaseSRProcessor extends Thread{
         YangFilter yangFilter = new YangFilter(energyInputMatList);
         yangFilter.perform();
 
+        edgeDetectionMeasure.timeEnd();
+
         //release energy input mat list
         MatMemory.releaseAll(energyInputMatList, false);
 
+        selectionMeasure.timeStart();
         //remeasure sharpness result without the image ground-truth
         SharpnessMeasure.SharpnessResult sharpnessResult = SharpnessMeasure.getSharedInstance().measureSharpness(yangFilter.getEdgeMatList());
 
@@ -115,10 +115,15 @@ public class ReleaseSRProcessor extends Thread{
         Integer[] inputIndices = SharpnessMeasure.getSharedInstance().trimMatList(ImageInputMap.numImages(), sharpnessResult, 0.0);
         Mat[] rgbInputMatList = new Mat[inputIndices.length];
 
+        selectionMeasure.timeEnd();
+
+
         this.interpolateImage(sharpnessResult.getLeastIndex());
 
         int bestIndex = 0;
         //load RGB inputs
+        Mat inputMat;
+        sharpeningMeasure.timeStart();
         for(int i = 0; i < inputIndices.length; i++) {
             //rgbInputMatList[i] = FileImageReader.getInstance().imReadFullPath(ImageInputMap.getInputImage(inputIndices[i]));
             //perform unsharp masking
@@ -130,7 +135,7 @@ public class ReleaseSRProcessor extends Thread{
                 bestIndex = i;
             }
         }
-
+        sharpeningMeasure.timeEnd();
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length+ " Best index: " +bestIndex);
 
         this.performActualSuperres(rgbInputMatList, inputIndices, bestIndex, false);
@@ -138,11 +143,20 @@ public class ReleaseSRProcessor extends Thread{
 
         srTimeMeasure.timeEnd();
         Log.d(TAG,"Total processing time is " +TimeMeasureManager.convertDeltaToString(srTimeMeasure.getDeltaDifference()));
+        Log.d(TAG, "Edge Detection time: " +TimeMeasureManager.convertDeltaToString(edgeDetectionMeasure.getDeltaDifference()));
+        Log.d(TAG, "Image Selection time: " +TimeMeasureManager.convertDeltaToSeconds(selectionMeasure.getDeltaDifference()));
+        Log.d(TAG, "Denoising time: " +TimeMeasureManager.convertDeltaToString(denoisingMeasure.getDeltaDifference()));
+        Log.d(TAG, "Image Sharpening time: " +TimeMeasureManager.convertDeltaToString(sharpeningMeasure.getDeltaDifference()));
+        Log.d(TAG, "Image Alignment time: " +TimeMeasureManager.convertDeltaToString(imageAlignmentMeasure.getDeltaDifference()));
+        Log.d(TAG, "Alignment Selection time: " +TimeMeasureManager.convertDeltaToString(alignmentSelectMeasure.getDeltaDifference()));
+        Log.d(TAG, "Image Fusion time: " +TimeMeasureManager.convertDeltaToString(fusionMeasuure.getDeltaDifference()));
     }
 
     public void performActualSuperres(Mat[] rgbInputMatList, Integer[] inputIndices, int bestIndex, boolean debugMode) {
         boolean performDenoising = ParameterConfig.getPrefsBoolean(ParameterConfig.DENOISE_FLAG_KEY, false);
 
+        TimeMeasure denoisingMeasure = TimeMeasureManager.getInstance().getTimeMeasure(TimeMeasureManager.DENOISING_TIME);
+        denoisingMeasure.timeStart();
         if(performDenoising) {
             ProgressDialogHandler.getInstance().showProcessDialog("Denoising", "Performing denoising", 15.0f);
 
@@ -156,6 +170,7 @@ public class ReleaseSRProcessor extends Thread{
         else {
             Log.d(TAG, "Denoising will be skipped!");
         }
+        denoisingMeasure.timeEnd();
 
 
         int srChoice = ParameterConfig.getPrefsInt(ParameterConfig.SR_CHOICE_KEY, FusionConstants.FULL_SR_MODE);
@@ -190,6 +205,8 @@ public class ReleaseSRProcessor extends Thread{
             warpResultnames[i] = FilenameConstants.WARP_PREFIX + i;
         }
 
+        TimeMeasure alignmentMeasure = TimeMeasureManager.getInstance().getTimeMeasure(TimeMeasureManager.IMAGE_ALIGNMENT_TIME);
+        alignmentMeasure.timeStart();
         if(warpChoice == WarpingConstants.BEST_ALIGNMENT) {
             this.performMedianAlignment(rgbInputMatList, medianResultNames);
             this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList, warpResultnames);
@@ -201,6 +218,7 @@ public class ReleaseSRProcessor extends Thread{
         else {
             this.performMedianAlignment(rgbInputMatList, medianResultNames);
         }
+        alignmentMeasure.timeEnd();
 
         //deallocate some classes
         SharpnessMeasure.destroy();
@@ -215,13 +233,18 @@ public class ReleaseSRProcessor extends Thread{
             medianAlignedNames[i] = FilenameConstants.MEDIAN_ALIGNMENT_PREFIX + i;
         }
 
+        TimeMeasure alignSelectMeasure = TimeMeasureManager.getInstance().getTimeMeasure(TimeMeasureManager.ALIGNMENT_SELECTION_TIME);
+        alignSelectMeasure.timeStart();
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Aligning images", 60.0f);
         String[] alignedImageNames = assessImageWarpResults(inputIndices[0], warpChoice, warpedImageNames, medianAlignedNames, debug);
-
+        alignSelectMeasure.timeEnd();
         MatMemory.cleanMemory();
 
+        TimeMeasure fusionMeasure = TimeMeasureManager.getInstance().getTimeMeasure(TimeMeasureManager.IMAGE_FUSION_TIME);
+        fusionMeasure.timeStart();
         ProgressDialogHandler.getInstance().showProcessDialog("Image fusion", "Performing image fusion", 70.0f);
         this.performMeanFusion(inputIndices[0], bestIndex, alignedImageNames, debug);
+        fusionMeasure.timeEnd();
 
         ProgressDialogHandler.getInstance().showProcessDialog("Image fusion", "Performing image fusion", 100.0f);
         try {

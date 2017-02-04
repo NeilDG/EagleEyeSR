@@ -33,7 +33,7 @@ public class DenoisingOperator implements IOperator{
             //perform denoising on energy channel only
             Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(this.matList[i]);
             Mat denoisedMat = new Mat();
-            MatOfFloat h = new MatOfFloat(3.0f);
+            MatOfFloat h = new MatOfFloat(6.0f);
             Photo.fastNlMeansDenoising(yuvMat[ColorSpaceOperator.Y_CHANNEL], denoisedMat, h, 7, 21, Core.NORM_L1);
 
             FileImageWriter.getInstance().saveMatrixToImage(yuvMat[ColorSpaceOperator.Y_CHANNEL], "noise_" +i, ImageFileAttribute.FileType.JPEG);

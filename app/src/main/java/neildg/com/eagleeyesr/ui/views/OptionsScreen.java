@@ -112,7 +112,8 @@ public class OptionsScreen extends AScreen {
         debugBtn.setChecked(true); //enable debug mode by default
 
         ToggleButton denoiseBtn = (ToggleButton) this.referenceView.findViewById(R.id.denoise_option_btn);
-        denoiseBtn.setChecked(false); //disable denoising mode by default.
+        boolean performDenoising = ParameterConfig.getPrefsBoolean(ParameterConfig.DENOISE_FLAG_KEY, false);
+        denoiseBtn.setChecked(performDenoising);
 
         RadioGroup warpChoiceGroup = (RadioGroup) this.referenceView.findViewById(R.id.warp_choice_radiogroup);
         int warpChoice = ParameterConfig.getPrefsInt(ParameterConfig.WARP_CHOICE_KEY, WarpingConstants.PERSPECTIVE_WARP);
