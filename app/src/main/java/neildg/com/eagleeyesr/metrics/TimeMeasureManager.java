@@ -47,7 +47,15 @@ public class TimeMeasureManager {
     }
 
     public TimeMeasure getTimeMeasure(String key) {
-        return this.timeMeasureTable.get(key);
+        if(this.timeMeasureTable.containsKey(key)) {
+            return this.timeMeasureTable.get(key);
+        }
+        else {
+            //return an empty time measure
+            TimeMeasure emptyTimeMeasure = new TimeMeasure();
+            return emptyTimeMeasure;
+        }
+
     }
 
     public static String convertDeltaToString(long deltaMillis) {

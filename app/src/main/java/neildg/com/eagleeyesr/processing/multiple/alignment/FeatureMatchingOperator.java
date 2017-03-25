@@ -76,10 +76,9 @@ public class FeatureMatchingOperator {
         Mat matchesShower = new Mat();
 
         for(int i = 0; i < comparingMatList.length; i++) {
-            //Mat comparingMat = this.comparingMatList[i];
             this.matchFeaturesToReference(this.lrDescriptorList[i],i);
 
-            //Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
+            //Features2d.drawMatches(this.referenceMat, this.refKeypoint, this.comparingMatList[i], this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
             //FileImageWriter.getInstance().debugSaveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
         }
 

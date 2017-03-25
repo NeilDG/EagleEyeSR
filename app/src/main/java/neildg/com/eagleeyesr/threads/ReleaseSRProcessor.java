@@ -209,11 +209,11 @@ public class ReleaseSRProcessor extends Thread{
         alignmentMeasure.timeStart();
         if(warpChoice == WarpingConstants.BEST_ALIGNMENT) {
             this.performMedianAlignment(rgbInputMatList, medianResultNames);
-            this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList, warpResultnames);
+            performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList, warpResultnames);
         }
         else if(warpChoice == WarpingConstants.PERSPECTIVE_WARP) {
             //perform perspective warping
-            this.performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList, warpResultnames);
+            performPerspectiveWarping(rgbInputMatList[0], succeedingMatList, succeedingMatList, warpResultnames);
         }
         else {
             this.performMedianAlignment(rgbInputMatList, medianResultNames);
@@ -343,7 +343,7 @@ public class ReleaseSRProcessor extends Thread{
         MatMemory.releaseAll(warpingOperator.getWarpedMatList(), true);
     }
 
-    private void performPerspectiveWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList, String[] resultNames) {
+    public static void performPerspectiveWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList, String[] resultNames) {
         ProgressDialogHandler.getInstance().showProcessDialog("Processing", "Aligning images", 30.0f);
         FeatureMatchingOperator matchingOperator = new FeatureMatchingOperator(referenceMat, candidateMatList);
         matchingOperator.perform();

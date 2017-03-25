@@ -10,10 +10,12 @@ import java.util.List;
 
 import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.io.BitmapURIRepository;
+import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.model.multiple.SharpnessMeasure;
 import neildg.com.eagleeyesr.processing.IOperator;
+import neildg.com.eagleeyesr.threads.ReleaseSRProcessor;
 import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
 
 /**
@@ -47,9 +49,18 @@ public class TestImagesSelector implements IOperator {
         ProgressDialogHandler.getInstance().showProcessDialog("Assessment method", "Finding appropriate ground-truth");
 
         int bestIndex = this.sharpnessResult.getBestIndex();
-        Bitmap bitmap = BitmapURIRepository.getInstance().getOriginalBitmap(bestIndex);
-        FileImageWriter.getInstance().saveBitmapImage(bitmap, FilenameConstants.GROUND_TRUTH_PREFIX_STRING+bestIndex, ImageFileAttribute.FileType.JPEG);
-        bitmap.recycle();
+        Bitmap groundTruthBitmap = BitmapURIRepository.getInstance().getOriginalBitmap(bestIndex);
+        Bitmap referenceBitmap = BitmapURIRepository.getInstance().getOriginalBitmap(0);
+        FileImageWriter.getInstance().saveBitmapImage(referenceBitmap, "reference_image", ImageFileAttribute.FileType.JPEG);
+        referenceBitmap.recycle();
+
+        FileImageWriter.getInstance().saveBitmapImage(groundTruthBitmap, FilenameConstants.GROUND_TRUTH_PREFIX_STRING+bestIndex, ImageFileAttribute.FileType.JPEG);
+        groundTruthBitmap.recycle();
+
+        Mat referenceMat = FileImageReader.getInstance().imReadOpenCV("reference_image", ImageFileAttribute.FileType.JPEG);
+        Mat groundTruthMat = FileImageReader.getInstance().imReadOpenCV(FilenameConstants.GROUND_TRUTH_PREFIX_STRING+bestIndex, ImageFileAttribute.FileType.JPEG);
+
+        this.performGroundTruthAlignment(referenceMat, groundTruthMat, bestIndex);
 
         //remove best mat from input list
         List<Mat> filteredMatList = new ArrayList<>();
@@ -66,6 +77,16 @@ public class TestImagesSelector implements IOperator {
         }
         this.outputMatList = filteredMatList.toArray(new Mat[filteredMatList.size()]);
         this.edgeMatList = edgeFilteredList.toArray(new Mat[edgeFilteredList.size()]);
+    }
+
+    private void performGroundTruthAlignment(Mat referenceMat, Mat groundTruthMat, int index) {
+        String[] warpResultnames = new String[1];
+        warpResultnames[0] = FilenameConstants.GROUND_TRUTH_PREFIX_STRING + index + "_aligned";
+
+        Mat[] imagesToAlignList = new Mat[1];
+        imagesToAlignList[0] = groundTruthMat;
+
+        ReleaseSRProcessor.performPerspectiveWarping(referenceMat, imagesToAlignList, imagesToAlignList, warpResultnames);
     }
 
     public Mat[] getProposedList() {
