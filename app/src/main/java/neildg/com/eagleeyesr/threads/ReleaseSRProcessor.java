@@ -10,7 +10,6 @@ import java.util.concurrent.Semaphore;
 
 import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
-import neildg.com.eagleeyesr.io.BitmapURIRepository;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.io.FileImageWriter;
@@ -21,7 +20,6 @@ import neildg.com.eagleeyesr.model.AttributeHolder;
 import neildg.com.eagleeyesr.model.AttributeNames;
 import neildg.com.eagleeyesr.model.multiple.SharpnessMeasure;
 import neildg.com.eagleeyesr.processing.filters.YangFilter;
-import neildg.com.eagleeyesr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
 import neildg.com.eagleeyesr.processing.imagetools.MatMemory;
 import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
@@ -29,7 +27,7 @@ import neildg.com.eagleeyesr.processing.multiple.alignment.MedianAlignmentOperat
 import neildg.com.eagleeyesr.processing.multiple.assessment.InputImageEnergyReader;
 import neildg.com.eagleeyesr.processing.multiple.enhancement.UnsharpMaskOperator;
 import neildg.com.eagleeyesr.processing.multiple.fusion.FusionConstants;
-import neildg.com.eagleeyesr.processing.multiple.fusion.OptimizedMeanFusionOperator;
+import neildg.com.eagleeyesr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.eagleeyesr.processing.multiple.refinement.DenoisingOperator;
 import neildg.com.eagleeyesr.processing.multiple.alignment.AffineWarpingOperator;
 import neildg.com.eagleeyesr.processing.multiple.alignment.FeatureMatchingOperator;
@@ -405,7 +403,7 @@ public class ReleaseSRProcessor extends Thread{
                 imagePathList.add(alignedImageNames[i]);
             }
 
-            OptimizedMeanFusionOperator fusionOperator = new OptimizedMeanFusionOperator(inputMat, imagePathList.toArray(new String[imagePathList.size()]));
+            MeanFusionOperator fusionOperator = new MeanFusionOperator(inputMat, imagePathList.toArray(new String[imagePathList.size()]));
             fusionOperator.perform();
             FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
             FileImageWriter.getInstance().saveHRResultToUserDir(fusionOperator.getResult(), ImageFileAttribute.FileType.JPEG);
