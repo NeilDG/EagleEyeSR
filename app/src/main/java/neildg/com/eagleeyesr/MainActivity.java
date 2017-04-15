@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import neildg.com.eagleeyesr.model.AttributeHolder;
 import neildg.com.eagleeyesr.platformtools.core_application.ApplicationCore;
 import neildg.com.eagleeyesr.io.BitmapURIRepository;
 import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.views.AboutScreen;
 import neildg.com.eagleeyesr.ui.views.InfoScreen;
 
 public class MainActivity extends AppCompatActivity{
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity{
     };
 
     private InfoScreen infoScreen;
+    private AboutScreen aboutScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +87,10 @@ public class MainActivity extends AppCompatActivity{
 
         this.infoScreen = new InfoScreen(this.findViewById(R.id.overlay_intro_view));
         this.infoScreen.initialize();
+
+        this.aboutScreen = new AboutScreen(this.findViewById(R.id.overlay_about_view));
+        this.aboutScreen.initialize();
+        this.aboutScreen.hide();
 
         this.verifyCamera();
         this.initializeButtons();
@@ -151,6 +158,14 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
             MainActivity.this.startImagePickActivity();
+            }
+        });
+
+        final ImageButton infoBtn = (ImageButton) this.findViewById(R.id.about_btn);
+        infoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.aboutScreen.show();
             }
         });
 

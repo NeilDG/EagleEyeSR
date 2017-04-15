@@ -176,4 +176,8 @@
     <include android:layout_height="match_parent"
         android:layout_width="match_parent"
         layout="@layout/overlay_intro_layout"/>
+
+    <include android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        layout="@layout/overlay_about_layout"/>
 </RelativeLayout>
