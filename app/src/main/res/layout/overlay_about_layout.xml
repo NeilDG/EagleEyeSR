@@ -108,6 +108,15 @@
                     android:textAlignment="textStart"
                     android:layout_marginBottom="5dp"/>
 
+                <TextView
+                    android:text="The camera module uses a modified version of OpenCamera system developed by Mark Harman. It is an open-source camera for Android devices."
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="14sp"
+                    android:textAlignment="textStart"
+                    android:layout_marginBottom="5dp"/>
+
             </LinearLayout>
         </ScrollView>
 
