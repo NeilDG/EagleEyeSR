@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#A6000000"
+    android:id="@+id/overlay_about_view">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#000000"
+            android:layout_weight="0.8"
+            android:fadeScrollbars="false"
+            android:scrollbarAlwaysDrawVerticalTrack="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:text="CREDITS"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView5"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="24sp"
+                    android:textAlignment="center"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp" />
+
+                <TextView
+                    android:text="Neil Patrick Del Gallego - Developer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="14sp"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="5dp"/>
+
+                <TextView
+                    android:text="Ryan Del Gallego - Promotional Materials"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="14sp"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="5dp"/>
+
+                <TextView
+                    android:text="Myrriane Aguila - App Icon Design"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="14sp"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="5dp"/>
+
+                <TextView
+                    android:text="INFO"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="24sp"
+                    android:textAlignment="center"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp" />
+
+                <TextView
+                    android:text="The design of this system is published as a research article at EURASIP Journal on Image and Video Processing. It is titled 'Multiple-image super-resolution on mobile devices: an image warping approach.'"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="5dp"
+                    android:textAlignment="textStart" />
+
+                <Button
+                    android:text="Article Online Access"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/article_link_btn"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:text="SPECIAL THANKS"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="24sp"
+                    android:textAlignment="center"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp" />
+
+                <TextView
+                    android:text="The following names provided test devices or sample images for testing: Dr. Joel Ilao, Jonathan Pabillore, Myrriane Aguila"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="14sp"
+                    android:textAlignment="textStart"
+                    android:layout_marginBottom="5dp"/>
+
+                <TextView
+                    android:text="The camera module uses a modified version of OpenCamera system developed by Mark Harman. It is an open-source camera for Android devices."
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="14sp"
+                    android:textAlignment="textStart"
+                    android:layout_marginBottom="5dp"/>
+
+            </LinearLayout>
+        </ScrollView>
+
+        <Button
+            android:text="Close"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/close_btn"
+            android:textAlignment="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:layout_weight="0.15" />
+
+    </LinearLayout>
+
+</FrameLayout>

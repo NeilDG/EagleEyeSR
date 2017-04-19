@@ -200,7 +200,7 @@ public class FileImageWriter {
 		deleteRecursive(dirFile);
 	}
 
-	private static void deleteRecursive(File fileOrDirectory) {
+	public static void deleteRecursive(File fileOrDirectory) {
 		if (fileOrDirectory.isDirectory())
 			for (File child : fileOrDirectory.listFiles())
 				deleteRecursive(child);

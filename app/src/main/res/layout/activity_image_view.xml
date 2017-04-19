@@ -7,7 +7,7 @@
     android:background="@android:color/black"
     tools:context="neildg.com.eagleeyesr.ImageViewActivity">
 
-    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+    <!--<com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
         android:id="@+id/nearest_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
@@ -15,10 +15,10 @@
     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
         android:id="@+id/linear_image_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"/> -->
 
     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-        android:id="@+id/cubic_image_view"
+        android:id="@+id/interpolated_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
@@ -31,11 +31,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:checkedButton="@+id/nearest_radio_btn"
+        android:checkedButton="@+id/interpolate_radio_btn"
         android:id="@+id/image_view_radio_group">
 
         <RadioButton
-            android:text="Nearest"
+            android:text="Interpolated"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -43,10 +43,10 @@
             android:textColor="@android:color/white"
             android:background="#D4404040"
             android:padding="10dp"
-            android:id="@+id/nearest_radio_btn"
+            android:id="@+id/interpolate_radio_btn"
             android:layout_margin="5dp" />
 
-        <RadioButton
+        <!--<RadioButton
             android:text="Linear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
             android:background="#D4404040"
             android:padding="10dp"
             android:id="@+id/cubic_radio_btn"
-            android:layout_margin="5dp" />
+            android:layout_margin="5dp" /> -->
 
         <RadioButton
             android:text="Super HD"

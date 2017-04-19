@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import neildg.com.eagleeyesr.model.AttributeHolder;
 import neildg.com.eagleeyesr.platformtools.core_application.ApplicationCore;
 import neildg.com.eagleeyesr.io.BitmapURIRepository;
 import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.views.AboutScreen;
 import neildg.com.eagleeyesr.ui.views.InfoScreen;
 
 public class MainActivity extends AppCompatActivity{
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity{
     };
 
     private InfoScreen infoScreen;
+    private AboutScreen aboutScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +87,10 @@ public class MainActivity extends AppCompatActivity{
 
         this.infoScreen = new InfoScreen(this.findViewById(R.id.overlay_intro_view));
         this.infoScreen.initialize();
+
+        this.aboutScreen = new AboutScreen(this.findViewById(R.id.overlay_about_view));
+        this.aboutScreen.initialize();
+        this.aboutScreen.hide();
 
         this.verifyCamera();
         this.initializeButtons();
@@ -135,7 +142,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        Button captureExternalBtn = (Button) this.findViewById(R.id.capture_external_btn);
+        /*Button captureExternalBtn = (Button) this.findViewById(R.id.capture_external_btn);
         captureExternalBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,7 +151,7 @@ public class MainActivity extends AppCompatActivity{
                     startActivityForResult(takePictureIntent, REQUEST_PICTURE_EXTERNAL);
                 }
             }
-        });
+        });*/
 
         Button pickImagesBtn = (Button) this.findViewById(R.id.select_image_btn);
         pickImagesBtn.setOnClickListener(new View.OnClickListener() {
@@ -154,16 +161,24 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+        final ImageButton infoBtn = (ImageButton) this.findViewById(R.id.about_btn);
+        infoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.aboutScreen.show();
+            }
+        });
+
         RadioGroup scaleRadioGroup = (RadioGroup) this.findViewById(R.id.scale_radio_group);
         scaleRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
 
-                if(checkedId == R.id.scale_1_btn) {
+                /*if(checkedId == R.id.scale_1_btn) {
                     //Toast.makeText(MainActivity.this, "No scaling applied", Toast.LENGTH_SHORT).show();
                     ParameterConfig.setScalingFactor(1);
                 }
-                else if(checkedId == R.id.scale_2_btn) {
+                else*/ if(checkedId == R.id.scale_2_btn) {
                     //Toast.makeText(MainActivity.this, "2x scale", Toast.LENGTH_SHORT).show();
                     ParameterConfig.setScalingFactor(2);
                 }
@@ -176,7 +191,7 @@ public class MainActivity extends AppCompatActivity{
 
 
 
-        RadioGroup techniqueRadioGroup = (RadioGroup) this.findViewById(R.id.technique_radio_group);
+        /*RadioGroup techniqueRadioGroup = (RadioGroup) this.findViewById(R.id.technique_radio_group);
         techniqueRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -189,7 +204,7 @@ public class MainActivity extends AppCompatActivity{
                     Toast.makeText(MainActivity.this, "Multiple-Image SR selected", Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        });*/
 
         scaleRadioGroup.check(R.id.scale_2_btn); ParameterConfig.setScalingFactor(2);
         RadioButton scale4Btn = (RadioButton) scaleRadioGroup.findViewById(R.id.scale_4_btn);

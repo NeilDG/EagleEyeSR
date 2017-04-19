@@ -76,7 +76,7 @@ public class YangFilter implements IOperator {
             YangFilterFusionOperator fusionOperator = new YangFilterFusionOperator(combinedFilterList);
             fusionOperator.perform();
 
-            FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.EDGE_DIRECTORY_PREFIX, FilenameConstants.IMAGE_EDGE_PREFIX+i, ImageFileAttribute.FileType.JPEG);
+            //FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.EDGE_DIRECTORY_PREFIX, FilenameConstants.IMAGE_EDGE_PREFIX+i, ImageFileAttribute.FileType.JPEG);
 
             combinedFilterList[0].release(); combinedFilterList[1].release(); combinedFilterList[2].release(); combinedFilterList[3].release();
             edgeMatList[i] = fusionOperator.getResult();
