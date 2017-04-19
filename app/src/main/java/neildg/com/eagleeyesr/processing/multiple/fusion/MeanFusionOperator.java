@@ -45,7 +45,7 @@ public class MeanFusionOperator implements IOperator {
         this.initialMat.convertTo(initialMat, CvType.CV_16UC(initialMat.channels())); //convert to CV_16UC
         Log.d(TAG, "Initial image for fusion Size:" +initialMat.size() + " Scale: " +scale);
 
-        Mat sumMat = ImageOperator.performInterpolation(initialMat, scale, Imgproc.INTER_CUBIC); //perform cubic interpolation for initial HR
+        Mat sumMat = ImageOperator.performInterpolation(initialMat, scale, Imgproc.INTER_LINEAR); //perform linear interpolation for initial HR
         //sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
         //FileImageWriter.getInstance().saveMatrixToImage(this.outputMat, FilenameConstants.HR_ITERATION_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
         this.initialMat.release();
