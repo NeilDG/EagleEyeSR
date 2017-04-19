@@ -15,7 +15,7 @@ android {
         applicationId 'neildg.com.eagleeyesr'
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 3
+        versionCode 4
         versionName '01.02.00'
         signingConfig signingConfigs.config
         vectorDrawables.useSupportLibrary = true

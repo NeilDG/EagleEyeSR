@@ -597,7 +597,7 @@ public class DrawPreview {
 				String number_string = decimalFormat.format(level_angle);
 				number_string = number_string.replaceAll( "^-(?=0(.0*)?$)", ""); // avoids displaying "-0.0", see http://stackoverflow.com/questions/11929096/negative-sign-in-case-of-zero-in-java
 				String string = getContext().getResources().getString(R.string.angle) + ": " + number_string + (char)0x00B0;
-				applicationInterface.drawTextWithBackground(canvas, p, string, color, Color.BLACK, canvas.getWidth() / 2 + pixels_offset_x, text_base_y, false, ybounds_text, true);
+				//applicationInterface.drawTextWithBackground(canvas, p, string, color, Color.BLACK, canvas.getWidth() / 2 + pixels_offset_x, text_base_y, false, ybounds_text, true);
 				p.setUnderlineText(false);
 			}
 			if( draw_geo_direction ) {
