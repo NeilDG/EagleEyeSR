@@ -10,9 +10,9 @@ import java.util.concurrent.Semaphore;
 
 import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
-import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.io.FileImageWriter;
+import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.ImageInputMap;
 import neildg.com.eagleeyesr.metrics.TimeMeasure;
 import neildg.com.eagleeyesr.metrics.TimeMeasureManager;
@@ -23,17 +23,17 @@ import neildg.com.eagleeyesr.processing.filters.YangFilter;
 import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
 import neildg.com.eagleeyesr.processing.imagetools.MatMemory;
 import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
+import neildg.com.eagleeyesr.processing.multiple.alignment.AffineWarpingOperator;
+import neildg.com.eagleeyesr.processing.multiple.alignment.FeatureMatchingOperator;
+import neildg.com.eagleeyesr.processing.multiple.alignment.LRWarpingOperator;
 import neildg.com.eagleeyesr.processing.multiple.alignment.MedianAlignmentOperator;
+import neildg.com.eagleeyesr.processing.multiple.alignment.WarpResultEvaluator;
+import neildg.com.eagleeyesr.processing.multiple.alignment.WarpingConstants;
 import neildg.com.eagleeyesr.processing.multiple.assessment.InputImageEnergyReader;
 import neildg.com.eagleeyesr.processing.multiple.enhancement.UnsharpMaskOperator;
 import neildg.com.eagleeyesr.processing.multiple.fusion.FusionConstants;
 import neildg.com.eagleeyesr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.eagleeyesr.processing.multiple.refinement.DenoisingOperator;
-import neildg.com.eagleeyesr.processing.multiple.alignment.AffineWarpingOperator;
-import neildg.com.eagleeyesr.processing.multiple.alignment.FeatureMatchingOperator;
-import neildg.com.eagleeyesr.processing.multiple.alignment.LRWarpingOperator;
-import neildg.com.eagleeyesr.processing.multiple.alignment.WarpResultEvaluator;
-import neildg.com.eagleeyesr.processing.multiple.alignment.WarpingConstants;
 import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
 
 /**
@@ -156,8 +156,6 @@ public class ReleaseSRProcessor extends Thread{
         TimeMeasure denoisingMeasure = TimeMeasureManager.getInstance().getTimeMeasure(TimeMeasureManager.DENOISING_TIME);
         denoisingMeasure.timeStart();
         if(performDenoising) {
-            ProgressDialogHandler.getInstance().showProcessDialog("Denoising", "Performing denoising", 15.0f);
-
             //perform denoising on original input list
             DenoisingOperator denoisingOperator = new DenoisingOperator(rgbInputMatList);
             denoisingOperator.perform();
