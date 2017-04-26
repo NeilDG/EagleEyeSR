@@ -3,25 +3,26 @@ package neildg.com.eagleeyesr.processing.multiple.refinement;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfFloat;
+import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
 
-import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageWriter;
+import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.processing.IOperator;
 import neildg.com.eagleeyesr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
 
-/**
- * Class that handles denoising operations
- * Created by NeilDG on 7/10/2016.
+/**Class that performs bilateral filtering for images as alternative to denoising.
+ * Created by NeilDG on 4/26/2017.
  */
-public class DenoisingOperator implements IOperator{
-    private final static String TAG = "DenoisingOperator";
+
+public class BilateralFilterOperator implements IOperator {
+    private final static String TAG = "BilateralFilterOperator";
 
     private Mat[] matList;
     private Mat[] outputMatList;
 
-    public DenoisingOperator(Mat[] matList) {
+    public BilateralFilterOperator(Mat[] matList) {
         this.matList = matList;
         this.outputMatList = new Mat[this.matList.length];
     }
@@ -29,28 +30,22 @@ public class DenoisingOperator implements IOperator{
     @Override
     public void perform() {
         for(int i = 0; i < this.matList.length; i++) {
-            ProgressDialogHandler.getInstance().showProcessDialog("Denoising", "Denoising image " +i, ProgressDialogHandler.getInstance().getProgress());
+            ProgressDialogHandler.getInstance().showProcessDialog("Denoising", "Performing bilateral filtering for image " +i, ProgressDialogHandler.getInstance().getProgress());
 
             //perform denoising on energy channel only
             Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(this.matList[i]);
-            Mat denoisedMat = new Mat();
+            Mat bilateralMat = new Mat();
             MatOfFloat h = new MatOfFloat(6.0f);
-            Photo.fastNlMeansDenoising(yuvMat[ColorSpaceOperator.Y_CHANNEL], denoisedMat, h, 7, 21, Core.NORM_L1);
+            Imgproc.bilateralFilter(yuvMat[ColorSpaceOperator.Y_CHANNEL], bilateralMat, 15, 160, 160);
 
             FileImageWriter.getInstance().saveMatrixToImage(yuvMat[ColorSpaceOperator.Y_CHANNEL], "noise_" +i, ImageFileAttribute.FileType.JPEG);
-            FileImageWriter.getInstance().saveMatrixToImage(denoisedMat, "denoise_" +i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(bilateralMat, "denoise_" +i, ImageFileAttribute.FileType.JPEG);
 
             //merge channel then convert back to RGB
             yuvMat[ColorSpaceOperator.Y_CHANNEL].release();
-            yuvMat[ColorSpaceOperator.Y_CHANNEL] = denoisedMat;
+            yuvMat[ColorSpaceOperator.Y_CHANNEL] = bilateralMat;
 
             this.outputMatList[i] = ColorSpaceOperator.convertYUVtoRGB(yuvMat);
-
-            /*Mat denoisedMat = new Mat();
-            Photo.fastNlMeansDenoisingColored(this.matList[i], denoisedMat, 3, 0, 7, 21);
-            this.outputMatList[i] = denoisedMat;
-            ImageWriter.getInstance().saveMatrixToImage(this.matList[i], "noise_" +i, ImageFileAttribute.FileType.JPEG);
-            ImageWriter.getInstance().saveMatrixToImage(denoisedMat, "denoise_" +i, ImageFileAttribute.FileType.JPEG);*/
 
             ProgressDialogHandler.getInstance().hideUserDialog();
         }
