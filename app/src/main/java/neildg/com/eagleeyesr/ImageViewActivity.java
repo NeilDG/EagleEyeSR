@@ -14,6 +14,8 @@ import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.views.ImageProgressScreen;
 
 public class ImageViewActivity extends AppCompatActivity {
     private final static String TAG = "ImageViewActivity";
@@ -26,11 +28,17 @@ public class ImageViewActivity extends AppCompatActivity {
     private SubsamplingScaleImageView interpolateView;
     private SubsamplingScaleImageView srView;
 
+    private ImageProgressScreen imageProgressScreen;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_view);
+
+        this.imageProgressScreen = new ImageProgressScreen(this.findViewById(R.id.image_progress_view));
+        this.imageProgressScreen.initialize();
+        this.imageProgressScreen.hide();
     }
 
     @Override
@@ -41,6 +49,9 @@ public class ImageViewActivity extends AppCompatActivity {
         RadioGroup radioGroup = (RadioGroup) this.findViewById(R.id.image_view_radio_group);
         RadioButton cubicBtn = (RadioButton) radioGroup.findViewById(R.id.interpolate_radio_btn);
         cubicBtn.setChecked(true);
+
+        ProgressDialogHandler.getInstance().setProgressImplementor(this.imageProgressScreen);
+        this.imageProgressScreen.show();
     }
 
     @Override

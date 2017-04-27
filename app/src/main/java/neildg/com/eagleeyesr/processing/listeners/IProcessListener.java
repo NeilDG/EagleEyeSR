@@ -6,4 +6,5 @@ package neildg.com.eagleeyesr.processing.listeners;
 
 public interface IProcessListener {
     void onProcessCompleted();
+    void onProducedInitialHR();
 }

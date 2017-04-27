@@ -10,17 +10,12 @@ import org.opencv.core.MatOfKeyPoint;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
-import org.opencv.features2d.Features2d;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
-import neildg.com.eagleeyesr.io.ImageFileAttribute;
-import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.processing.imagetools.MatMemory;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
 
 /**
  * Compare LR reference mat and match features to LR2...LRN.

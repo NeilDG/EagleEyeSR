@@ -15,7 +15,7 @@ import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.ImageInputMap;
 import neildg.com.eagleeyesr.processing.IOperator;
 import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Experiment on new proposed method for performing mean fusion for images that have been warped and interpolated.

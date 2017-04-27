@@ -11,12 +11,11 @@ import android.widget.TextView;
 import neildg.com.eagleeyesr.constants.BuildMode;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
 import neildg.com.eagleeyesr.io.BitmapURIRepository;
-import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
 import neildg.com.eagleeyesr.threads.DebugSRProcessor;
 import neildg.com.eagleeyesr.threads.ReleaseSRProcessor;
 import neildg.com.eagleeyesr.threads.SingleImageSRProcessor;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 import neildg.com.eagleeyesr.ui.views.OptionsScreen;
 
 /*
@@ -46,6 +45,8 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
         super.onResume();
         TextView numImagesText = (TextView) this.findViewById(R.id.num_images_txt);
         numImagesText.setText(Integer.toString(BitmapURIRepository.getInstance().getNumImagesSelected()));
+
+        ProgressDialogHandler.getInstance().setDefaultProgressImplementor();
     }
 
     @Override
@@ -130,5 +131,12 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
                 imageViewBtn.setEnabled(true);
             }
         });
+    }
+
+    @Override
+    public void onProducedInitialHR() {
+        //start image preview intent for initial viewing
+        Intent previewIntent = new Intent(ProcessingActivityRelease.this, ImageViewActivity.class);
+        startActivity(previewIntent);
     }
 }

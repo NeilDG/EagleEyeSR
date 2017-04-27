@@ -1,16 +1,14 @@
 package neildg.com.eagleeyesr.processing.multiple.refinement;
 
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfFloat;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.photo.Photo;
 
 import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.processing.IOperator;
 import neildg.com.eagleeyesr.processing.imagetools.ColorSpaceOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**Class that performs bilateral filtering for images as alternative to denoising.
  * Created by NeilDG on 4/26/2017.
@@ -47,7 +45,7 @@ public class BilateralFilterOperator implements IOperator {
 
             this.outputMatList[i] = ColorSpaceOperator.convertYUVtoRGB(yuvMat);
 
-            ProgressDialogHandler.getInstance().hideUserDialog();
+            ProgressDialogHandler.getInstance().hideProcessDialog();
         }
     }
 

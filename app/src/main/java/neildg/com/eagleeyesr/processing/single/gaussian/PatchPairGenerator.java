@@ -14,7 +14,7 @@ import neildg.com.eagleeyesr.model.single_gaussian.LoadedImagePatch;
 import neildg.com.eagleeyesr.number.MathUtils;
 import neildg.com.eagleeyesr.processing.IOperator;
 import neildg.com.eagleeyesr.processing.single.gaussian.listeners.ThreadFinishedListener;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Created by NeilDG on 5/23/2016.

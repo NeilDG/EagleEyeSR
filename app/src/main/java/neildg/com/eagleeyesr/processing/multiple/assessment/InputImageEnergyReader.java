@@ -49,4 +49,7 @@ public class InputImageEnergyReader extends FlaggingThread {
     public Mat getOutputMat() {
         return this.outputMat;
     }
+
+
+
 }

@@ -9,7 +9,7 @@ import android.widget.Button;
 
 import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
 import neildg.com.eagleeyesr.threads.ReleaseSRProcessor;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 public class ProcessingFromCamActivity extends AppCompatActivity implements IProcessListener{
 
@@ -57,5 +57,10 @@ public class ProcessingFromCamActivity extends AppCompatActivity implements IPro
                 imageViewBtn.setEnabled(true);
             }
         });
+    }
+
+    @Override
+    public void onProducedInitialHR() {
+
     }
 }

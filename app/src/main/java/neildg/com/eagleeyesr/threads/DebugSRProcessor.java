@@ -19,7 +19,7 @@ import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
 import neildg.com.eagleeyesr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.eagleeyesr.processing.multiple.selection.TestImagesSelector;
 import neildg.com.eagleeyesr.processing.multiple.resizing.LRToHROperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * SRProcessor debugging main entry point. This processor has the downsampling operator included.

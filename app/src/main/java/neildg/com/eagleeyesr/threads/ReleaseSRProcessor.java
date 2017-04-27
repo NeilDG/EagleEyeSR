@@ -34,7 +34,8 @@ import neildg.com.eagleeyesr.processing.multiple.enhancement.UnsharpMaskOperator
 import neildg.com.eagleeyesr.processing.multiple.fusion.FusionConstants;
 import neildg.com.eagleeyesr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.eagleeyesr.processing.multiple.refinement.DenoisingOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProcessingDialog;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * SR processor for release mode
@@ -115,8 +116,8 @@ public class ReleaseSRProcessor extends Thread{
 
         selectionMeasure.timeEnd();
 
-
         this.interpolateImage(sharpnessResult.getLeastIndex());
+        this.processListener.onProducedInitialHR();
 
         int bestIndex = 0;
         //load RGB inputs
@@ -279,6 +280,7 @@ public class ReleaseSRProcessor extends Thread{
     }
 
     private void interpolateImage(int index) {
+        ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Creating initial HR image", 20.0f);
         boolean outputComparisons = ParameterConfig.getPrefsBoolean(ParameterConfig.DEBUGGING_FLAG_KEY, false);
 
         if(outputComparisons) {

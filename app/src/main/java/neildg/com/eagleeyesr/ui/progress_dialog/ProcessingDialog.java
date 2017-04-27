@@ -1,4 +1,4 @@
-package neildg.com.eagleeyesr.ui;
+package neildg.com.eagleeyesr.ui.progress_dialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -7,12 +7,13 @@ import android.widget.TextView;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 
 import neildg.com.eagleeyesr.R;
+import neildg.com.eagleeyesr.ui.progress_dialog.IProgressImplementor;
 
 /**
  * Created by NeilDG on 11/27/2016.
  */
 
-public class ProcessingDialog extends Dialog {
+public class ProcessingDialog extends Dialog implements IProgressImplementor {
 
     private final static String TAG = "ProcessingDialog";
 
@@ -28,11 +29,13 @@ public class ProcessingDialog extends Dialog {
         this.progressBar.setMax(100);
     }
 
+    @Override
     public void setup(String title, String message) {
         this.setTitle(title);
         this.textView.setText(message);
     }
 
+    @Override
     public void updateProgress(float progress) {
         if(progress < this.progressBar.getMax()) {
             this.progressBar.setProgress(progress);
@@ -42,7 +45,24 @@ public class ProcessingDialog extends Dialog {
         }
     }
 
+    @Override
     public float getProgress() {
         return this.progressBar.getProgress();
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        this.setCancelable(false);
+    }
+
+    @Override
+    public boolean isShown() {
+        return this.isShowing();
+    }
+
+    @Override
+    public void hide() {
+        this.dismiss();
     }
 }
