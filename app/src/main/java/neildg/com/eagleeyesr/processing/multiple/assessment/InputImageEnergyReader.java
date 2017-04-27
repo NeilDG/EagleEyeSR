@@ -29,16 +29,6 @@ public class InputImageEnergyReader extends FlaggingThread {
         this.inputImagePath = inputImagePath;
     }
 
-    public void startWork() {
-        try {
-            this.semaphore.acquire();
-            this.start();
-        }
-        catch(InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void run() {
         Log.d(TAG, "Started energy reading for " +this.inputImagePath);
@@ -50,7 +40,8 @@ public class InputImageEnergyReader extends FlaggingThread {
 
         this.outputMat = yuvMat[ColorSpaceOperator.Y_CHANNEL];
         inputMat.release();
-        this.semaphore.release();
+
+        this.finishWork();
 
         Log.d(TAG, "Ended energy reading! Success!");
     }
