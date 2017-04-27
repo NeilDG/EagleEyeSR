@@ -57,6 +57,7 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
         this.srProcessor.startBackgroundThread();
 
         ProgressDialogHandler.initialize(this);
+        ProgressDialogHandler.getInstance().setDefaultProgressImplementor();
         ImageSaveBroadcaster.getSharedInstance().addEvent(this);
 
         ImageButton takePhotoBtn = (ImageButton) this.findViewById(R.id.take_photo);

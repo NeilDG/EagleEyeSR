@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
+import neildg.com.eagleeyesr.platformtools.notifications.Notifications;
 import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
 import neildg.com.eagleeyesr.threads.ReleaseSRProcessor;
 import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
@@ -26,6 +28,12 @@ public class ProcessingFromCamActivity extends AppCompatActivity implements IPro
         ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor(this);
         releaseSRProcessor.start();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ProgressDialogHandler.getInstance().setDefaultProgressImplementor();
     }
 
     @Override
@@ -55,12 +63,16 @@ public class ProcessingFromCamActivity extends AppCompatActivity implements IPro
             public void run() {
                 Button imageViewBtn = (Button) ProcessingFromCamActivity.this.findViewById(R.id.image_results_view_btn);
                 imageViewBtn.setEnabled(true);
+
+                NotificationCenter.getInstance().postNotification(Notifications.ON_SR_PROCESS_COMPLETED);
             }
         });
     }
 
     @Override
     public void onProducedInitialHR() {
-
+        //start image preview intent for initial viewing
+        Intent previewIntent = new Intent(this, ImageViewActivity.class);
+        startActivity(previewIntent);
     }
 }

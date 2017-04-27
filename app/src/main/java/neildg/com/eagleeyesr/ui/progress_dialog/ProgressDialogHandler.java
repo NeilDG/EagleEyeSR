@@ -38,7 +38,17 @@ public class ProgressDialogHandler {
 	}
 
 	public void setProgressImplementor(IProgressImplementor progressImplementor) {
+
+		float progress = 0.0f;
+		String text = null;
+		if(this.progressImplementor != null) {
+			progress = this.progressImplementor.getProgress();
+			text = this.progressImplementor.getMessage();
+		}
+
 		this.progressImplementor = progressImplementor;
+		this.progressImplementor.setup("", text);
+		this.progressImplementor.updateProgress(progress);
 	}
 	
 	public static void initialize(Activity activity) {

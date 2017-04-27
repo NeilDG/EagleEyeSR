@@ -65,4 +65,9 @@ public class ProcessingDialog extends Dialog implements IProgressImplementor {
     public void hide() {
         this.dismiss();
     }
+
+    @Override
+    public String getMessage() {
+        return this.textView.getText().toString();
+    }
 }

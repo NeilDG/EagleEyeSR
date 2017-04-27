@@ -125,9 +125,9 @@
             app:rcBackgroundPadding="5dp"
             app:rcReverse="false"
             app:rcProgressColor="@android:color/holo_blue_dark"
-            android:id="@+id/progress_bar"
+            android:id="@+id/image_view_progress_bar"
             android:layout_margin="5dp"
-            android:layout_height="10dp" />
+            android:layout_height="20dp" />
     </LinearLayout>
 
 </RelativeLayout>

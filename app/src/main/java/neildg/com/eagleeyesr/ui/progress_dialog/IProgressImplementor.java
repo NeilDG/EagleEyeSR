@@ -9,6 +9,7 @@ public interface IProgressImplementor {
     void updateProgress(float progress);
 
     float getProgress();
+    String getMessage();
 
     void show();
     void hide();

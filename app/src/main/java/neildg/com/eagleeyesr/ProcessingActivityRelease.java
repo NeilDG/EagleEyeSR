@@ -11,6 +11,8 @@ import android.widget.TextView;
 import neildg.com.eagleeyesr.constants.BuildMode;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
 import neildg.com.eagleeyesr.io.BitmapURIRepository;
+import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
+import neildg.com.eagleeyesr.platformtools.notifications.Notifications;
 import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
 import neildg.com.eagleeyesr.threads.DebugSRProcessor;
 import neildg.com.eagleeyesr.threads.ReleaseSRProcessor;
@@ -129,6 +131,8 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
             public void run() {
                 Button imageViewBtn = (Button) ProcessingActivityRelease.this.findViewById(R.id.image_results_view_btn);
                 imageViewBtn.setEnabled(true);
+
+                NotificationCenter.getInstance().postNotification(Notifications.ON_SR_PROCESS_COMPLETED);
             }
         });
     }

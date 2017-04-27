@@ -14,10 +14,14 @@ import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
+import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
+import neildg.com.eagleeyesr.platformtools.notifications.NotificationListener;
+import neildg.com.eagleeyesr.platformtools.notifications.Notifications;
+import neildg.com.eagleeyesr.platformtools.notifications.Parameters;
 import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 import neildg.com.eagleeyesr.ui.views.ImageProgressScreen;
 
-public class ImageViewActivity extends AppCompatActivity {
+public class ImageViewActivity extends AppCompatActivity implements NotificationListener {
     private final static String TAG = "ImageViewActivity";
 
     private enum ImageViewType {
@@ -52,11 +56,15 @@ public class ImageViewActivity extends AppCompatActivity {
 
         ProgressDialogHandler.getInstance().setProgressImplementor(this.imageProgressScreen);
         this.imageProgressScreen.show();
+
+        NotificationCenter.getInstance().addObserver(Notifications.ON_SR_PROCESS_COMPLETED, this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
+        NotificationCenter.getInstance().removeObserver(Notifications.ON_SR_PROCESS_COMPLETED, this);
     }
 
     private void loadImageView() {
@@ -110,6 +118,24 @@ public class ImageViewActivity extends AppCompatActivity {
         else if(imageViewType == ImageViewType.SUPER_RES) {
             this.interpolateView.setVisibility(View.INVISIBLE);
             this.srView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onNotify(String notificationString, Parameters params) {
+        if(notificationString == Notifications.ON_SR_PROCESS_COMPLETED) {
+            RadioGroup radioGroup = (RadioGroup) this.findViewById(R.id.image_view_radio_group);
+            RadioButton srBtn = (RadioButton) radioGroup.findViewById(R.id.sr_radio_btn);
+            if(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG)) {
+                srBtn.setEnabled(true);
+            }
+            else {
+                srBtn.setEnabled(false);
+            }
+
+            this.srView = (SubsamplingScaleImageView) this.findViewById(R.id.sr_image_view);
+            String imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+            this.srView.setImage(ImageSource.uri(imageSource));
         }
     }
 }

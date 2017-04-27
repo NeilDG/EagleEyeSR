@@ -1,5 +1,6 @@
 package neildg.com.eagleeyesr.ui.views;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,7 +27,7 @@ public class ImageProgressScreen extends AScreen implements IProgressImplementor
     @Override
     public void initialize() {
         this.textView = (TextView) this.referenceView.findViewById(R.id.text_view_message);
-        this.progressBar = (RoundCornerProgressBar) this.referenceView.findViewById(R.id.progress_bar);
+        this.progressBar = (RoundCornerProgressBar) this.referenceView.findViewById(R.id.image_view_progress_bar);
         this.progressBar.setMax(100);
     }
 
@@ -37,6 +38,7 @@ public class ImageProgressScreen extends AScreen implements IProgressImplementor
 
     @Override
     public void updateProgress(float progress) {
+        Log.i(TAG, "Progress is: " +progress);
         if(progress < this.progressBar.getMax()) {
             this.progressBar.setProgress(progress);
         }
@@ -50,5 +52,8 @@ public class ImageProgressScreen extends AScreen implements IProgressImplementor
        return this.progressBar.getProgress();
     }
 
-
+    @Override
+    public String getMessage() {
+        return this.textView.getText().toString();
+    }
 }

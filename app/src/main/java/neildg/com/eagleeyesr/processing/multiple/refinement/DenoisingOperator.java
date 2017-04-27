@@ -34,7 +34,7 @@ public class DenoisingOperator implements IOperator{
     @Override
     public void perform() {
         for(int i = 0; i < this.matList.length; i++) {
-            ProgressDialogHandler.getInstance().showProcessDialog("Denoising", "Denoising image " +i, ProgressDialogHandler.getInstance().getProgress());
+            ProgressDialogHandler.getInstance().showProcessDialog("Denoising", "Denoising image " +i, 25.0f);
 
             //perform denoising on energy channel only
             Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(this.matList[i]);
