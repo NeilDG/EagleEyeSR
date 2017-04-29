@@ -9,7 +9,7 @@ import android.widget.Button;
 
 import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
 import neildg.com.eagleeyesr.platformtools.notifications.Notifications;
-import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
+import neildg.com.eagleeyesr.processing.process_observer.IProcessListener;
 import neildg.com.eagleeyesr.threads.ReleaseSRProcessor;
 import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
@@ -25,7 +25,7 @@ public class ProcessingFromCamActivity extends AppCompatActivity implements IPro
         ProgressDialogHandler.initialize(this);
         this.initializeButtons();
 
-        ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor(this);
+        ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor();
         releaseSRProcessor.start();
 
     }

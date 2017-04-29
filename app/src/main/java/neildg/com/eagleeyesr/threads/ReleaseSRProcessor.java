@@ -22,7 +22,7 @@ import neildg.com.eagleeyesr.model.multiple.SharpnessMeasure;
 import neildg.com.eagleeyesr.processing.filters.YangFilter;
 import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
 import neildg.com.eagleeyesr.processing.imagetools.MatMemory;
-import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
+import neildg.com.eagleeyesr.processing.process_observer.IProcessListener;
 import neildg.com.eagleeyesr.processing.multiple.alignment.AffineWarpingOperator;
 import neildg.com.eagleeyesr.processing.multiple.alignment.FeatureMatchingOperator;
 import neildg.com.eagleeyesr.processing.multiple.alignment.LRWarpingOperator;
@@ -34,7 +34,7 @@ import neildg.com.eagleeyesr.processing.multiple.enhancement.UnsharpMaskOperator
 import neildg.com.eagleeyesr.processing.multiple.fusion.FusionConstants;
 import neildg.com.eagleeyesr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.eagleeyesr.processing.multiple.refinement.DenoisingOperator;
-import neildg.com.eagleeyesr.ui.progress_dialog.ProcessingDialog;
+import neildg.com.eagleeyesr.processing.process_observer.SRProcessManager;
 import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
@@ -44,9 +44,8 @@ import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 public class ReleaseSRProcessor extends Thread{
     private final static String TAG = "ReleaseSRProcessor";
 
-    private IProcessListener processListener;
-    public ReleaseSRProcessor(IProcessListener processListener) {
-        this.processListener = processListener;
+    public ReleaseSRProcessor() {
+
     }
 
     @Override
@@ -117,7 +116,7 @@ public class ReleaseSRProcessor extends Thread{
         selectionMeasure.timeEnd();
 
         this.interpolateImage(sharpnessResult.getLeastIndex());
-        this.processListener.onProducedInitialHR();
+        SRProcessManager.getInstance().initialHRProduced();
 
         int bestIndex = 0;
         //load RGB inputs
@@ -138,7 +137,7 @@ public class ReleaseSRProcessor extends Thread{
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length+ " Best index: " +bestIndex);
 
         this.performActualSuperres(rgbInputMatList, inputIndices, bestIndex, false);
-        this.processListener.onProcessCompleted();
+        SRProcessManager.getInstance().srProcessCompleted();
 
         srTimeMeasure.timeEnd();
         Log.d(TAG,"Total processing time is " +TimeMeasureManager.convertDeltaToString(srTimeMeasure.getDeltaDifference()));
