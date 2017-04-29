@@ -58,7 +58,7 @@
     </layouts>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="D/ReleaseSR" />
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="D/Release" />
     <option name="TOOL_WINDOW_LOG_LEVEL" value="debug" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="No Filters" />
     <option name="LOGCAT_FORMAT_STRING" value="%2$s/%3$s %4$c/%5$s: %6$s" />
@@ -129,17 +129,30 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FeatureMatchingOperator.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="FeatureMatchingOperator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/processing/multiple/alignment/FeatureMatchingOperator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="832">
-              <caret line="128" column="6" selection-start-line="128" selection-start-column="6" selection-end-line="128" selection-end-column="6" />
+            <state relative-caret-position="128">
+              <caret line="84" column="43" selection-start-line="84" selection-start-column="43" selection-end-line="84" selection-end-column="43" />
               <folding>
-                <element signature="e#9424#9425#0" expanded="true" />
-                <element signature="e#9467#9468#0" expanded="true" />
-                <element signature="e#9515#9516#0" expanded="true" />
-                <element signature="e#9559#9560#0" expanded="true" />
-                <marker date="1493472623429" expanded="false" signature="6210:6218" ph="&lt;~&gt;" />
+                <element signature="e#9208#9209#0" expanded="true" />
+                <element signature="e#9251#9252#0" expanded="true" />
+                <element signature="e#9299#9300#0" expanded="true" />
+                <element signature="e#9343#9344#0" expanded="true" />
+                <marker date="1493474366403" expanded="false" signature="5994:6002" ph="&lt;~&gt;" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LRWarpingOperator.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/processing/multiple/alignment/LRWarpingOperator.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="304">
+              <caret line="81" column="9" selection-start-line="81" selection-start-column="9" selection-end-line="81" selection-end-column="9" />
+              <folding>
+                <element signature="e#9034#9035#0" expanded="true" />
+                <element signature="e#9079#9080#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -3445,7 +3458,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/io/FileImageReader.java" />
         <option value="$PROJECT_DIR$/opencamera/src/main/java/net/sourceforge/opencamera/OpenCameraActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_processing_from_cam.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/pipeline/ProcessingQueue.java" />
@@ -3496,6 +3508,7 @@
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/threads/ReleaseSRProcessor.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/threads/FlaggingThread.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/processing/multiple/alignment/FeatureMatchingOperator.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/processing/multiple/alignment/LRWarpingOperator.java" />
       </list>
     </option>
   </component>
@@ -3713,6 +3726,36 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="refinement" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MegatronSR" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="eagleeyesr" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="processing" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="multiple" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="alignment" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -4281,12 +4324,12 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18856838" sideWeight="0.5924276" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5005624" sideWeight="0.51495725" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5" sideWeight="0.48504272" order="18" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5" sideWeight="0.48504272" order="18" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -4692,14 +4735,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/processing/multiple/alignment/LRWarpingOperator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="94">
-          <caret line="81" column="16" selection-start-line="81" selection-start-column="16" selection-end-line="81" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/threads/ReleaseSRProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="286">
@@ -4750,14 +4785,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/processing/multiple/alignment/FeatureMatchingOperator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="832">
-          <caret line="128" column="6" selection-start-line="128" selection-start-column="6" selection-end-line="128" selection-end-column="6" />
+        <state relative-caret-position="128">
+          <caret line="84" column="43" selection-start-line="84" selection-start-column="43" selection-end-line="84" selection-end-column="43" />
           <folding>
-            <element signature="e#9424#9425#0" expanded="true" />
-            <element signature="e#9467#9468#0" expanded="true" />
-            <element signature="e#9515#9516#0" expanded="true" />
-            <element signature="e#9559#9560#0" expanded="true" />
-            <marker date="1493472623429" expanded="false" signature="6210:6218" ph="&lt;~&gt;" />
+            <element signature="e#9208#9209#0" expanded="true" />
+            <element signature="e#9251#9252#0" expanded="true" />
+            <element signature="e#9299#9300#0" expanded="true" />
+            <element signature="e#9343#9344#0" expanded="true" />
+            <marker date="1493474366403" expanded="false" signature="5994:6002" ph="&lt;~&gt;" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/neildg/com/eagleeyesr/processing/multiple/alignment/LRWarpingOperator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="81" column="9" selection-start-line="81" selection-start-column="9" selection-end-line="81" selection-end-column="9" />
+          <folding>
+            <element signature="e#9034#9035#0" expanded="true" />
+            <element signature="e#9079#9080#0" expanded="true" />
           </folding>
         </state>
       </provider>

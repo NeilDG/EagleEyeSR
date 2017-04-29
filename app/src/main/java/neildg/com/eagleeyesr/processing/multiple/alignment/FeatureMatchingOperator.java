@@ -83,7 +83,6 @@ public class FeatureMatchingOperator {
 
 
         ////MULTI-THREADED FEATURE MATCHING
-        ProgressDialogHandler.getInstance().showProcessDialog("", "Detecting features in images" , ProgressDialogHandler.getInstance().getProgress());
         this.detectFeaturesInReference();
         FeatureMatcher[] featureMatchers = new FeatureMatcher[this.comparingMatList.length];
         Semaphore featureSem = new Semaphore(this.comparingMatList.length);
@@ -114,7 +113,6 @@ public class FeatureMatchingOperator {
             e.printStackTrace();
         }
 
-        ProgressDialogHandler.getInstance().hideProcessDialog();
     }
 
     private void detectFeaturesInReference() {
