@@ -41,14 +41,29 @@ public class ProgressDialogHandler {
 
 		float progress = 0.0f;
 		String text = null;
+		boolean isShowing = false;
 		if(this.progressImplementor != null) {
+			//get the last state of the previous progress bar
 			progress = this.progressImplementor.getProgress();
 			text = this.progressImplementor.getMessage();
+			isShowing = this.progressImplementor.isShown();
+
+			this.progressImplementor.hide();
+
 		}
 
+		//apply last state
 		this.progressImplementor = progressImplementor;
 		this.progressImplementor.setup("", text);
 		this.progressImplementor.updateProgress(progress);
+
+		if(isShowing) {
+			this.progressImplementor.show();
+		}
+		else {
+			this.progressImplementor.hide();
+		}
+
 	}
 	
 	public static void initialize(Activity activity) {

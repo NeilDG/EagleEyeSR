@@ -1,14 +1,19 @@
 package neildg.com.eagleeyesr;
 
 import android.media.Image;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+
+import java.io.File;
 
 import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.io.FileImageReader;
@@ -55,7 +60,6 @@ public class ImageViewActivity extends AppCompatActivity implements Notification
         cubicBtn.setChecked(true);
 
         ProgressDialogHandler.getInstance().setProgressImplementor(this.imageProgressScreen);
-        this.imageProgressScreen.show();
 
         NotificationCenter.getInstance().addObserver(Notifications.ON_SR_PROCESS_COMPLETED, this);
     }
@@ -76,6 +80,8 @@ public class ImageViewActivity extends AppCompatActivity implements Notification
         imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
         this.srView.setImage(ImageSource.uri(imageSource));
     }
+
+
 
     private void setupRadioButtons() {
         RadioGroup radioGroup = (RadioGroup) this.findViewById(R.id.image_view_radio_group);
