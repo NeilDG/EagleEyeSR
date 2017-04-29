@@ -62,11 +62,6 @@ public class ReleaseSRProcessor extends Thread{
 
         srTimeMeasure.timeStart();
 
-        ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Creating backup copy for processing.", 0.0f);
-
-        //TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
-        //transferToDirOperator.perform();
-
         ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Analyzing images", 10.0f);
 
         //initialize classes

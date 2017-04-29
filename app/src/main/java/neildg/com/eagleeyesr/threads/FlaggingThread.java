@@ -16,6 +16,9 @@ public abstract class FlaggingThread extends Thread {
         this.semaphore = semaphore;
     }
 
+    /*
+     * Starts the work of the thread while acquiring the semaphore permit
+     */
     public void startWork() {
         try {
             this.semaphore.acquire();
@@ -26,6 +29,9 @@ public abstract class FlaggingThread extends Thread {
         }
     }
 
+    /*
+     * Stops the work of the thread. IMPORTANT. This must be called at the end of the overrided run() function to ensure that the semaphore permit is released.
+     */
     public void finishWork() {
         this.semaphore.release();
     }
