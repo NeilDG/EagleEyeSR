@@ -9,8 +9,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import neildg.com.eagleeyesr.constants.BuildMode;
+import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
 import neildg.com.eagleeyesr.io.BitmapURIRepository;
+import neildg.com.eagleeyesr.io.DirectoryStorage;
+import neildg.com.eagleeyesr.io.FileImageReader;
+import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
 import neildg.com.eagleeyesr.platformtools.notifications.Notifications;
 import neildg.com.eagleeyesr.processing.process_observer.IProcessListener;
@@ -50,8 +54,9 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
         numImagesText.setText(Integer.toString(BitmapURIRepository.getInstance().getNumImagesSelected()));
 
         ProgressDialogHandler.getInstance().setDefaultProgressImplementor();
-
         SRProcessManager.getInstance().setProcessListener(this, this);
+
+        this.updateImageViewStatus();
     }
 
     @Override
@@ -69,10 +74,7 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
             }
         });
 
-        //temporarily disable results button
         Button imageViewBtn = (Button) this.findViewById(R.id.image_results_view_btn);
-        imageViewBtn.setEnabled(false);
-
         imageViewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,6 +91,11 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
             }
         });
 
+    }
+
+    private void updateImageViewStatus() {
+        Button imageViewBtn = (Button) this.findViewById(R.id.image_results_view_btn);
+        imageViewBtn.setEnabled(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG));
     }
 
     private void initializeOverlayViews() {
@@ -129,9 +136,7 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
 
     @Override
     public void onProcessCompleted() {
-        Button imageViewBtn = (Button) ProcessingActivityRelease.this.findViewById(R.id.image_results_view_btn);
-        imageViewBtn.setEnabled(true);
-
+       this.updateImageViewStatus();
         ///automatically start image preview
         Intent previewIntent = new Intent(ProcessingActivityRelease.this, ImageViewActivity.class);
         startActivity(previewIntent);

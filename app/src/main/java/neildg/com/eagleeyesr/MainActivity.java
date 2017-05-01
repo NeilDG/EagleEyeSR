@@ -76,9 +76,6 @@ public class MainActivity extends AppCompatActivity{
 
         ApplicationCore.initialize(this);
         ProgressDialogHandler.initialize(this);
-        DirectoryStorage.getSharedInstance().createDirectory();
-        FileImageWriter.initialize(this);
-        FileImageReader.initialize(this);
         ParameterConfig.initialize(this);
         AttributeHolder.initialize(this);
 
@@ -105,6 +102,10 @@ public class MainActivity extends AppCompatActivity{
             Log.d(TAG, "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
+
+        DirectoryStorage.getSharedInstance().createDirectory();
+        FileImageWriter.initialize(this);
+        FileImageReader.initialize(this);
     }
 
     @Override

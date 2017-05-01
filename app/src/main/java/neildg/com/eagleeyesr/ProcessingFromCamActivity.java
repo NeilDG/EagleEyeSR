@@ -7,9 +7,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import neildg.com.eagleeyesr.constants.FilenameConstants;
+import neildg.com.eagleeyesr.io.DirectoryStorage;
+import neildg.com.eagleeyesr.io.FileImageReader;
+import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
 import neildg.com.eagleeyesr.platformtools.notifications.Notifications;
 import neildg.com.eagleeyesr.processing.process_observer.IProcessListener;
+import neildg.com.eagleeyesr.processing.process_observer.SRProcessManager;
 import neildg.com.eagleeyesr.threads.ReleaseSRProcessor;
 import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
@@ -34,6 +39,9 @@ public class ProcessingFromCamActivity extends AppCompatActivity implements IPro
     protected void onResume() {
         super.onResume();
         ProgressDialogHandler.getInstance().setDefaultProgressImplementor();
+        SRProcessManager.getInstance().setProcessListener(this, this);
+
+        this.updateImageViewStatus();
     }
 
     @Override
@@ -42,11 +50,14 @@ public class ProcessingFromCamActivity extends AppCompatActivity implements IPro
         super.onDestroy();
     }
 
+    private void updateImageViewStatus() {
+        Button imageViewBtn = (Button) this.findViewById(R.id.image_results_view_btn);
+        imageViewBtn.setEnabled(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG));
+    }
+
 
     private void initializeButtons() {
         Button imageViewBtn = (Button) this.findViewById(R.id.image_results_view_btn);
-        imageViewBtn.setEnabled(false);
-
         imageViewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,15 +69,11 @@ public class ProcessingFromCamActivity extends AppCompatActivity implements IPro
 
     @Override
     public void onProcessCompleted() {
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Button imageViewBtn = (Button) ProcessingFromCamActivity.this.findViewById(R.id.image_results_view_btn);
-                imageViewBtn.setEnabled(true);
+        ProcessingFromCamActivity.this.updateImageViewStatus();
 
-                NotificationCenter.getInstance().postNotification(Notifications.ON_SR_PROCESS_COMPLETED);
-            }
-        });
+        ///automatically start image preview
+        Intent previewIntent = new Intent(ProcessingFromCamActivity.this, ImageViewActivity.class);
+        startActivity(previewIntent);
     }
 
     @Override
