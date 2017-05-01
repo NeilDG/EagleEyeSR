@@ -11,12 +11,10 @@ import java.util.concurrent.Semaphore;
 
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageWriter;
-import neildg.com.eagleeyesr.io.ImageInputMap;
 import neildg.com.eagleeyesr.processing.IOperator;
 import neildg.com.eagleeyesr.processing.imagetools.ColorSpaceOperator;
-import neildg.com.eagleeyesr.processing.multiple.assessment.InputImageEnergyReader;
 import neildg.com.eagleeyesr.threads.FlaggingThread;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Class that handles denoising operations
@@ -36,7 +34,7 @@ public class DenoisingOperator implements IOperator{
     @Override
     public void perform() {
         for(int i = 0; i < this.matList.length; i++) {
-            ProgressDialogHandler.getInstance().showProcessDialog("Denoising", "Denoising image " +i, ProgressDialogHandler.getInstance().getProgress());
+            ProgressDialogHandler.getInstance().showProcessDialog("Denoising", "Denoising image " +i, 25.0f);
 
             //perform denoising on energy channel only
             Mat[] yuvMat = ColorSpaceOperator.convertRGBToYUV(this.matList[i]);
@@ -53,7 +51,7 @@ public class DenoisingOperator implements IOperator{
 
             this.outputMatList[i] = ColorSpaceOperator.convertYUVtoRGB(yuvMat);
 
-            ProgressDialogHandler.getInstance().hideUserDialog();
+            ProgressDialogHandler.getInstance().hideProcessDialog();
         }
 
         /*DenoisingWorker[] denoisingWorkers = new DenoisingWorker[this.matList.length];

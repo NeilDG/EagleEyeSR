@@ -6,6 +6,8 @@ package neildg.com.eagleeyesr.io;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -164,6 +166,19 @@ public class FileImageWriter {
 			}
 		});
 
+		this.refreshImageGallery(imageFile);
+	}
+
+	private void refreshImageGallery(File srFile) {
+		//refresh image gallery
+		MediaScannerConnection.scanFile(this.context,
+				new String[] { srFile.toString() }, null,
+				new MediaScannerConnection.OnScanCompletedListener() {
+					public void onScanCompleted(String path, Uri uri) {
+						Log.i("ExternalStorage", "Scanned " + path);
+						Log.i("ExternalStorage", "-> uri=" + uri);
+					}
+				});
 	}
 
 	private File getAlbumStorageDir(String albumName) {

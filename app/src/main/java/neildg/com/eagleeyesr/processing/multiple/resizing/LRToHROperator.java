@@ -8,7 +8,7 @@ import neildg.com.eagleeyesr.constants.ParameterConfig;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.processing.IOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Converts LR to HR images and saves them. This serves as generation of different HR images for comparison

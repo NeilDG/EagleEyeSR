@@ -9,7 +9,7 @@ import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.model.AttributeHolder;
 import neildg.com.eagleeyesr.model.AttributeNames;
 import neildg.com.eagleeyesr.processing.IOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Created by NeilDG on 5/4/2016.

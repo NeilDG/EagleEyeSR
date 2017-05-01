@@ -17,7 +17,7 @@ import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.pipeline.ProcessingQueue;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Handles the saving of image upon capture

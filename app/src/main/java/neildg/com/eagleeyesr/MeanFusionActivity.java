@@ -11,7 +11,7 @@ import org.opencv.android.OpenCVLoader;
 import neildg.com.eagleeyesr.io.DirectoryStorage;
 import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.io.FileImageWriter;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 public class MeanFusionActivity extends AppCompatActivity {
     private final static String TAG = "MeanFusionActivity";

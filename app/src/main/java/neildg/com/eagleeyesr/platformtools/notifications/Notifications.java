@@ -17,4 +17,6 @@ public class Notifications {
 
 	public final static String ON_SR_AWAKE = "ON_SR_AWAKE";
 	public final static String ON_PIPELINE_REQUEST_NEW_IMAGE = "ON_PIPELINE_REQUEST_NEW_IMAGE";
+
+	public final static String ON_SR_PROCESS_COMPLETED = "ON_SR_PROCESS_COMPLETED";
 }

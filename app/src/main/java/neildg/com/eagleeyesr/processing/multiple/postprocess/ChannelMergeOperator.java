@@ -12,7 +12,7 @@ import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.processing.IOperator;
 import neildg.com.eagleeyesr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Operator that merges the YUV channels of the mat and converts it back to RGB format (if needed).

@@ -13,7 +13,7 @@ import neildg.com.eagleeyesr.constants.ParameterConfig;
 import neildg.com.eagleeyesr.model.multiple.DisplacementValue;
 import neildg.com.eagleeyesr.processing.IOperator;
 import neildg.com.eagleeyesr.processing.imagetools.ColorSpaceOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Creates zero-filled images by optical flow

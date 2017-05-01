@@ -10,7 +10,7 @@ import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.io.MatWriter;
 import neildg.com.eagleeyesr.processing.ITest;
 import neildg.com.eagleeyesr.processing.multiple.resizing.DownsamplingOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Created by NeilDG on 6/4/2016.

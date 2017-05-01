@@ -1,4 +1,4 @@
-package neildg.com.eagleeyesr.processing.listeners;
+package neildg.com.eagleeyesr.processing.process_observer;
 
 /**
  * Created by NeilDG on 10/4/2016.
@@ -6,4 +6,5 @@ package neildg.com.eagleeyesr.processing.listeners;
 
 public interface IProcessListener {
     void onProcessCompleted();
+    void onProducedInitialHR();
 }

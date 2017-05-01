@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -18,8 +17,6 @@ import com.darsh.multipleimageselect.activities.AlbumSelectActivity;
 import com.darsh.multipleimageselect.helpers.Constants;
 import com.darsh.multipleimageselect.models.Image;
 
-import net.sourceforge.opencamera.OpenCameraActivity;
-
 import org.opencv.android.*;
 
 import java.io.File;
@@ -32,7 +29,7 @@ import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.model.AttributeHolder;
 import neildg.com.eagleeyesr.platformtools.core_application.ApplicationCore;
 import neildg.com.eagleeyesr.io.BitmapURIRepository;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 import neildg.com.eagleeyesr.ui.views.AboutScreen;
 import neildg.com.eagleeyesr.ui.views.InfoScreen;
 
@@ -79,9 +76,6 @@ public class MainActivity extends AppCompatActivity{
 
         ApplicationCore.initialize(this);
         ProgressDialogHandler.initialize(this);
-        DirectoryStorage.getSharedInstance().createDirectory();
-        FileImageWriter.initialize(this);
-        FileImageReader.initialize(this);
         ParameterConfig.initialize(this);
         AttributeHolder.initialize(this);
 
@@ -108,6 +102,10 @@ public class MainActivity extends AppCompatActivity{
             Log.d(TAG, "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
+
+        DirectoryStorage.getSharedInstance().createDirectory();
+        FileImageWriter.initialize(this);
+        FileImageReader.initialize(this);
     }
 
     @Override

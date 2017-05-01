@@ -22,7 +22,7 @@ import neildg.com.eagleeyesr.model.multiple.SharpnessMeasure;
 import neildg.com.eagleeyesr.processing.filters.YangFilter;
 import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
 import neildg.com.eagleeyesr.processing.imagetools.MatMemory;
-import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
+import neildg.com.eagleeyesr.processing.process_observer.IProcessListener;
 import neildg.com.eagleeyesr.processing.multiple.alignment.AffineWarpingOperator;
 import neildg.com.eagleeyesr.processing.multiple.alignment.FeatureMatchingOperator;
 import neildg.com.eagleeyesr.processing.multiple.alignment.LRWarpingOperator;
@@ -34,7 +34,8 @@ import neildg.com.eagleeyesr.processing.multiple.enhancement.UnsharpMaskOperator
 import neildg.com.eagleeyesr.processing.multiple.fusion.FusionConstants;
 import neildg.com.eagleeyesr.processing.multiple.fusion.MeanFusionOperator;
 import neildg.com.eagleeyesr.processing.multiple.refinement.DenoisingOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.processing.process_observer.SRProcessManager;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * SR processor for release mode
@@ -43,9 +44,8 @@ import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
 public class ReleaseSRProcessor extends Thread{
     private final static String TAG = "ReleaseSRProcessor";
 
-    private IProcessListener processListener;
-    public ReleaseSRProcessor(IProcessListener processListener) {
-        this.processListener = processListener;
+    public ReleaseSRProcessor() {
+
     }
 
     @Override
@@ -61,11 +61,6 @@ public class ReleaseSRProcessor extends Thread{
         TimeMeasure fusionMeasuure = TimeMeasureManager.getInstance().newTimeMeasure(TimeMeasureManager.IMAGE_FUSION_TIME);
 
         srTimeMeasure.timeStart();
-
-        ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Creating backup copy for processing.", 0.0f);
-
-        //TransferToDirOperator transferToDirOperator = new TransferToDirOperator(BitmapURIRepository.getInstance().getNumImagesSelected());
-        //transferToDirOperator.perform();
 
         ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Analyzing images", 10.0f);
 
@@ -115,8 +110,8 @@ public class ReleaseSRProcessor extends Thread{
 
         selectionMeasure.timeEnd();
 
-
         this.interpolateImage(sharpnessResult.getLeastIndex());
+        SRProcessManager.getInstance().initialHRProduced();
 
         int bestIndex = 0;
         //load RGB inputs
@@ -137,7 +132,7 @@ public class ReleaseSRProcessor extends Thread{
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length+ " Best index: " +bestIndex);
 
         this.performActualSuperres(rgbInputMatList, inputIndices, bestIndex, false);
-        this.processListener.onProcessCompleted();
+        SRProcessManager.getInstance().srProcessCompleted();
 
         srTimeMeasure.timeEnd();
         Log.d(TAG,"Total processing time is " +TimeMeasureManager.convertDeltaToString(srTimeMeasure.getDeltaDifference()));
@@ -279,6 +274,7 @@ public class ReleaseSRProcessor extends Thread{
     }
 
     private void interpolateImage(int index) {
+        ProgressDialogHandler.getInstance().showProcessDialog("Pre-process", "Creating initial HR image", 20.0f);
         boolean outputComparisons = ParameterConfig.getPrefsBoolean(ParameterConfig.DEBUGGING_FLAG_KEY, false);
 
         if(outputComparisons) {

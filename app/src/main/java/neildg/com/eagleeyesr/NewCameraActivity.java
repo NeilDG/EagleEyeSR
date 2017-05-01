@@ -2,14 +2,11 @@ package neildg.com.eagleeyesr;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -20,15 +17,12 @@ import net.sourceforge.opencamera.external_bridge.ImageSaveBroadcaster;
 
 import neildg.com.eagleeyesr.camera2.CameraUserSettings;
 import neildg.com.eagleeyesr.io.FileImageReader;
-import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.ImageInputMap;
 import neildg.com.eagleeyesr.pipeline.ProcessingQueue;
 import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
-import neildg.com.eagleeyesr.platformtools.notifications.NotificationListener;
 import neildg.com.eagleeyesr.platformtools.notifications.Notifications;
-import neildg.com.eagleeyesr.platformtools.notifications.Parameters;
 import neildg.com.eagleeyesr.threads.CaptureSRProcessor;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 import neildg.com.eagleeyesr.ui.views.OptionsScreen;
 import neildg.com.eagleeyesr.ui.views.ProcessingQueueScreen;
 
@@ -63,6 +57,7 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
         this.srProcessor.startBackgroundThread();
 
         ProgressDialogHandler.initialize(this);
+        ProgressDialogHandler.getInstance().setDefaultProgressImplementor();
         ImageSaveBroadcaster.getSharedInstance().addEvent(this);
 
         ImageButton takePhotoBtn = (ImageButton) this.findViewById(R.id.take_photo);

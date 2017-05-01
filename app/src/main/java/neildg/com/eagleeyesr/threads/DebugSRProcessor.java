@@ -15,11 +15,11 @@ import neildg.com.eagleeyesr.model.multiple.SharpnessMeasure;
 import neildg.com.eagleeyesr.processing.filters.YangFilter;
 import neildg.com.eagleeyesr.processing.imagetools.ColorSpaceOperator;
 import neildg.com.eagleeyesr.processing.imagetools.MatMemory;
-import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
+import neildg.com.eagleeyesr.processing.process_observer.IProcessListener;
 import neildg.com.eagleeyesr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.eagleeyesr.processing.multiple.selection.TestImagesSelector;
 import neildg.com.eagleeyesr.processing.multiple.resizing.LRToHROperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * SRProcessor debugging main entry point. This processor has the downsampling operator included.
@@ -126,7 +126,7 @@ public class DebugSRProcessor extends Thread {
         rgbInputMatList = newInputMatList.toArray(new Mat[newInputMatList.size()]);
         Log.d(TAG, "RGB INPUT LENGTH: "+rgbInputMatList.length + " Best index: " +bestIndex);
 
-        ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor(this.processListener);
+        ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor();
         releaseSRProcessor.performActualSuperres(rgbInputMatList, inputIndices, bestIndex, true);
         this.processListener.onProcessCompleted();
 
