@@ -24,8 +24,10 @@ android {
         }
     }
 
-    // add begin
-    sourceSets.main.jni.srcDirs = []
+    sourceSets.main{
+        jni.srcDirs = []
+        jniLibs.srcDir 'src/main/jniLibs'
+    }
 
     task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
         Properties properties = new Properties()

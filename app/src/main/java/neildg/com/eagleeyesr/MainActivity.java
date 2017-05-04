@@ -18,6 +18,7 @@ import com.darsh.multipleimageselect.helpers.Constants;
 import com.darsh.multipleimageselect.models.Image;
 
 import org.opencv.android.*;
+import org.opencv.core.Mat;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.model.AttributeHolder;
 import neildg.com.eagleeyesr.platformtools.core_application.ApplicationCore;
 import neildg.com.eagleeyesr.io.BitmapURIRepository;
+import neildg.com.eagleeyesr.processing.jni_bridge.SuperResJNI;
 import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 import neildg.com.eagleeyesr.ui.views.AboutScreen;
 import neildg.com.eagleeyesr.ui.views.InfoScreen;
@@ -46,15 +48,13 @@ public class MainActivity extends AppCompatActivity{
         System.loadLibrary("opencv_bridge");
     }
 
-    private native String hello();
-
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS:
                 {
-                    Log.i(TAG, "OpenCV loaded successfully " +MainActivity.this.hello());
+                    Log.i(TAG, "OpenCV loaded successfully!");
                 } break;
                 default:
                 {
@@ -106,6 +106,12 @@ public class MainActivity extends AppCompatActivity{
         DirectoryStorage.getSharedInstance().createDirectory();
         FileImageWriter.initialize(this);
         FileImageReader.initialize(this);
+
+        int result = SuperResJNI.getInstance().testSum(10,20);
+        Log.i(TAG, "Result of add from JNI : " +result);
+
+        Mat testMat = SuperResJNI.getInstance().getOutputMat();
+        Log.i(TAG, "Test mat property size: " + testMat.size().toString() + " Sample value: " +testMat.get(0,0)[0]);
     }
 
     @Override
