@@ -63,7 +63,6 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile project(':openCVLibrary310_new')
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.android.support:design:24.2.0'
     compile 'com.android.support:recyclerview-v7:24.2.0'
@@ -73,4 +72,5 @@ dependencies {
     compile 'com.akexorcist:RoundCornerProgressBar:2.0.3'
     compile 'com.github.darsh2:MultipleImageSelect:v0.0.4'
     compile project(':opencamera')
+    compile project(':openCVLibrary320')
 }

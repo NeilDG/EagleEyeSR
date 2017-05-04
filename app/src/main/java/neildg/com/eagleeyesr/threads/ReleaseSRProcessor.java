@@ -4,6 +4,7 @@ import android.util.Log;
 
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.ml.NormalBayesClassifier;
 
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
@@ -313,6 +314,7 @@ public class ReleaseSRProcessor extends Thread{
         else {
             return warpedImageNames;
         }
+
     }
 
     private void performAffineWarping(Mat referenceMat, Mat[] candidateMatList, Mat[] imagesToWarpList) {
