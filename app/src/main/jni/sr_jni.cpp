@@ -8,10 +8,15 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <string>
+#include <android/log.h>
 #include "neildg_com_eagleeyesr_processing_jni_bridge_SuperResJNI.h"
 
 using namespace cv;
 using namespace std;
+
+#define  LOG_TAG    "SuperResJNI_Native"
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+
 
 JNIEXPORT jlong JNICALL Java_neildg_com_eagleeyesr_processing_jni_1bridge_SuperResJNI_n_1processMat
   (JNIEnv *env, jclass myClass, jlong matAddr1, jlong matAddr2, jlong outputAddr){
@@ -28,6 +33,7 @@ JNIEXPORT jlong JNICALL Java_neildg_com_eagleeyesr_processing_jni_1bridge_SuperR
 
 JNIEXPORT jlong JNICALL Java_neildg_com_eagleeyesr_processing_jni_1bridge_SuperResJNI_n_1meanFusion
   (JNIEnv *env, jclass myClass, jint j_scaleFactor, jlong inputAddr, jobjectArray objectArr, jlong outputAddr) {
+
     int size = env->GetArrayLength(objectArr);
 
     Mat& initialMat = *(Mat*) inputAddr;
@@ -42,26 +48,37 @@ JNIEXPORT jlong JNICALL Java_neildg_com_eagleeyesr_processing_jni_1bridge_SuperR
 
     initialMat.release();
 
-    for (int i=0; i < size; ++i)
+    for (int i=0; i < size; i++)
     {
         jstring jStringObj = (jstring) env->GetObjectArrayElement(objectArr, i);
         const char* myarray = env->GetStringUTFChars(jStringObj, 0);
 
         //perform bicubic interpolation
-        IplImage* image = cvLoadImage(myarray);
-        initialMat = cvarrToMat(image);
+        initialMat = imread(myarray);
+        LOGI("Path: %s", myarray);
+         if(! initialMat.data )                              // Check for invalid input
+         {
+                LOGI("Could not open or find the image");
+         }
+
+
         Mat resizedMat(initialMat.rows * scaleFactor, initialMat.cols * scaleFactor, CV_16UC3);
         cv::resize(initialMat, resizedMat, resizedMat.size(), scaleFactor, scaleFactor, INTER_LINEAR);
 
         //accumulate to HR grid
-        cv::add(sumMat, resizedMat, sumMat);
+        //create mask
+        Mat mask = Mat::ones(resizedMat.rows, resizedMat.cols, CV_8UC1);
+        cv::add(sumMat, resizedMat, sumMat, mask, CV_16UC3);
+
+        mask.release();
+        initialMat.release();
 
         env->ReleaseStringUTFChars(jStringObj, myarray);
         env->DeleteLocalRef(jStringObj);
     }
 
      //perform per-element division after accumulating to HR grid
-     sumMat = sumMat / (size + 1);
+     cv::divide(sumMat, size + 1, sumMat);
      sumMat.convertTo(outputMat, CV_8UC3);
      sumMat.release();
 

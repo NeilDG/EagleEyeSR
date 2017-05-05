@@ -106,12 +106,6 @@ public class MainActivity extends AppCompatActivity{
         DirectoryStorage.getSharedInstance().createDirectory();
         FileImageWriter.initialize(this);
         FileImageReader.initialize(this);
-
-        int result = SuperResJNI.getInstance().testSum(10,20);
-        Log.i(TAG, "Result of add from JNI : " +result);
-
-        Mat testMat = SuperResJNI.getInstance().getOutputMat();
-        Log.i(TAG, "Test mat property size: " + testMat.size().toString() + " Sample value: " +testMat.get(0,0)[0]);
     }
 
     @Override

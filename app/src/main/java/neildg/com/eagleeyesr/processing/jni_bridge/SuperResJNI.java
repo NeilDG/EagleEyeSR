@@ -43,9 +43,9 @@ public class SuperResJNI {
 
         for(int i = 0; i <  imagePathList.length; i++) {
             decodedFilePath[i] = FileImageReader.getInstance().getDecodedFilePath(imagePathList[i], ImageFileAttribute.FileType.JPEG);
-            Log.i(TAG, "Image path: " +decodedFilePath[i]);
         }
-        return new Mat(SuperResJNI.n_meanFusion(scaleFactor, initialMat.nativeObj, imagePathList, outputMat.nativeObj));
+
+        return new Mat(SuperResJNI.n_meanFusion(scaleFactor, initialMat.nativeObj, decodedFilePath, outputMat.nativeObj));
     }
 
     public int testSum(int a, int b) {

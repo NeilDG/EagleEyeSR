@@ -136,14 +136,14 @@ public class ReleaseSRProcessor extends Thread{
         SRProcessManager.getInstance().srProcessCompleted();
 
         srTimeMeasure.timeEnd();
-        Log.d(TAG,"Total processing time is " +TimeMeasureManager.convertDeltaToString(srTimeMeasure.getDeltaDifference()));
-        Log.d(TAG, "Edge Detection time: " +TimeMeasureManager.convertDeltaToString(edgeDetectionMeasure.getDeltaDifference()));
-        Log.d(TAG, "Image Selection time: " +TimeMeasureManager.convertDeltaToSeconds(selectionMeasure.getDeltaDifference()));
-        Log.d(TAG, "Denoising time: " +TimeMeasureManager.convertDeltaToString(denoisingMeasure.getDeltaDifference()));
-        Log.d(TAG, "Image Sharpening time: " +TimeMeasureManager.convertDeltaToString(sharpeningMeasure.getDeltaDifference()));
-        Log.d(TAG, "Image Alignment time: " +TimeMeasureManager.convertDeltaToString(imageAlignmentMeasure.getDeltaDifference()));
-        Log.d(TAG, "Alignment Selection time: " +TimeMeasureManager.convertDeltaToString(alignmentSelectMeasure.getDeltaDifference()));
-        Log.d(TAG, "Image Fusion time: " +TimeMeasureManager.convertDeltaToString(fusionMeasuure.getDeltaDifference()));
+        Log.i(TAG,"Total processing time is " +TimeMeasureManager.convertDeltaToString(srTimeMeasure.getDeltaDifference()));
+        Log.i(TAG, "Edge Detection time: " +TimeMeasureManager.convertDeltaToString(edgeDetectionMeasure.getDeltaDifference()));
+        Log.i(TAG, "Image Selection time: " +TimeMeasureManager.convertDeltaToSeconds(selectionMeasure.getDeltaDifference()));
+        Log.i(TAG, "Denoising time: " +TimeMeasureManager.convertDeltaToString(denoisingMeasure.getDeltaDifference()));
+        Log.i(TAG, "Image Sharpening time: " +TimeMeasureManager.convertDeltaToString(sharpeningMeasure.getDeltaDifference()));
+        Log.i(TAG, "Image Alignment time: " +TimeMeasureManager.convertDeltaToString(imageAlignmentMeasure.getDeltaDifference()));
+        Log.i(TAG, "Alignment Selection time: " +TimeMeasureManager.convertDeltaToString(alignmentSelectMeasure.getDeltaDifference()));
+        Log.i(TAG, "Image Fusion time: " +TimeMeasureManager.convertDeltaToString(fusionMeasuure.getDeltaDifference()));
     }
 
     public void performActualSuperres(Mat[] rgbInputMatList, Integer[] inputIndices, int bestIndex, boolean debugMode) {
