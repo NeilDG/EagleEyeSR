@@ -15,6 +15,7 @@ import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.ImageInputMap;
 import neildg.com.eagleeyesr.processing.IOperator;
 import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
+import neildg.com.eagleeyesr.processing.jni_bridge.SuperResJNI;
 import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
@@ -40,7 +41,10 @@ public class MeanFusionOperator implements IOperator {
 
         ImageInputMap.deletePlaceholderImages(); //delete acquired images if camera app was used.
 
-        int scale = ParameterConfig.getScalingFactor();
+        this.outputMat = new Mat();
+        SuperResJNI.getInstance().performMeanFusion(ParameterConfig.getScalingFactor(), this.initialMat, this.imageMatPathList, this.outputMat);
+
+        /*int scale = ParameterConfig.getScalingFactor();
         this.outputMat = new Mat();
         this.initialMat.convertTo(initialMat, CvType.CV_16UC(initialMat.channels())); //convert to CV_16UC
         Log.d(TAG, "Initial image for fusion Size:" +initialMat.size() + " Scale: " +scale);
@@ -79,7 +83,7 @@ public class MeanFusionOperator implements IOperator {
         Core.divide(sumMat, Scalar.all(this.imageMatPathList.length + 1), sumMat);
 
         sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
-        sumMat.release();
+        sumMat.release();*/
     }
 
 

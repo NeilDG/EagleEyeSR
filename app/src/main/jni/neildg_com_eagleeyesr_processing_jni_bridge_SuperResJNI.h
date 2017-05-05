@@ -23,6 +23,14 @@ JNIEXPORT jlong JNICALL Java_neildg_com_eagleeyesr_processing_jni_1bridge_SuperR
 JNIEXPORT jint JNICALL Java_neildg_com_eagleeyesr_processing_jni_1bridge_SuperResJNI_n_1testSum
   (JNIEnv *, jclass, jint, jint);
 
+/*
+ * Class:     neildg_com_eagleeyesr_processing_jni_bridge_SuperResJNI
+ * Method:    n_meanFusion
+ * Signature: (IJ[Ljava/lang/String;J)J
+ */
+JNIEXPORT jlong JNICALL Java_neildg_com_eagleeyesr_processing_jni_1bridge_SuperResJNI_n_1meanFusion
+  (JNIEnv *, jclass, jint, jlong, jobjectArray, jlong);
+
 #ifdef __cplusplus
 }
 #endif
