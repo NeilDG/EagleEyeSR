@@ -365,6 +365,7 @@ public class OpenCameraActivity extends Activity implements AudioListener.AudioL
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putString(PreferenceKeys.getBurstModePreferenceKey(), "10");
+		editor.putString(PreferenceKeys.getSceneModePreferenceKey(), "steadyphoto");
 		editor.apply();
 	}
 

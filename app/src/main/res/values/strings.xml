@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Eagle-Eye HD Camera</string>
     <string name="title_activity_main">Eagle-Eye HD Camera</string>
-    <string name="sr_title">Eagle-Eye: A Superresolution Experiment</string>
+    <string name="sr_title">Eagle-Eye: A Super-Resolution Experiment</string>
     <string name="sr_intro">ABOUT: This is a mobile application that utilizes super-resolution to further enhance an image. App is in early stages of development and may not be stable.</string>
     <string name="title_activity_image_capture">ImageCaptureActivity</string>
     <string name="desc_debug_mode">Produce nearest-neighbor, bilinear and bicubic HR images if debugging mode is enabled.</string>
