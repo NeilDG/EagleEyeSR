@@ -46,7 +46,7 @@ JNIEXPORT jlong JNICALL Java_neildg_com_eagleeyesr_processing_jni_1bridge_SuperR
     Mat sumMat(initialMat.rows * scaleFactor, initialMat.cols * scaleFactor, CV_16UC3);
     cv::resize(initialMat, sumMat, sumMat.size(), scaleFactor, scaleFactor, INTER_LINEAR);
 
-    //initialMat.release();
+    initialMat.release();
 
     for (int i=0; i < size; i++)
     {
@@ -80,7 +80,7 @@ JNIEXPORT jlong JNICALL Java_neildg_com_eagleeyesr_processing_jni_1bridge_SuperR
      //perform per-element division after accumulating to HR grid
      cv::divide(sumMat, size + 1, sumMat);
      sumMat.convertTo(outputMat, CV_8UC3);
-     //sumMat.release();
+     sumMat.release();
 
     return (jlong) &outputMat;
   }
