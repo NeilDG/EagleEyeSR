@@ -185,7 +185,7 @@ public class FileImageWriter {
 		// Get the directory for the app's private pictures directory.
 		File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), albumName);
 		if (!file.mkdirs()) {
-			Log.e(TAG, "Directory not created");
+			Log.d(TAG, "Directory not created");
 		}
 		return file;
 	}

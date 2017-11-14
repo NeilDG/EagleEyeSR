@@ -4,7 +4,7 @@ include $(CLEAR_VARS)
 
 #opencv
 OPENCVROOT:= C:\Users\NeilDG\Documents\MSCSGithubProjects\opencv-3.2.0-android-sdk\OpenCV-android-sdk
-OPENCV_CAMERA_MODcULES:=off
+OPENCV_CAMERA_MODULES:=off
 OPENCV_INSTALL_MODULES:=on
 OPENCV_LIB_TYPE:=SHARED
 include ${OPENCVROOT}/sdk/native/jni/OpenCV.mk

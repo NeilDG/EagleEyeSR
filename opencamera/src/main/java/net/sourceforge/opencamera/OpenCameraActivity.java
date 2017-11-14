@@ -1752,7 +1752,7 @@ public class OpenCameraActivity extends Activity implements AudioListener.AudioL
 		showPreview(false);
 		setWindowFlagsForSettings();
 		final String orig_save_location = applicationInterface.getStorageUtils().getSaveLocation();
-		FolderChooserDialog fragment = new FolderChooserDialog() {
+		/*FolderChooserDialog fragment = new FolderChooserDialog() {
 			@Override
 			public void onDismiss(DialogInterface dialog) {
 				if( MyDebug.LOG )
@@ -1769,7 +1769,7 @@ public class OpenCameraActivity extends Activity implements AudioListener.AudioL
 				super.onDismiss(dialog);
 			}
 		};
-		fragment.show(getFragmentManager(), "FOLDER_FRAGMENT");
+		fragment.show(getFragmentManager(), "FOLDER_FRAGMENT");*/
     }
 
     /** User can long-click on gallery to select a recent save location from the history, of if not available,

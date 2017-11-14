@@ -36,6 +36,10 @@ public class ParameterConfig {
         this.editorPrefs = this.sharedPrefs.edit();
     }
 
+    public static boolean hasInitialized() {
+        return (sharedInstance != null);
+    }
+
     public static void initialize(Context appContext) {
         if(sharedInstance == null) {
             sharedInstance = new ParameterConfig(appContext);

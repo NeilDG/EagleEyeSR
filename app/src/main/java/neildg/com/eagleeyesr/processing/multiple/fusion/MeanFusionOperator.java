@@ -42,9 +42,16 @@ public class MeanFusionOperator implements IOperator {
         ImageInputMap.deletePlaceholderImages(); //delete acquired images if camera app was used.
 
         this.outputMat = new Mat();
-        SuperResJNI.getInstance().performMeanFusion(ParameterConfig.getScalingFactor(), this.initialMat, this.imageMatPathList, this.outputMat);
+        //SuperResJNI.getInstance().performMeanFusion(ParameterConfig.getScalingFactor(), this.initialMat, this.imageMatPathList, this.outputMat);
 
-        /*int scale = ParameterConfig.getScalingFactor();
+        this.performAlternateFusion();
+
+    }
+
+
+    //this function is similar to its native counterpart. However, this one has more overhead because of repetitive JNI calls.
+    private void performAlternateFusion() {
+        int scale = ParameterConfig.getScalingFactor();
         this.outputMat = new Mat();
         this.initialMat.convertTo(initialMat, CvType.CV_16UC(initialMat.channels())); //convert to CV_16UC
         Log.d(TAG, "Initial image for fusion Size:" +initialMat.size() + " Scale: " +scale);
@@ -83,10 +90,8 @@ public class MeanFusionOperator implements IOperator {
         Core.divide(sumMat, Scalar.all(this.imageMatPathList.length + 1), sumMat);
 
         sumMat.convertTo(this.outputMat, CvType.CV_8UC(sumMat.channels()));
-        sumMat.release();*/
+        sumMat.release();
     }
-
-
 
     public Mat getResult() {
         return this.outputMat;

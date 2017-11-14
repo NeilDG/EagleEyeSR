@@ -4,9 +4,9 @@
       <root url="jar://$PROJECT_DIR$/opencamera/build/intermediates/exploded-aar/com.android.support/support-v4/24.0.0/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/opencamera/build/intermediates/exploded-aar/com.android.support/support-v4/24.0.0/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/opencamera/build/intermediates/exploded-aar/com.android.support/support-v4/24.0.0/res" />
-      <root url="jar://$PROJECT_DIR$/opencamera/build/intermediates/exploded-aar/com.android.support/support-v4/24.0.0/jars/libs/internal_impl-24.0.0.jar!/" />
+      <root url="jar://C:/Android/.android/build-cache/dc9b0eb058044de57cfeb7e5220fd003c9590ef1/output/jars/libs/internal_impl-24.0.0.jar!/" />
+      <root url="file://C:/Android/.android/build-cache/dc9b0eb058044de57cfeb7e5220fd003c9590ef1/output/res" />
+      <root url="jar://C:/Android/.android/build-cache/dc9b0eb058044de57cfeb7e5220fd003c9590ef1/output/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

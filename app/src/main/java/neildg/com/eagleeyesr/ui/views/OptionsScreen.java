@@ -10,6 +10,7 @@ import android.widget.ToggleButton;
 
 import neildg.com.eagleeyesr.R;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
+import neildg.com.eagleeyesr.platformtools.core_application.ApplicationCore;
 import neildg.com.eagleeyesr.processing.multiple.alignment.WarpingConstants;
 import neildg.com.eagleeyesr.processing.multiple.fusion.FusionConstants;
 import neildg.com.eagleeyesr.ui.ResolutionPickerDialog;
