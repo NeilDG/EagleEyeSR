@@ -81,7 +81,6 @@ public class FeatureMatchingOperator {
         }
         MatMemory.releaseAll(this.lrDescriptorList, false);*/
 
-
         ////MULTI-THREADED FEATURE MATCHING
         this.detectFeaturesInReference();
         FeatureMatcher[] featureMatchers = new FeatureMatcher[this.comparingMatList.length];

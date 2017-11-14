@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="MultipleImageSelect-v0.0.4">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.darsh2/MultipleImageSelect/v0.0.4/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.darsh2/MultipleImageSelect/v0.0.4/res" />
+      <root url="file://C:/Android/.android/build-cache/ab655ba96f7213546373314f6da782e8b8391760/output/res" />
+      <root url="jar://C:/Android/.android/build-cache/ab655ba96f7213546373314f6da782e8b8391760/output/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
