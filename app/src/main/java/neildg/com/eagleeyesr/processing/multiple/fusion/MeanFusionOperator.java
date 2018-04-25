@@ -15,6 +15,7 @@ import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.ImageInputMap;
 import neildg.com.eagleeyesr.processing.IOperator;
 import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
+import neildg.com.eagleeyesr.processing.imagetools.MatMemory;
 import neildg.com.eagleeyesr.processing.jni_bridge.SuperResJNI;
 import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
@@ -85,6 +86,7 @@ public class MeanFusionOperator implements IOperator {
 
             this.initialMat.release();
             maskMat.release();
+            MatMemory.cleanMemory();
         }
 
         Core.divide(sumMat, Scalar.all(this.imageMatPathList.length + 1), sumMat);
