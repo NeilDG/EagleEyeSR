@@ -73,13 +73,10 @@ public class ImageViewActivity extends AppCompatActivity implements IProcessList
     private void loadImageView() {
         String imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG);
         this.interpolateView = (SubsamplingScaleImageView) this.findViewById(R.id.interpolated_image_view);
-        //this.interpolateView.setImage(ImageSource.uri(imageSource).dimensions(20000,20000),ImageSource.uri(imageSource).dimensions(500,500));
         this.interpolateView.setImage(ImageSource.uri(imageSource));
 
         this.srView = (SubsamplingScaleImageView) this.findViewById(R.id.sr_image_view);
         imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
-        //this.srView.setImage(ImageSource.uri(imageSource).dimensions(20000,20000),ImageSource.uri(imageSource).dimensions(500,500));
-        
         this.srView.setImage(ImageSource.uri(imageSource));
 
     }
