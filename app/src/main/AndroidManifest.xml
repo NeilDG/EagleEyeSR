@@ -26,7 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="neildg.com.eagleeyesr.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="sensorLandscape">
             <intent-filter>
@@ -36,23 +36,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="neildg.com.eagleeyesr.ProcessingActivityDebug"
+            android:name=".ProcessingActivityDebug"
             android:label="Process Images"
             android:screenOrientation="sensorLandscape" />
         <activity
-            android:name="neildg.com.eagleeyesr.ProcessingActivityRelease"
+            android:name=".ProcessingActivityRelease"
             android:label="Process Images"
             android:screenOrientation="sensorLandscape" />
         <activity
-            android:name="neildg.com.eagleeyesr.MeanFusionActivity"
+            android:name=".MeanFusionActivity"
             android:process=":mean_fusion_process" />
         <activity
-            android:name="neildg.com.eagleeyesr.CameraActivity"
+            android:name=".CameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
-        <activity android:name="neildg.com.eagleeyesr.ImageViewActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
-            android:screenOrientation="sensorLandscape"></activity>
+        <activity
+            android:name=".ImageViewActivity"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <activity
             android:name="com.darsh.multipleimageselect.activities.AlbumSelectActivity"
             android:theme="@style/MultipleImageSelectTheme">
@@ -60,14 +61,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="neildg.com.eagleeyesr.NewCameraActivity"
-            android:screenOrientation="landscape"
-            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:name=".NewCameraActivity"
             android:clearTaskOnLaunch="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
-        </activity>
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"></activity>
+        <activity android:name=".ProcessingFromCamActivity"
+            android:label="Process Images"
+            android:screenOrientation="sensorLandscape"
+            ></activity>
     </application>
 
 </manifest>

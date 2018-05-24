@@ -14,7 +14,7 @@ import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.model.multiple.SharpnessMeasure;
 import neildg.com.eagleeyesr.processing.IOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Handles the scheme of selecting test input images and selecting a ground-truth based on sharpness index.

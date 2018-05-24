@@ -1,7 +1,11 @@
 package neildg.com.eagleeyesr;
 
+import android.media.Image;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -9,31 +13,43 @@ import android.widget.RadioGroup;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
+import java.io.File;
+
 import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
+import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
+import neildg.com.eagleeyesr.platformtools.notifications.NotificationListener;
+import neildg.com.eagleeyesr.platformtools.notifications.Notifications;
+import neildg.com.eagleeyesr.platformtools.notifications.Parameters;
+import neildg.com.eagleeyesr.processing.process_observer.IProcessListener;
+import neildg.com.eagleeyesr.processing.process_observer.SRProcessManager;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.views.ImageProgressScreen;
 
-public class ImageViewActivity extends AppCompatActivity {
+public class ImageViewActivity extends AppCompatActivity implements IProcessListener {
     private final static String TAG = "ImageViewActivity";
 
     private enum ImageViewType {
-        NEAREST,
-        LINEAR,
-        CUBIC,
+        INTERPOLATED,
         SUPER_RES
     }
 
-    private SubsamplingScaleImageView nearestView;
-    private SubsamplingScaleImageView linearView;
-    private SubsamplingScaleImageView cubicView;
+    private SubsamplingScaleImageView interpolateView;
     private SubsamplingScaleImageView srView;
+
+    private ImageProgressScreen imageProgressScreen;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_view);
+
+        this.imageProgressScreen = new ImageProgressScreen(this.findViewById(R.id.image_progress_view));
+        this.imageProgressScreen.initialize();
+        this.imageProgressScreen.hide();
     }
 
     @Override
@@ -42,8 +58,11 @@ public class ImageViewActivity extends AppCompatActivity {
         this.loadImageView();
         this.setupRadioButtons();
         RadioGroup radioGroup = (RadioGroup) this.findViewById(R.id.image_view_radio_group);
-        RadioButton cubicBtn = (RadioButton) radioGroup.findViewById(R.id.cubic_radio_btn);
+        RadioButton cubicBtn = (RadioButton) radioGroup.findViewById(R.id.interpolate_radio_btn);
         cubicBtn.setChecked(true);
+
+        ProgressDialogHandler.getInstance().setProgressImplementor(this.imageProgressScreen);
+        SRProcessManager.getInstance().setProcessListener(this,this);
     }
 
     @Override
@@ -52,41 +71,25 @@ public class ImageViewActivity extends AppCompatActivity {
     }
 
     private void loadImageView() {
-
-        this.nearestView = (SubsamplingScaleImageView) this.findViewById(R.id.nearest_image_view);
-        String imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
-        this.nearestView.setImage(ImageSource.uri(imageSource));
-        //this.nearestView.setRotation(180.0f);
-
-        this.linearView = (SubsamplingScaleImageView) this.findViewById(R.id.linear_image_view);
-        imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG);
-        this.linearView.setImage(ImageSource.uri(imageSource));
-        //this.linearView.setRotation(180.0f);
-
-        this.cubicView = (SubsamplingScaleImageView) this.findViewById(R.id.cubic_image_view);
-        imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
-        this.cubicView.setImage(ImageSource.uri(imageSource));
-        //this.cubicView.setRotation(180.0f);
+        String imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG);
+        this.interpolateView = (SubsamplingScaleImageView) this.findViewById(R.id.interpolated_image_view);
+        this.interpolateView.setImage(ImageSource.uri(imageSource));
 
         this.srView = (SubsamplingScaleImageView) this.findViewById(R.id.sr_image_view);
         imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
         this.srView.setImage(ImageSource.uri(imageSource));
-        //this.cubicView.setRotation(180.0f);
+
     }
+
+
 
     private void setupRadioButtons() {
         RadioGroup radioGroup = (RadioGroup) this.findViewById(R.id.image_view_radio_group);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == R.id.nearest_radio_btn) {
-                    ImageViewActivity.this.setImageViewType(ImageViewType.NEAREST);
-                }
-                else if(checkedId == R.id.linear_radio_btn) {
-                    ImageViewActivity.this.setImageViewType(ImageViewType.LINEAR);
-                }
-                else if(checkedId == R.id.cubic_radio_btn) {
-                    ImageViewActivity.this.setImageViewType(ImageViewType.CUBIC);
+                if(checkedId == R.id.interpolate_radio_btn) {
+                    ImageViewActivity.this.setImageViewType(ImageViewType.INTERPOLATED);
                 }
                 else if(checkedId == R.id.sr_radio_btn) {
                     ImageViewActivity.this.setImageViewType(ImageViewType.SUPER_RES);
@@ -94,37 +97,14 @@ public class ImageViewActivity extends AppCompatActivity {
             }
         });
 
-        RadioButton nearestBtn = (RadioButton) radioGroup.findViewById(R.id.nearest_radio_btn);
-        RadioButton linearBtn = (RadioButton) radioGroup.findViewById(R.id.linear_radio_btn);
-        RadioButton cubicBtn = (RadioButton) radioGroup.findViewById(R.id.cubic_radio_btn);
+        RadioButton interpolateBtn = (RadioButton) radioGroup.findViewById(R.id.interpolate_radio_btn);
         RadioButton srBtn = (RadioButton) radioGroup.findViewById(R.id.sr_radio_btn);
 
-        if(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG)) {
-            nearestBtn.setEnabled(true);
-        }
-        else {
-            nearestBtn.setEnabled(false);
-        }
-
         if(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG)) {
-            linearBtn.setEnabled(true);
+            interpolateBtn.setEnabled(true);
         }
         else {
-            linearBtn.setEnabled(false);
-        }
-
-        if(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG)) {
-            cubicBtn.setEnabled(true);
-        }
-        else {
-            cubicBtn.setEnabled(false);
-        }
-
-        if(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG)) {
-            cubicBtn.setEnabled(true);
-        }
-        else {
-            cubicBtn.setEnabled(false);
+            interpolateBtn.setEnabled(false);
         }
 
         if(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG)) {
@@ -137,29 +117,34 @@ public class ImageViewActivity extends AppCompatActivity {
     }
 
     private void setImageViewType(ImageViewType imageViewType) {
-        if(imageViewType == ImageViewType.NEAREST) {
-            this.nearestView.setVisibility(View.VISIBLE);
-            this.linearView.setVisibility(View.INVISIBLE);
-            this.cubicView.setVisibility(View.INVISIBLE);
-            this.srView.setVisibility(View.INVISIBLE);
-        }
-        else if(imageViewType == ImageViewType.LINEAR) {
-            this.nearestView.setVisibility(View.INVISIBLE);
-            this.linearView.setVisibility(View.VISIBLE);
-            this.cubicView.setVisibility(View.INVISIBLE);
-            this.srView.setVisibility(View.INVISIBLE);
-        }
-        else if(imageViewType == ImageViewType.CUBIC){
-            this.nearestView.setVisibility(View.INVISIBLE);
-            this.linearView.setVisibility(View.INVISIBLE);
-            this.cubicView.setVisibility(View.VISIBLE);
+        if(imageViewType == ImageViewType.INTERPOLATED) {
+            this.interpolateView.setVisibility(View.VISIBLE);
             this.srView.setVisibility(View.INVISIBLE);
         }
         else if(imageViewType == ImageViewType.SUPER_RES) {
-            this.nearestView.setVisibility(View.INVISIBLE);
-            this.linearView.setVisibility(View.INVISIBLE);
-            this.cubicView.setVisibility(View.INVISIBLE);
+            this.interpolateView.setVisibility(View.INVISIBLE);
             this.srView.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onProcessCompleted() {
+        RadioGroup radioGroup = (RadioGroup) ImageViewActivity.this.findViewById(R.id.image_view_radio_group);
+        RadioButton srBtn = (RadioButton) radioGroup.findViewById(R.id.sr_radio_btn);
+        if(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG)) {
+            srBtn.setEnabled(true);
+        }
+        else {
+            srBtn.setEnabled(false);
+        }
+
+        ImageViewActivity.this.srView = (SubsamplingScaleImageView) ImageViewActivity.this.findViewById(R.id.sr_image_view);
+        String imageSource = FileImageReader.getInstance().getDecodedFilePath(FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG);
+        ImageViewActivity.this.srView.setImage(ImageSource.uri(imageSource));
+    }
+
+    @Override
+    public void onProducedInitialHR() {
+
     }
 }

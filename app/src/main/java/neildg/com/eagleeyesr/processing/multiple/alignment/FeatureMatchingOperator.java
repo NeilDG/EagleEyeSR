@@ -7,7 +7,6 @@ import org.opencv.core.DMatch;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.Scalar;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
@@ -15,13 +14,15 @@ import org.opencv.features2d.Features2d;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
-import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageWriter;
+import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.processing.imagetools.MatMemory;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.threads.FlaggingThread;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Compare LR reference mat and match features to LR2...LRN.
@@ -68,24 +69,49 @@ public class FeatureMatchingOperator {
 
     public void perform() {
 
-        this.detectFeaturesInReference();
+        /*this.detectFeaturesInReference();
         for(int i = 0; i < this.comparingMatList.length; i++) {
             this.detectFeatures(this.comparingMatList[i], i);
         }
 
-
-        Mat matchesShower = new Mat();
-
         for(int i = 0; i < comparingMatList.length; i++) {
-            Mat comparingMat = this.comparingMatList[i];
+            //Mat comparingMat = this.comparingMatList[i];
             this.matchFeaturesToReference(this.lrDescriptorList[i],i);
 
-            Features2d.drawMatches(this.referenceMat, this.refKeypoint, comparingMat, this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
-            FileImageWriter.getInstance().debugSaveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
+        }
+        MatMemory.releaseAll(this.lrDescriptorList, false);*/
+
+        ////MULTI-THREADED FEATURE MATCHING
+        this.detectFeaturesInReference();
+        FeatureMatcher[] featureMatchers = new FeatureMatcher[this.comparingMatList.length];
+        Semaphore featureSem = new Semaphore(this.comparingMatList.length);
+
+        //perform multithreaded feature matching
+        for(int i = 0; i < featureMatchers.length; i++) {
+            featureMatchers[i] = new FeatureMatcher(featureSem, this.referenceDescriptor, this.comparingMatList[i]);
+            featureMatchers[i].startWork();
         }
 
-        MatMemory.releaseAll(this.lrDescriptorList, false);
-        matchesShower.release();
+        try {
+            featureSem.acquire(this.comparingMatList.length);
+
+            for(int i = 0; i < featureMatchers.length; i++) {
+
+                this.dMatchesList[i] = featureMatchers[i].getMatches();
+                this.lrKeypointsList[i] = featureMatchers[i].getLRKeypoint();
+
+                /*Mat matchesShower = new Mat();
+                Features2d.drawMatches(this.referenceMat, this.refKeypoint, this.comparingMatList[i], this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
+                FileImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
+                matchesShower.release();*/
+            }
+
+            featureSem.release(this.comparingMatList.length);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void detectFeaturesInReference() {
@@ -97,7 +123,7 @@ public class FeatureMatchingOperator {
         descriptorExtractor.compute(this.referenceMat, this.refKeypoint, this.referenceDescriptor);
     }
 
-    private void detectFeatures(Mat imgMat, int index) {
+    /*private void detectFeatures(Mat imgMat, int index) {
         Mat lrDescriptor = new Mat();
         MatOfKeyPoint refKeypoint = new MatOfKeyPoint();
 
@@ -106,12 +132,6 @@ public class FeatureMatchingOperator {
 
         this.lrKeypointsList[index] = refKeypoint;
         this.lrDescriptorList[index] = lrDescriptor;
-
-        /*Mat drawingMat = new Mat();
-        Features2d.drawKeypoints(imgMat, refKeypoint, drawingMat, new Scalar(0.0,255.0,0.0), Features2d.DRAW_RICH_KEYPOINTS);
-        FileImageWriter.getInstance().debugSaveMatrixToImage(drawingMat, "keypoint_" +index, ImageFileAttribute.FileType.JPEG);
-
-        drawingMat.release();*/
     }
 
     private void matchFeaturesToReference(Mat comparingDescriptor, int index) {
@@ -138,7 +158,74 @@ public class FeatureMatchingOperator {
         goodMatches.fromArray(goodMatchesList.toArray(new DMatch[goodMatchesList.size()]));
 
         this.dMatchesList[index] = goodMatches;
-    }
+    }*/
 
+    private class FeatureMatcher extends FlaggingThread {
+
+        private Mat refDescriptor;
+        private Mat comparingMat;
+        private FeatureDetector featureDetector = FeatureDetector.create(FeatureDetector.ORB);
+        private DescriptorExtractor descriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
+        private DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
+
+        private MatOfKeyPoint keypoint;
+        private Mat descriptor;
+        private MatOfDMatch matches;
+
+        public FeatureMatcher(Semaphore semaphore, Mat referenceDescriptor, Mat comparingMat) {
+            super(semaphore);
+
+            this.refDescriptor = referenceDescriptor;
+            this.comparingMat = comparingMat;
+        }
+
+        @Override
+        public void run() {
+
+            //detect features in comparing mat
+            this.descriptor = new Mat();
+            this.keypoint = new MatOfKeyPoint();
+
+            this.featureDetector.detect(this.comparingMat,this.keypoint);
+            this.descriptorExtractor.compute(this.comparingMat, this.keypoint, this.descriptor);
+            this.matches = this.matchFeaturesToReference();
+
+            this.finishWork();
+        }
+
+        private MatOfDMatch matchFeaturesToReference() {
+            MatOfDMatch initialMatch = new MatOfDMatch();
+            Log.d(TAG, "Reference descriptor type: "+ CvType.typeToString(this.refDescriptor.type()) + " Comparing descriptor type: "+CvType.typeToString(this.descriptor.type()));
+            Log.d(TAG, "Reference size: " +this.refDescriptor.size().toString()+ " Comparing descriptor size: " +this.descriptor.size().toString());
+            this.matcher.match(this.refDescriptor, this.descriptor, initialMatch);
+
+            float minDistance = ParameterConfig.getPrefsFloat(ParameterConfig.FEATURE_MINIMUM_DISTANCE_KEY, 999.0f);
+            //only select good matches
+            DMatch[] dMatchList = initialMatch.toArray();
+            List<DMatch> goodMatchesList = new ArrayList<DMatch>();
+            for(int i = 0; i < dMatchList.length; i++) {
+                Log.d(TAG, "dMatch distance: " +dMatchList[i].distance);
+                if(dMatchList[i].distance < minDistance) {
+                    goodMatchesList.add(dMatchList[i]);
+                }
+            }
+
+            initialMatch.release();
+
+            //filter matches to only show good ones
+            MatOfDMatch goodMatches = new MatOfDMatch();
+            goodMatches.fromArray(goodMatchesList.toArray(new DMatch[goodMatchesList.size()]));
+
+            return goodMatches;
+        }
+
+        public MatOfDMatch getMatches() {
+            return this.matches;
+        }
+
+        public MatOfKeyPoint getLRKeypoint() {
+            return this.keypoint;
+        }
+    }
 
 }

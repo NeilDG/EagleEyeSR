@@ -9,14 +9,20 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import neildg.com.eagleeyesr.constants.BuildMode;
+import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.constants.ParameterConfig;
 import neildg.com.eagleeyesr.io.BitmapURIRepository;
-import neildg.com.eagleeyesr.io.FileImageWriter;
-import neildg.com.eagleeyesr.processing.listeners.IProcessListener;
+import neildg.com.eagleeyesr.io.DirectoryStorage;
+import neildg.com.eagleeyesr.io.FileImageReader;
+import neildg.com.eagleeyesr.io.ImageFileAttribute;
+import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
+import neildg.com.eagleeyesr.platformtools.notifications.Notifications;
+import neildg.com.eagleeyesr.processing.process_observer.IProcessListener;
+import neildg.com.eagleeyesr.processing.process_observer.SRProcessManager;
 import neildg.com.eagleeyesr.threads.DebugSRProcessor;
 import neildg.com.eagleeyesr.threads.ReleaseSRProcessor;
 import neildg.com.eagleeyesr.threads.SingleImageSRProcessor;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 import neildg.com.eagleeyesr.ui.views.OptionsScreen;
 
 /*
@@ -46,6 +52,11 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
         super.onResume();
         TextView numImagesText = (TextView) this.findViewById(R.id.num_images_txt);
         numImagesText.setText(Integer.toString(BitmapURIRepository.getInstance().getNumImagesSelected()));
+
+        ProgressDialogHandler.getInstance().setDefaultProgressImplementor();
+        SRProcessManager.getInstance().setProcessListener(this, this);
+
+        this.updateImageViewStatus();
     }
 
     @Override
@@ -63,10 +74,7 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
             }
         });
 
-        //temporarily disable results button
         Button imageViewBtn = (Button) this.findViewById(R.id.image_results_view_btn);
-        imageViewBtn.setEnabled(false);
-
         imageViewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,6 +91,11 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
             }
         });
 
+    }
+
+    private void updateImageViewStatus() {
+        Button imageViewBtn = (Button) this.findViewById(R.id.image_results_view_btn);
+        imageViewBtn.setEnabled(FileImageReader.getInstance().doesImageExists(FilenameConstants.HR_SUPERRES, ImageFileAttribute.FileType.JPEG));
     }
 
     private void initializeOverlayViews() {
@@ -111,7 +124,7 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
                 debugSRProcessor.start();
             }
             else {
-                ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor(this);
+                ReleaseSRProcessor releaseSRProcessor = new ReleaseSRProcessor();
                 releaseSRProcessor.start();
             }
 
@@ -123,12 +136,16 @@ public class ProcessingActivityRelease extends AppCompatActivity implements IPro
 
     @Override
     public void onProcessCompleted() {
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Button imageViewBtn = (Button) ProcessingActivityRelease.this.findViewById(R.id.image_results_view_btn);
-                imageViewBtn.setEnabled(true);
-            }
-        });
+       this.updateImageViewStatus();
+        ///automatically start image preview
+        Intent previewIntent = new Intent(ProcessingActivityRelease.this, ImageViewActivity.class);
+        startActivity(previewIntent);
+    }
+
+    @Override
+    public void onProducedInitialHR() {
+        //start image preview intent for initial viewing
+        Intent previewIntent = new Intent(ProcessingActivityRelease.this, ImageViewActivity.class);
+        startActivity(previewIntent);
     }
 }

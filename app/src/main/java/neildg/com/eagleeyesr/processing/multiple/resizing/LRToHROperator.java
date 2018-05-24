@@ -8,7 +8,7 @@ import neildg.com.eagleeyesr.constants.ParameterConfig;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.processing.IOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Converts LR to HR images and saves them. This serves as generation of different HR images for comparison
@@ -30,14 +30,14 @@ public class LRToHROperator implements IOperator {
         //only interpolate the first reference image
         Mat hrMat = Mat.ones(this.lrMat.rows() * ParameterConfig.getScalingFactor(), this.lrMat.cols() * ParameterConfig.getScalingFactor(), this.lrMat.type());
 
-        Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
-        FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
+        //Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
+        //FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
 
         Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_LINEAR);
         FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG);
 
-        Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
-        FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
+        //Imgproc.resize(this.lrMat, hrMat, hrMat.size(), ParameterConfig.getScalingFactor(), ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
+        //FileImageWriter.getInstance().saveMatrixToImage(hrMat, FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
 
         //Mat zeroFillMat = ImageOperator.performZeroFill(this.lrMat, ParameterConfig.getScalingFactor(), 0, 0);
         //FileImageWriter.getInstance().saveMatrixToImage(zeroFillMat, FilenameConstants.HR_ZERO_FILL, ImageFileAttribute.FileType.JPEG);

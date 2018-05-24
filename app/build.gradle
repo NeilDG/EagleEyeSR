@@ -1,3 +1,4 @@
+//noinspection GradleCompatible
 apply plugin: 'com.android.application'
 
 android {
@@ -9,14 +10,14 @@ android {
             storePassword '123456'
         }
     }
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    compileSdkVersion 27
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId 'neildg.com.eagleeyesr'
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 2
-        versionName '01.00.00'
+        versionCode 8
+        versionName '01.03.03'
         signingConfig signingConfigs.config
         vectorDrawables.useSupportLibrary = true
         ndk {
@@ -24,8 +25,10 @@ android {
         }
     }
 
-    // add begin
-    sourceSets.main.jni.srcDirs = []
+    sourceSets.main{
+        jni.srcDirs = []
+        jniLibs.srcDir 'src/main/jniLibs'
+    }
 
     task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
         Properties properties = new Properties()
@@ -52,6 +55,10 @@ android {
     }
     productFlavors {
     }
+
+    lintOptions {
+        checkReleaseBuilds false
+    }
 }
 
 repositories {
@@ -63,14 +70,14 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile project(':openCVLibrary310_new')
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
-    compile 'com.android.support:recyclerview-v7:24.2.0'
-    compile 'com.android.support:cardview-v7:24.2.0'
+    compile 'com.android.support:appcompat-v7:27.1.1'
+    compile 'com.android.support:design:27.1.1'
+    compile 'com.android.support:recyclerview-v7:27.1.1'
+    compile 'com.android.support:cardview-v7:27.1.1'
     //open-source libraries start
-    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.6.0'
-    compile 'com.akexorcist:RoundCornerProgressBar:2.0.3'
-    compile 'com.github.darsh2:MultipleImageSelect:v0.0.4'
+    implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
+    implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3'
+    implementation 'com.github.darsh2:MultipleImageSelect:v0.0.4'
     compile project(':opencamera')
+    compile project(':openCVLibrary320')
 }

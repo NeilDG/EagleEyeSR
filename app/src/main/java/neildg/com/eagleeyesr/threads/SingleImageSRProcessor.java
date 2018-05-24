@@ -5,7 +5,7 @@ import neildg.com.eagleeyesr.processing.single.gaussian.InputImageAssociator;
 import neildg.com.eagleeyesr.processing.single.gaussian.PatchPairGenerator;
 import neildg.com.eagleeyesr.processing.single.glasner.PostProcessImage;
 import neildg.com.eagleeyesr.processing.single.glasner.GlasnerVariableSetup;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Created by NeilDG on 5/4/2016.

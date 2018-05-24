@@ -9,7 +9,7 @@ import android.util.Log;
 
 import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
 import neildg.com.eagleeyesr.platformtools.notifications.Notifications;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Handles cleanup of capture

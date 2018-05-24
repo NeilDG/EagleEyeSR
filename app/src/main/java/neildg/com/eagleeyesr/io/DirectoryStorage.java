@@ -59,7 +59,7 @@ public class DirectoryStorage {
         File filePath = new File(this.proposedPath);
         filePath.mkdirs();
 
-        Log.d(TAG, "Image storage is set to: " + proposedPath);
+        Log.i(TAG, "Image storage is set to: " + proposedPath);
     }
 
     public void refreshProposedPath() {

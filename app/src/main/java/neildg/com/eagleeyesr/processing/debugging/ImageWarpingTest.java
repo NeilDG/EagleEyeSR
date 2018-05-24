@@ -18,7 +18,7 @@ import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
 import neildg.com.eagleeyesr.processing.multiple.resizing.DownsamplingOperator;
 import neildg.com.eagleeyesr.processing.multiple.alignment.FeatureMatchingOperator;
 import neildg.com.eagleeyesr.processing.multiple.alignment.LRWarpingOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Created by NeilDG on 6/4/2016.

@@ -10,8 +10,8 @@ public class FilenameConstants {
     public final static String NOISE_PREFIX_STRING = "input_noise_";
     public final static String INPUT_PREFIX_SHARPEN_STRING = "sharpen_";
 
-    public final static String HR_NEAREST = "nearest";
-    public final static String HR_CUBIC = "cubic";
+    /*public final static String HR_NEAREST = "nearest";
+    public final static String HR_CUBIC = "cubic";*/
     public final static String HR_LINEAR = "linear";
     public final static String HR_SUPERRES = "result";
     public final static String HR_ITERATION_PREFIX_STRING = "hr_initial_";

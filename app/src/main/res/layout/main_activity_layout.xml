@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     xmlns:sl="http://schemas.android.com/tools">
@@ -10,7 +11,8 @@
         android:fitsSystemWindows="true"
         sl:context="neildg.com.eagleeyesr.MainActivity"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:weightSum="1">
 
         <TextView
             android:layout_width="wrap_content"
@@ -38,7 +40,7 @@
 
             <LinearLayout
                 android:orientation="horizontal"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
                 <RadioGroup
@@ -55,12 +57,12 @@
                         android:textSize="20dp"
                         android:layout_marginTop="5dp" />
 
-                    <RadioButton
+                    <!--<RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1x"
                         android:id="@+id/scale_1_btn"
-                        android:checked="true" />
+                        android:checked="true" />-->
 
                     <RadioButton
                         android:layout_width="wrap_content"
@@ -85,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
 
-                <RadioGroup
+                <!--<RadioGroup
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -115,7 +117,7 @@
                         android:id="@+id/multiple_sr_btn"
                         android:checked="true" />
 
-                </RadioGroup>
+                </RadioGroup> -->
 
             </LinearLayout>
 
@@ -133,32 +135,49 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Take Photos"
-                android:id="@+id/capture_btn" />
+                android:id="@+id/capture_btn"
+                android:padding="25dp" />
 
-            <Button
+            <!--<Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Use External Camera App"
-                android:id="@+id/capture_external_btn" />
+                android:id="@+id/capture_external_btn" />-->
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Pick Images from Gallery"
-                android:id="@+id/select_image_btn" />
+                android:id="@+id/select_image_btn"
+                android:padding="25dp" />
 
 
         </LinearLayout>
 
-        <TextView
+        <!--<TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/textView9"
             android:text="@string/notice_app"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp" />-->
 
     </LinearLayout>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/ic_menu_info_details"
+        android:id="@+id/about_btn"
+        android:layout_marginEnd="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
     <include android:layout_height="match_parent"
         android:layout_width="match_parent"
         layout="@layout/overlay_intro_layout"/>
+
+    <include android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        layout="@layout/overlay_about_layout"/>
 </RelativeLayout>

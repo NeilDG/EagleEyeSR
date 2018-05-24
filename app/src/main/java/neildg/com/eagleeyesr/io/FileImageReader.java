@@ -80,10 +80,15 @@ public class FileImageReader {
 	 * @return
 	 */
 	public Mat imReadOpenCV(String fileName, ImageFileAttribute.FileType fileType) {
-		String completeFilePath = FileImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
-
-		Log.d(TAG, "Filepath for imread: " + completeFilePath);
-		return Imgcodecs.imread(completeFilePath);
+		if(fileName.toLowerCase().contains(".jpg") == true) {
+			Log.d(TAG, "Filepath for imread: " + fileName);
+			return Imgcodecs.imread(fileName);
+		}
+		else {
+			String completeFilePath = FileImageWriter.getInstance().getFilePath() + "/" + fileName + ImageFileAttribute.getFileExtension(fileType);
+			Log.d(TAG, "Filepath for imread: " + completeFilePath);
+			return Imgcodecs.imread(completeFilePath);
+		}
 	}
 
 	public Mat imReadFullPath(String fullPath) {
@@ -111,6 +116,11 @@ public class FileImageReader {
 
 	public Bitmap loadBitmapThumbnail(String fileName, ImageFileAttribute.FileType fileType, int width, int height) {
 		Bitmap resized = ThumbnailUtils.extractThumbnail(this.loadBitmapFromFile(fileName, fileType), width, height);
+		return resized;
+	}
+
+	public Bitmap loadAbsoluteBitmapThumbnail(String absolutePath, int width, int height) {
+		Bitmap resized = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(absolutePath), width, height);
 		return resized;
 	}
 

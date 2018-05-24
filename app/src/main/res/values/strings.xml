@@ -1,14 +1,14 @@
 <resources>
     <string name="app_name">Eagle-Eye HD Camera</string>
     <string name="title_activity_main">Eagle-Eye HD Camera</string>
-    <string name="sr_title">Eagle-Eye: A Superresolution Experiment</string>
+    <string name="sr_title">Eagle-Eye: A Super-Resolution Experiment</string>
     <string name="sr_intro">ABOUT: This is a mobile application that utilizes super-resolution to further enhance an image. App is in early stages of development and may not be stable.</string>
     <string name="title_activity_image_capture">ImageCaptureActivity</string>
-    <string name ="desc_debug_mode">Produce nearest-neighbor, bilinear and bicubic HR images if debugging mode is enabled.</string>
-    <string name ="desc_denoise_mode">Enable image denoising. Recommended for low-light situations.</string>
-    <string name ="desc_feature_match">Feature point minimum distance. Higher value is recommended for shaky captures.</string>
-    <string name ="desc_fusion_threshold">Image fusion noise threshold. Used for assessing image alignment techniques.</string>
-    <string name ="desc_warp_choice">Choice of image alignment technique. Best alignment technique chooses the best image alignment method to use.</string>
-    <string name ="desc_sr_choice">Choice of super-resolution technique. Fast mode prioritizes speed over accuracy. Full super-resolution mode considers all images for processing to have better chances of getting a clearer image. </string>
-    <string name = "notice_app">NOTICE: Developed By: Neil Del Gallego \n For feedback, please send to neil.delgallego@gmail.com</string>
+    <string name="desc_debug_mode">Produce nearest-neighbor, bilinear and bicubic HR images if debugging mode is enabled.</string>
+    <string name="desc_denoise_mode">Enable image denoising. Recommended for low-light situations.</string>
+    <string name="desc_feature_match">Feature point minimum distance. Higher value is recommended for shaky captures.</string>
+    <string name="desc_fusion_threshold">Image fusion noise threshold. Used for assessing image alignment techniques.</string>
+    <string name="desc_warp_choice">Choice of image alignment technique. Best alignment technique chooses the best image alignment method to use.</string>
+    <string name="desc_sr_choice">Choice of super-resolution technique. Fast mode prioritizes speed over accuracy. Full super-resolution mode considers all images for processing to have better chances of getting a clearer image. </string>
+    <string name="notice_app">For feedback, please send to neil.delgallego@gmail.com</string>
 </resources>

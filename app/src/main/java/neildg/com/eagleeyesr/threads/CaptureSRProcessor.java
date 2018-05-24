@@ -111,19 +111,21 @@ public class CaptureSRProcessor extends Thread implements NotificationListener {
         boolean isDebugMode = ParameterConfig.getPrefsBoolean(ParameterConfig.DEBUGGING_FLAG_KEY, false);
 
         //produce initial HR using cubic interpolation
-        Mat inputMat = FileImageReader.getInstance().imReadOpenCV(fileName, ImageFileAttribute.FileType.JPEG);
+        //Mat inputMat = FileImageReader.getInstance().imReadOpenCV(fileName, ImageFileAttribute.FileType.JPEG);
+        Log.d(TAG, "Absolute path for image: " +fileName);
+        Mat inputMat = FileImageReader.getInstance().imReadFullPath(fileName);
         Mat outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_LINEAR);
         FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_ITERATION_PREFIX_STRING + 0, ImageFileAttribute.FileType.JPEG);
 
         if(isDebugMode) {
             //create cubic interpolation copy for comparison
-            FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
+            /*FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_CUBIC, ImageFileAttribute.FileType.JPEG);
             outputMat.release();
 
             //produce other types of known interpolation techniques for comparison
             outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_NEAREST);
             FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_NEAREST, ImageFileAttribute.FileType.JPEG);
-            outputMat.release();
+            outputMat.release();*/
 
             outputMat = ImageOperator.performInterpolation(inputMat, ParameterConfig.getScalingFactor(), Imgproc.INTER_CUBIC);
             FileImageWriter.getInstance().saveMatrixToImage(outputMat, FilenameConstants.HR_LINEAR, ImageFileAttribute.FileType.JPEG);

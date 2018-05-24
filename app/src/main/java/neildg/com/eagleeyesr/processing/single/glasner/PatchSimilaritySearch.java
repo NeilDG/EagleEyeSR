@@ -13,7 +13,7 @@ import neildg.com.eagleeyesr.model.single_glasner.PatchAttributeTable;
 import neildg.com.eagleeyesr.model.single_glasner.PatchRelationTable;
 import neildg.com.eagleeyesr.number.MathUtils;
 import neildg.com.eagleeyesr.processing.IOperator;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /**
  * Created by NeilDG on 5/9/2016.

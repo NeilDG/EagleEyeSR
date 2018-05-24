@@ -19,10 +19,10 @@
         android:scaleType="fitCenter"
         android:contentDescription="@string/take_photo"
         android:src="@drawable/take_photo_selector"
-        android:onClick="clickedTakePhoto"
         android:layout_centerVertical="true"
 		android:background="@null"
-        />
+        style="@style/image_button"
+        android:onClick="clickedTakePhoto" />
 
     <ZoomControls
         android:id="@+id/zoom"
@@ -33,15 +33,15 @@
         />
 
     <SeekBar
-        android:id="@+id/zoom_seekbar"
-        android:contentDescription="@string/zoom"
-        android:layout_width="150dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp"
-        />
+    android:id="@+id/zoom_seekbar"
+    android:contentDescription="@string/zoom"
+    android:layout_width="150dp"
+    android:layout_height="50dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="0dp"
+    android:layout_marginBottom="0dp"
+    />
 
     <SeekBar
         android:id="@+id/focus_seekbar"
@@ -295,6 +295,13 @@
         >
     </ScrollView>
 
+    <FrameLayout
+        android:id="@+id/opencamera_overlay_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -318,30 +325,30 @@
             android:layout_height="50dp"
             android:id="@+id/processing_bar"
             android:layout_width="50dp"
-            android:layout_marginStart="22dp"
-            android:layout_marginTop="14dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+            android:layout_marginStart="15dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="8dp" />
 
         <ImageButton
-            android:layout_width="64dp"
-            android:layout_height="66dp"
             android:id="@+id/btn_image_preview"
             android:background="@android:color/transparent"
             android:scaleType="centerInside"
             android:layout_weight="0.25"
-            android:layout_below="@+id/gui_anchor"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="9dp" />
+            android:layout_marginTop="7dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/processing_bar" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_height="50dp"
+            android:id="@+id/capture_progress_bar"
+            android:layout_width="50dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
-
-    <FrameLayout
-        android:id="@+id/opencamera_overlay_frame"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        />
 
 </RelativeLayout>

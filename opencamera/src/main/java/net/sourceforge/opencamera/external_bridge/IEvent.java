@@ -5,5 +5,5 @@ package net.sourceforge.opencamera.external_bridge;
  */
 
 public interface IEvent {
-    void onReceivedEvent();
+    void onReceivedEvent(String absolutePath);
 }

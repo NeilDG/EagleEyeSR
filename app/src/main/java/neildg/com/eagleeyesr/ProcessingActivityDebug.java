@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import neildg.com.eagleeyesr.constants.BuildMode;
 import neildg.com.eagleeyesr.io.BitmapURIRepository;
-import neildg.com.eagleeyesr.ui.ProgressDialogHandler;
+import neildg.com.eagleeyesr.ui.progress_dialog.ProgressDialogHandler;
 
 /*
     Processing activity for SR. Just a simple debugging activity
