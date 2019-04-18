@@ -100,7 +100,7 @@
                     android:layout_marginBottom="10dp" />
 
                 <TextView
-                    android:text="The following names provided test devices or sample images for testing: Dr. Joel Ilao, Jonathan Pabillore, Myrriane Aguila"
+                    android:text="The following people tested and reviewed the application: Dr. Joel Ilao, Dr. Roger Tan, Jonathan Pabillore, Myrriane Aguila"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="#FFFFFFFF"

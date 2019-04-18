@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <RadioGroup
+                <!--<RadioGroup
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -57,12 +57,12 @@
                         android:textSize="20dp"
                         android:layout_marginTop="5dp" />
 
-                    <!--<RadioButton
+                    <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1x"
                         android:id="@+id/scale_1_btn"
-                        android:checked="true" />-->
+                        android:checked="true" />
 
                     <RadioButton
                         android:layout_width="wrap_content"
@@ -78,7 +78,7 @@
                         android:id="@+id/scale_4_btn"
                         android:checked="true" />
 
-                </RadioGroup>
+                </RadioGroup>-->
 
             </LinearLayout>
 

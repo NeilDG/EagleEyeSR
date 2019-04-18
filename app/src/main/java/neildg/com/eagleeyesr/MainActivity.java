@@ -167,16 +167,13 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        RadioGroup scaleRadioGroup = (RadioGroup) this.findViewById(R.id.scale_radio_group);
+
+        /*RadioGroup scaleRadioGroup = (RadioGroup) this.findViewById(R.id.scale_radio_group);
         scaleRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
 
-                /*if(checkedId == R.id.scale_1_btn) {
-                    //Toast.makeText(MainActivity.this, "No scaling applied", Toast.LENGTH_SHORT).show();
-                    ParameterConfig.setScalingFactor(1);
-                }
-                else*/ if(checkedId == R.id.scale_2_btn) {
+                if(checkedId == R.id.scale_2_btn) {
                     //Toast.makeText(MainActivity.this, "2x scale", Toast.LENGTH_SHORT).show();
                     ParameterConfig.setScalingFactor(2);
                 }
@@ -185,7 +182,7 @@ public class MainActivity extends AppCompatActivity{
                     //ParameterConfig.setScalingFactor(4);
                 }
             }
-        });
+        });*/
 
 
 
@@ -204,12 +201,14 @@ public class MainActivity extends AppCompatActivity{
             }
         });*/
 
-        scaleRadioGroup.check(R.id.scale_2_btn); ParameterConfig.setScalingFactor(2);
-        RadioButton scale4Btn = (RadioButton) scaleRadioGroup.findViewById(R.id.scale_4_btn);
+        //scaleRadioGroup.check(R.id.scale_2_btn); ParameterConfig.setScalingFactor(2);
+        //RadioButton scale4Btn = (RadioButton) scaleRadioGroup.findViewById(R.id.scale_4_btn);
 
         //TODO: temporarily disable functionalities
-        scale4Btn.setEnabled(false);
+        //scale4Btn.setEnabled(false);
         //captureImageBtn.setEnabled(false);
+
+        ParameterConfig.setScalingFactor(2);
     }
 
     @Override

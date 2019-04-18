@@ -16,9 +16,12 @@ import net.sourceforge.opencamera.external_bridge.IEvent;
 import net.sourceforge.opencamera.external_bridge.ImageSaveBroadcaster;
 
 import neildg.com.eagleeyesr.camera2.CameraUserSettings;
+import neildg.com.eagleeyesr.constants.ParameterConfig;
 import neildg.com.eagleeyesr.io.FileImageReader;
 import neildg.com.eagleeyesr.io.ImageInputMap;
+import neildg.com.eagleeyesr.model.AttributeHolder;
 import neildg.com.eagleeyesr.pipeline.ProcessingQueue;
+import neildg.com.eagleeyesr.platformtools.core_application.ApplicationCore;
 import neildg.com.eagleeyesr.platformtools.notifications.NotificationCenter;
 import neildg.com.eagleeyesr.platformtools.notifications.Notifications;
 import neildg.com.eagleeyesr.threads.CaptureSRProcessor;
@@ -42,6 +45,11 @@ public class NewCameraActivity extends OpenCameraActivity implements IEvent {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ApplicationCore.initialize(this);
+        ProgressDialogHandler.initialize(this);
+        ParameterConfig.initialize(this);
+        AttributeHolder.initialize(this);
 
         this.inflateCustomLayouts();
         this.initializeButtons();

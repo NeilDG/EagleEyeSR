@@ -6,7 +6,7 @@ android {
         config {
             keyAlias 'NeilDG'
             keyPassword '123456'
-            storeFile file('C:/Users/NeilDG/Documents/MSCSGithubProjects/MegatronSR/sr_keystore.jks')
+            storeFile file('C:/Users/NeilDG/Documents/GithubProjects/MegatronSR/sr_keystore.jks')
             storePassword '123456'
         }
     }
@@ -15,9 +15,9 @@ android {
     defaultConfig {
         applicationId 'neildg.com.eagleeyesr'
         minSdkVersion 17
-        targetSdkVersion 22
-        versionCode 8
-        versionName '01.03.03'
+        targetSdkVersion 26
+        versionCode 9
+        versionName '01.03.04'
         signingConfig signingConfigs.config
         vectorDrawables.useSupportLibrary = true
         ndk {
