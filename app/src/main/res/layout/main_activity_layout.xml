@@ -151,6 +151,14 @@
                 android:id="@+id/select_image_btn"
                 android:padding="25dp" />
 
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Grant Permissions"
+                android:id="@+id/button_grant_permission"
+                android:padding="25dp"
+                android:visibility="invisible"/>
+
 
         </LinearLayout>
 
