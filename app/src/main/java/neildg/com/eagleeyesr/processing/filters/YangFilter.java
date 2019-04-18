@@ -11,6 +11,7 @@ import neildg.com.eagleeyesr.constants.FilenameConstants;
 import neildg.com.eagleeyesr.io.ImageFileAttribute;
 import neildg.com.eagleeyesr.io.FileImageWriter;
 import neildg.com.eagleeyesr.processing.IOperator;
+import neildg.com.eagleeyesr.processing.imagetools.ImageOperator;
 import neildg.com.eagleeyesr.processing.multiple.fusion.YangFilterFusionOperator;
 
 /**
@@ -57,16 +58,16 @@ public class YangFilter implements IOperator {
             //ProgressDialogHandler.getInstance().showDialog("Feature detection", "Extracting edge features for image " +i);
 
             Imgproc.filter2D(this.inputMatList[i], inputf1, this.inputMatList[i].depth(), this.f1Kernel);
-            //ImageWriter.getInstance().saveMatrixToImage(inputf1, "YangEdges", "image_f1_"+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(inputf1, "YangEdges", "image_f1_"+i, ImageFileAttribute.FileType.JPEG);
 
             Imgproc.filter2D(this.inputMatList[i], inputf2, this.inputMatList[i].depth(), this.f2Kernel);
-            //ImageWriter.getInstance().saveMatrixToImage(inputf2, "YangEdges", "image_f2_"+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(inputf2, "YangEdges", "image_f2_"+i, ImageFileAttribute.FileType.JPEG);
 
             Imgproc.filter2D(this.inputMatList[i], inputf3, this.inputMatList[i].depth(), this.f3Kernel);
-            //ImageWriter.getInstance().saveMatrixToImage(inputf3, "YangEdges", "image_f3_"+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(inputf3, "YangEdges", "image_f3_"+i, ImageFileAttribute.FileType.JPEG);
 
             Imgproc.filter2D(this.inputMatList[i], inputf4, this.inputMatList[i].depth(), this.f4Kernel);
-            //ImageWriter.getInstance().saveMatrixToImage(inputf4, "YangEdges", "image_f4_"+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(inputf4, "YangEdges", "image_f4_"+i, ImageFileAttribute.FileType.JPEG);
 
             combinedFilterList[0] = inputf1;
             combinedFilterList[1] = inputf2;
@@ -76,18 +77,10 @@ public class YangFilter implements IOperator {
             YangFilterFusionOperator fusionOperator = new YangFilterFusionOperator(combinedFilterList);
             fusionOperator.perform();
 
-            //FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.EDGE_DIRECTORY_PREFIX, FilenameConstants.IMAGE_EDGE_PREFIX+i, ImageFileAttribute.FileType.JPEG);
+            FileImageWriter.getInstance().saveMatrixToImage(fusionOperator.getResult(), FilenameConstants.EDGE_DIRECTORY_PREFIX, FilenameConstants.IMAGE_EDGE_PREFIX+i, ImageFileAttribute.FileType.JPEG);
 
             combinedFilterList[0].release(); combinedFilterList[1].release(); combinedFilterList[2].release(); combinedFilterList[3].release();
             edgeMatList[i] = fusionOperator.getResult();
-
-            //test. Highlight the edges
-            /*Core.addWeighted(fusionOperator.getResult(), 1.0, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
-            Mat edgeMat = fusionOperator.getResult();
-            Mat maskMat = ImageOperator.produceMask(edgeMat, 25);
-
-            Core.addWeighted(edgeMat, -0.35, this.inputMatList[i], 1.0, 0.0, this.inputMatList[i]);
-            ImageWriter.getInstance().saveMatrixToImage(this.inputMatList[i], "YangEdges", "image_sharpen_"+i, ImageFileAttribute.FileType.JPEG);*/
         }
     }
 

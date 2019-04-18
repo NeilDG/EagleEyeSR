@@ -100,10 +100,10 @@ public class FeatureMatchingOperator {
                 this.dMatchesList[i] = featureMatchers[i].getMatches();
                 this.lrKeypointsList[i] = featureMatchers[i].getLRKeypoint();
 
-                /*Mat matchesShower = new Mat();
+                Mat matchesShower = new Mat();
                 Features2d.drawMatches(this.referenceMat, this.refKeypoint, this.comparingMatList[i], this.lrKeypointsList[i], this.dMatchesList[i], matchesShower);
                 FileImageWriter.getInstance().saveMatrixToImage(matchesShower, FilenameConstants.MATCHES_PREFIX_STRING + i, ImageFileAttribute.FileType.JPEG);
-                matchesShower.release();*/
+                matchesShower.release();
             }
 
             featureSem.release(this.comparingMatList.length);
