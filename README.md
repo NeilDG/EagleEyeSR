@@ -18,5 +18,13 @@ Please cite the following resources if you plan to use our source code:
 
 BIBTEX: 
 ```bib
-@article{Del_Gallego_2020, title={Blind First-Order Perspective Distortion Correction Using Parallel Convolutional Neural Networks}, volume={20}, ISSN={1424-8220}, url={http://dx.doi.org/10.3390/s20174898}, DOI={10.3390/s20174898}, number={17}, journal={Sensors}, publisher={MDPI AG}, author={Del Gallego, Neil Patrick and Ilao, Joel and Cordel, Macario}, year={2020}, month={Aug}, pages={4898}}
+@Article{delgallego_2017,
+  author="Del Gallego, Neil Patrick and Ilao, Joel",
+  title="Multiple-image super-resolution on mobile devices: an image warping approach",
+  journal="EURASIP Journal on Image and Video Processing",
+  year="2017",
+  volume="2017",
+  number="1",
+  pages="15"
+}
 ```
